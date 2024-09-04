@@ -198,5 +198,5 @@ workflow MLST_TYPING {
 
     emit:
     versions = ch_versions
-    report = MLST.out.report
+    report = MLST.out.json
     }

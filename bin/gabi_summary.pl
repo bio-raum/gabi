@@ -60,11 +60,14 @@ foreach my $file ( @files ) {
     chomp(my @lines = <$FILE>);
 
     # Crude way to avoid empty files - we expect at least 2 lines: header and result
-    next if (scalar @lines < 2);
+    next if (scalar @lines < 1);
 
     if ($filename =~ /.*kraken.*/) {
         my %data = parse_kraken(\@lines);
         $matrix{"kraken"} = \%data;
+    } elsif ( $filename =~ /.*mlst.json/) {
+        my %data = parse_mlst(\@lines);
+        $matrix{"mlst"} = \%data;
     } elsif ( $filename =~ /.*confindr.*/ ) {
         my @data = parse_confindr(\@lines);
         # We may see more than one ConfindR report!
@@ -75,9 +78,6 @@ foreach my $file ( @files ) {
     } elsif ( @lines[0] =~ /^Protein identifier.*/) {
         my @data = parse_amrfinder(\@lines);
         $matrix{"amrfinder"} = \@data;
-    } elsif ( $filename =~ /.*mlst.txt/) {
-        my %data = parse_mlst(\@lines);
-        $matrix{"mlst"} = \%data;
     } elsif ( $filename =~ /.*ectyper.tsv/) {
         my %data = parse_ectyper(\@lines);
         $matrix{'ectyper'} = \%data;
@@ -169,15 +169,11 @@ sub parse_ectyper {
 sub parse_mlst {
 
     my @lines = @{$_[0]} ;
+    my $text = join " ",@lines;
+    my $json = JSON::XS->new->utf8->decode($text);
+    my $info = @$json[0];
 
-    my %data;
-    my $this_line = shift @lines;
-
-    my @elements = split "\t", $this_line;
-    
-    $data{'mlst'} = @elements[2];
-
-    return %data;
+    return  %$info;
 }
 sub parse_amrfinder {
 
