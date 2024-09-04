@@ -18,7 +18,7 @@ That said, if you did everything right, it could be that the assembly algorithm 
 
 This could simply be an issue with your executing machine not having enough RAM to run some of the tools we put into this pipeline. The exact amount of RAM needed is difficult to predict and can depend on factors like read length and/or sequencing depth - but we suspect that at least 32GB RAM should be available to avoid RAM-related issues (preferably 64GB). 
 
-If this is already the case for you, then it is more likely that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/marchoeppner/nf-configs/) or from the command line - in which case GABI will use the built-in default (128 GB Ram) - which may well exceed the limits of your system. Please check our section on manipulating [resource](usage.md#resources) limits from the command line. 
+If this is already the case for you, then it is more likely that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) or from the command line - in which case GABI will use the built-in default (128 GB Ram) - which may well exceed the limits of your system. Please check our section on manipulating [resource](usage.md#resources) limits from the command line. 
 
 ## Why is the pipeline so slow?
 
@@ -42,4 +42,4 @@ Most likely you saw something like this:
 ERROR ~ No such file or directory: 
 ```
 
-This is most likely happening because you passed the `reference_base` option from a custom config file via the "-c" argument. There is currently a [known bug](https://github.com/nextflow-io/nextflow/issues/2662) in Nextflow which prevents the correct passing of parameters from a custom config file to the workflow. Please use the command line argument `--reference_base` instead or consider contributing a site-specific [config file](https://github.com/marchoeppner/nf-configs). 
+This is most likely happening because you passed the `reference_base` option from a custom config file via the "-c" argument. There is currently a [known bug](https://github.com/nextflow-io/nextflow/issues/2662) in Nextflow which prevents the correct passing of parameters from a custom config file to the workflow. Please use the command line argument `--reference_base` instead or consider contributing a site-specific [config file](https://github.com/bio-raum/nf-configs). 

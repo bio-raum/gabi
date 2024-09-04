@@ -1,6 +1,6 @@
 # Installation
 
-If you are new to our pipeline ecosystem, we recommend you first check out our general setup guide [here](https://github.com/marchoeppner/nf-configs/blob/main/doc/installation.md). That said, the instructions below will probably be sufficient for most users. 
+If you are new to our pipeline ecosystem, we recommend you first check out our general setup guide [here](https://github.com/bio-raum/nf-configs/blob/main/doc/installation.md). That said, the instructions below will probably be sufficient for most users. 
 
 ## Installing nextflow
 
@@ -39,7 +39,7 @@ nextflow run marchoeppner/gabi -profile singularity \\
 --reference_base /path/to/references
 ```
 
-where `/path/to/references` could be something like `/data/pipelines/references` or whatever is most appropriate on your system. On a distributed compute environment, this directory needs to live on a shared file system. If you already use a site-specific [config](https://github.com/marchoeppner/nf-configs) file, the `--reference_base` option does not need to be set. 
+where `/path/to/references` could be something like `/data/pipelines/references` or whatever is most appropriate on your system. On a distributed compute environment, this directory needs to live on a shared file system. If you already use a site-specific [config](https://github.com/bio-raum/nf-configs) file, the `--reference_base` option does not need to be set. 
 
 If you do not have singularity on your system, you can also specify docker, podman or conda for software provisioning - see the [usage information](usage.md).
 

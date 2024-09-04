@@ -171,7 +171,7 @@ Do not run MLST typing tools (chewbbaca, pyMLST)
 
 ## Resources
 
-The following options can be set to control resource usage outside of a site-specific [config](https://github.com/marchoeppner/nf-configs) file.
+The following options can be set to control resource usage outside of a site-specific [config](https://github.com/bio-raum/nf-configs) file.
 
 ### `--max_cpus` [ default = 16]
 
