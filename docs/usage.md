@@ -82,7 +82,7 @@ sample_id,platform,R1,R2
 S100,ILLUMINA,/home/marc/projects/gaba/data/S100_R1.fastq.gz,/home/marc/projects/gaba/data/S100_R2.fastq.gz
 ```
 
-If the pipeline sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. 
+If the pipeline sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the R2 column should remain empty. 
 
 Please note that there is an optional column `library_id`, which is used to name some of the output folders for read-set specific QC measures. If `library_id` is not given, the pipeline will use the file name.
 
@@ -109,7 +109,7 @@ Set this option to true if you believe your ONT data to be of "high quality". Th
 
 ### `--ont_min_q` [ default = 10 ]
 
-Discard nanopore Reads below this mean quality.
+Discard nanopore reads below this mean quality.
 
 ### `--ont_min_length`  [ default = 5000 ]
 
@@ -150,7 +150,7 @@ Perform sub-sampling of (long reads) prior to assembly. This is meant to deal wi
 
 If sub-sampling (`--subsample_reads`) is enabled, this is the target coverage. This option is combined with `--genome_size`. 
 
-### `--genome_size` [ default = 6Mb ]
+### `--genome_size` [ default = '6Mb' ]
 
 If sub-sampling (`--subsample_reads`) is enabled, this is the assumed genome size against which the coverage is measured. Since this pipeline supports processing of diverse species in parallel, the default of 6Mb is a compromise and should at the very least prevent grossly over-sampled data to bring the workflow to its knees. Of course, if you only sequence a single species, you are welcome to set this to that specific genome size. 
 
@@ -167,7 +167,7 @@ If you analyse a single species and wish to optimize the quality of the genome a
 A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria and Salmonella. 
 
 ### `--skip_mlst` [ default = false ]
-Do not run MLST typing tools (chewbbaca, pyMLST)
+Do not run MLST typing tools (chewbbaca, MLST, pyMLST)
 
 ## Resources
 

@@ -31,6 +31,7 @@ include { MLST_TYPING }                 from './../subworkflows/mlst'
 include { REPORT }                      from './../subworkflows/report'
 include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
+include { COVERAGE }                    from './../subworkflows/coverage'
 
 /*
 --------------------
@@ -222,6 +223,20 @@ workflow GABI {
         tuple(newMeta, f)
     }.set { ch_assemblies_clean }
 
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Calculate coverage against assembled genome
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    COVERAGE(
+        ch_assemblies_clean,
+        ch_short_reads_only,
+        ch_ont_reads_only,
+        ch_pb_reads_only
+    )
+    ch_versions   = ch_versions.mix(COVERAGE.out.versions)
+    multiqc_files = multiqc_files.mix(COVERAGE.out.report.map {m,r -> r })
+ 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies
