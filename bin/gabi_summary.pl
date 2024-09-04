@@ -60,11 +60,14 @@ foreach my $file ( @files ) {
     chomp(my @lines = <$FILE>);
 
     # Crude way to avoid empty files - we expect at least 2 lines: header and result
-    next if (scalar @lines < 2);
+    next if (scalar @lines < 1);
 
     if ($filename =~ /.*kraken.*/) {
         my %data = parse_kraken(\@lines);
         $matrix{"kraken"} = \%data;
+    } elsif ( $filename =~ /.*mlst.json/) {
+        my %data = parse_mlst(\@lines);
+        $matrix{"mlst"} = \%data;
     } elsif ( $filename =~ /.*confindr.*/ ) {
         my @data = parse_confindr(\@lines);
         # We may see more than one ConfindR report!
@@ -75,9 +78,6 @@ foreach my $file ( @files ) {
     } elsif ( @lines[0] =~ /^Protein identifier.*/) {
         my @data = parse_amrfinder(\@lines);
         $matrix{"amrfinder"} = \@data;
-    } elsif ( $filename =~ /.*clamlst.txt/) {
-        my %data = parse_clamlst(\@lines);
-        $matrix{"mlst"} = \%data;
     } elsif ( $filename =~ /.*ectyper.tsv/) {
         my %data = parse_ectyper(\@lines);
         $matrix{'ectyper'} = \%data;
@@ -166,24 +166,14 @@ sub parse_ectyper {
 
     return %data;
 }
-sub parse_clamlst {
+sub parse_mlst {
 
     my @lines = @{$_[0]} ;
+    my $text = join " ",@lines;
+    my $json = JSON::XS->new->utf8->decode($text);
+    my $info = @$json[0];
 
-    my $h = shift @lines;
-    my @header = split "\t",$h;
-
-    my %data;
-    my $this_line = shift @lines;
-
-    my @elements = split "\t", $this_line;
-    for my $i (0..$#header) {
-        my $column = @header[$i];
-        my $entry = @elements[$i];
-        $data{$column} = $entry 
-    }
-
-    return %data;
+    return  %$info;
 }
 sub parse_amrfinder {
 
