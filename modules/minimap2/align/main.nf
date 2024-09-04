@@ -1,6 +1,6 @@
 process MINIMAP2_ALIGN {
     tag "$meta.sample_id"
-    label 'short_parallel'
+    label 'medium_parallel'
 
     // Note: the versions here need to match the versions used in the mulled container below and minimap2/index
     conda "${moduleDir}/environment.yml"
@@ -23,11 +23,13 @@ process MINIMAP2_ALIGN {
     def args  = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     def bam_index = "${prefix}.bam"
+    def algorithm = meta.platform == "NANOPORE" ? "-ax map-ont" : "-ax map-hifi"
 
     """
     minimap2 \\
         $args \\
         -t $task.cpus \\
+        $algorithm \\
         $reference \\
         $reads \\
         | samtools sort -@ ${task.cpus} -o ${bam_index} -

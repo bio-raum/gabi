@@ -75,8 +75,8 @@ foreach my $file ( @files ) {
     } elsif ( @lines[0] =~ /^Protein identifier.*/) {
         my @data = parse_amrfinder(\@lines);
         $matrix{"amrfinder"} = \@data;
-    } elsif ( $filename =~ /.*clamlst.txt/) {
-        my %data = parse_clamlst(\@lines);
+    } elsif ( $filename =~ /.*mlst.txt/) {
+        my %data = parse_mlst(\@lines);
         $matrix{"mlst"} = \%data;
     } elsif ( $filename =~ /.*ectyper.tsv/) {
         my %data = parse_ectyper(\@lines);
@@ -166,22 +166,16 @@ sub parse_ectyper {
 
     return %data;
 }
-sub parse_clamlst {
+sub parse_mlst {
 
     my @lines = @{$_[0]} ;
-
-    my $h = shift @lines;
-    my @header = split "\t",$h;
 
     my %data;
     my $this_line = shift @lines;
 
     my @elements = split "\t", $this_line;
-    for my $i (0..$#header) {
-        my $column = @header[$i];
-        my $entry = @elements[$i];
-        $data{$column} = $entry 
-    }
+    
+    $data{'mlst'} = @elements[2];
 
     return %data;
 }
