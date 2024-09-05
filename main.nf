@@ -10,7 +10,7 @@ GABI Pipeline
 This Pipeline performs assembly of bacterial isolates from NGS reads and performs typing
 
 ### Homepage / git
-git@github.com:marchoeppner/gabi.git
+git@github.com:bio-raum/gabi.git
 
 **/
 
