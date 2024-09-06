@@ -1,5 +1,42 @@
 # Outputs 
 
+## Interpreting results
+
+<details markdown=1>
+<summary>Evaluating samples</summary>
+
+### A good start to judge the success of a sequencing run, the following steps should be covered:
+
+- Does the assembly size match puiblished values for this species?
+- Into how many contigs was the sample assembled?
+- Are the reads potentially contaminated?
+- Does the taxonomic profile suggest the presence of more than one species?
+- How complete is the assembly?
+- How much read coverage do we have (for each sequencing technololgy)
+- How complete is the gene space coverage and are there many duplicate BUSCO hits?
+
+Basically, our goal should be to have highly contiguous assembly, without any contaminations or obvious errors. The `general statistics` section provides some immediate hints:
+
+![general](../images/multiqc_general_stats.png)
+
+Secondly, ConfindR results inform about potential contamination issues:
+
+![confindr](../images/multiqc_confindr.png)
+
+QUAST provides some insights into the assembly quality - with some caveats concerning missamblies etc, based on the availability of a suitable reference genome against which to compare. 
+
+![quast](../images/multiqc_quast.png)
+
+BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain many duplicated BUSCOs. 
+
+![busco](../images/multiqc_busco.png)
+
+Complementary to ConfindR, Kraken can be used to check if the sample consists of more than one species.A low level of abundance is typically no reason for concern and more likely the result of low complexiyt sequence motifs. 
+
+![kraken](../images/multiqc_kraken.png)
+
+</details>
+
 ## Reports
 
 <details markdown=1>
