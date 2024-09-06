@@ -49,6 +49,11 @@ workflow.onComplete {
     emailFields['version'] = workflow.manifest.version
     emailFields['session'] = workflow.sessionId
     emailFields['runName'] = run_name
+    emailFields['Subsampling'] = params.subsample_reads
+    if (params.subsample_reads) {
+        emailFields['Maximum coverage'] = params.max_coverage
+        emailFields['Genome size'] = params.genome_size
+    }
     emailFields['success'] = workflow.success
     emailFields['dateStarted'] = workflow.start
     emailFields['dateComplete'] = workflow.complete
