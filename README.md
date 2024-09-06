@@ -4,6 +4,8 @@
 
 If you are really impatient, check out our [quickstart](docs/quickstart.md) guide. 
 
+![schema](images/GABI_Schema_v2.png)
+
 ## Documentation 
 
 1. [What happens in this pipeline?](docs/pipeline.md)
