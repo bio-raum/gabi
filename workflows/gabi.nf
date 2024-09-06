@@ -71,6 +71,9 @@ ch_versions     = Channel.from([])
 multiqc_files   = Channel.from([])
 ch_assemblies   = Channel.from([])
 ch_report       = Channel.from([])
+ch_multiqc_illumina = Channel.from([])
+ch_multiqc_nanopore = Channel.from([])
+ch_multiqc_pacbio   = Channel.from([])
 
 workflow GABI {
     main:
@@ -93,28 +96,9 @@ workflow GABI {
     multiqc_files       = multiqc_files.mix(QC.out.qc)
     ch_report           = ch_report.mix(QC.out.confindr_reports)
 
-    /*
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Platform-specific MultiQC reports
-    since different technologies are difficult to
-    display jointly (scale etc)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    */
-    MULTIQC_ILLUMINA(
-        QC.out.qc_illumina.collect(),
-        ch_multiqc_config,
-        ch_multiqc_logo
-    )
-    MULTIQC_NANOPORE(
-        QC.out.qc_nanopore.collect(),
-        ch_multiqc_config,
-        ch_multiqc_logo
-    )
-    MULTIQC_PACBIO(
-        QC.out.qc_pacbio.collect(),
-        ch_multiqc_config,
-        ch_multiqc_logo
-    )
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(QC.out.qc_illumina)
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(QC.out.qc_nanopore)
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(QC.out.qc_pacbio)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -235,7 +219,21 @@ workflow GABI {
         ch_pb_reads_only
     )
     ch_versions   = ch_versions.mix(COVERAGE.out.versions)
-    multiqc_files = multiqc_files.mix(COVERAGE.out.report.map {m,r -> r })
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(
+        COVERAGE.out.report.filter { m,r -> 
+            m.platform == "ILLUMINA"
+        }.map { m,r -> r}
+    )
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(
+        COVERAGE.out.report.filter { m,r ->
+            m.platform == "NANOPORE"
+        }.map { m,r -> r }
+    )
+    ch_multiqc_pacbio = ch_multiqc_pacbio.mix(
+        COVERAGE.out.report.filter { m,r ->
+            m.platform == "PACBIO"
+        }.map { m,r -> r }
+    )
  
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,6 +388,29 @@ workflow GABI {
 
     MULTIQC(
         multiqc_files.collect(),
+        ch_multiqc_config,
+        ch_multiqc_logo
+    )
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Platform-specific MultiQC reports
+    since different technologies are difficult to
+    display jointly (scale etc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    MULTIQC_ILLUMINA(
+        ch_multiqc_illumina.collect(),
+        ch_multiqc_config,
+        ch_multiqc_logo
+    )
+    MULTIQC_NANOPORE(
+        ch_multiqc_nanopore.collect(),
+        ch_multiqc_config,
+        ch_multiqc_logo
+    )
+    MULTIQC_PACBIO(
+        ch_multiqc_pacbio.collect(),
         ch_multiqc_config,
         ch_multiqc_logo
     )

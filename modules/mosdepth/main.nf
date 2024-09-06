@@ -20,7 +20,7 @@ process MOSDEPTH {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}_${meta.platform}"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}"
 
     """
     mosdepth \\
