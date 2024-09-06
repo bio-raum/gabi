@@ -49,6 +49,11 @@ workflow.onComplete {
     emailFields['version'] = workflow.manifest.version
     emailFields['session'] = workflow.sessionId
     emailFields['runName'] = run_name
+    emailFields['Subsampling'] = params.subsample_reads
+    if (params.subsample_reads) {
+        emailFields['Maximum coverage'] = params.max_coverage
+        emailFields['Genome size'] = params.genome_size
+    }
     emailFields['success'] = workflow.success
     emailFields['dateStarted'] = workflow.start
     emailFields['dateComplete'] = workflow.complete
@@ -99,13 +104,13 @@ workflow.onComplete {
                 mqcReport = multiqc_report.getVal()
                 if (mqcReport.getClass() == ArrayList) {
                     // TODO: Update name of pipeline
-                    log.warn "[Pipeline] Found multiple reports from process 'multiqc', will use only one"
+                    log.warn "[bio-raum/gabi] Found multiple reports from process 'multiqc', will use only one"
                     mqcReport = mqcReport[0]
                 }
             }
         } catch (all) {
             // TODO: Update name of pipeline
-            log.warn '[PipelineName] Could not attach MultiQC report to summary email'
+            log.warn '[bio-raum/gabi] Could not attach MultiQC report to summary email'
         }
 
         smailFields = [ email: params.email, subject: subject, emailText: emailText,
