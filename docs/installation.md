@@ -33,7 +33,7 @@ Also note that Nextflow supports additional software provisioning [frameworks](h
 This pipeline requires locally stored references. To build these, do:
 
 ```bash
-nextflow run marchoeppner/gabi -profile singularity \\
+nextflow run bio-raum/gabi -profile singularity \\
 --build_references \\
 --run_name build_refs \\
 --reference_base /path/to/references
@@ -58,7 +58,7 @@ Site-specific config-files for our pipeline ecosystem are stored centrally on [g
 If you absolutely do not want to add your system to this repository, you can manually pass a compatible configuration to nextflow using the `-c`  command line option:
 
 ```bash
-nextflow -c my.config run marchoeppner/gabi --input samples.csv --run_name my_run_name --reference_base /path/to/references
+nextflow -c my.config run bio-raum/gabi --input samples.csv --run_name my_run_name --reference_base /path/to/references
 ```
 
 A basic example may look as follows:
