@@ -59,7 +59,7 @@ jobs:
           node-version: 22
 
       - name: Install groovy lint
-        run: npm install -g npm-groovy-lint
+        run: npm install -g npm-groovy-lint@14.2.4
 
       - name: Run groovy lint check
-        run: npm-groovy-lint -i '${GITHUB_WORKSPACE}/workflows/*.nf' -i '${GITHUB_WORKSPACE}/subworkflows/mlst/*.nf' --failon error ${GITHUB_WORKSPACE}
+        run: npm-groovy-lint --failon error ${GITHUB_WORKSPACE}
