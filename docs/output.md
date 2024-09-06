@@ -5,9 +5,9 @@
 <details markdown=1>
 <summary>Evaluating samples</summary>
 
-### A good start to judge the success of a sequencing run, the following steps should be covered:
+### How to judge the success of a sequencing run
 
-- Does the assembly size match puiblished values for this species?
+- Does the assembly size match known/published values for this species?
 - Into how many contigs was the sample assembled?
 - Are the reads potentially contaminated?
 - Does the taxonomic profile suggest the presence of more than one species?
@@ -15,25 +15,39 @@
 - How much read coverage do we have (for each sequencing technololgy)
 - How complete is the gene space coverage and are there many duplicate BUSCO hits?
 
+#### General statistics
+
 Basically, our goal should be to have highly contiguous assembly, without any contaminations or obvious errors. The `general statistics` section provides some immediate hints:
 
 ![general](../images/multiqc_general_stats.png)
 
-Secondly, ConfindR results inform about potential contamination issues:
+#### Confindr
+
+Secondly, `ConfindR` results inform about potential contamination issues:
 
 ![confindr](../images/multiqc_confindr.png)
+
+#### Quast
 
 QUAST provides some insights into the assembly quality - with some caveats concerning missamblies etc, based on the availability of a suitable reference genome against which to compare. 
 
 ![quast](../images/multiqc_quast.png)
 
+#### Busco
+
 BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain many duplicated BUSCOs. 
 
 ![busco](../images/multiqc_busco.png)
 
+#### Kraken
+
 Complementary to ConfindR, Kraken can be used to check if the sample consists of more than one species.A low level of abundance is typically no reason for concern and more likely the result of low complexiyt sequence motifs. 
 
 ![kraken](../images/multiqc_kraken.png)
+
+#### Technology-specific QC
+
+GABI generates additional MultiQC reports for each sequencing technology. These can be used to get a few more details, for example for the ConfindR results or the technology-specific sequence coverage of the final assembly.
 
 </details>
 
