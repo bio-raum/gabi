@@ -4,7 +4,7 @@
 
 If you are really impatient, check out our [quickstart](docs/quickstart.md) guide. 
 
-![schema](images/GABI_Schema_v4.png)
+![schema](images/GABI_Schema_v5.png)
 
 ## Documentation 
 

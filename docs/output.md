@@ -49,6 +49,8 @@ QUAST provides some insights into the assembly quality - with some caveats conce
 
 ![quast](../images/multiqc_quast.png)
 
+Also see our [troubleshooting](troubleshooting.md) document for more explanations on the limitation of Quast as used by GABI. 
+
 #### Busco
 
 BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain (many) duplicated BUSCOs. 

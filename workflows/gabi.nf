@@ -372,7 +372,7 @@ workflow GABI {
         REPORT(
             ch_reports_grouped
         )
-        }
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
