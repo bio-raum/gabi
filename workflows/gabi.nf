@@ -214,9 +214,9 @@ workflow GABI {
     */
     COVERAGE(
         ch_assemblies_clean,
-        ch_short_reads_only,
-        ch_ont_reads_only,
-        ch_pb_reads_only
+        ch_illumina_trimmed,
+        ch_ont_trimmed,
+        ch_pacbio_trimmed
     )
     ch_versions   = ch_versions.mix(COVERAGE.out.versions)
     ch_multiqc_illumina = ch_multiqc_illumina.mix(
