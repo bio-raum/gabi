@@ -244,22 +244,24 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
+    ch_assembly_without_plasmids = PLASMIDS.out.chromosome
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Find the appropriate reference genome+annotation for each assembly
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     FIND_REFERENCES(
-        PLASMIDS.out.chromosome,
+        ch_assembly_without_plasmids,
         mashdb
     )
     ch_versions = ch_versions.mix(FIND_REFERENCES.out.versions)
 
     /*
     Combine the assembly with the best reference genome and annotation
-    Here we use the full assembly incl. Plasmids again since we may need that for BUSCO
+    Here we use only the chromosomal assembly, since Plasmids may skew the metrics
     */
-    ch_assemblies_clean.map { m, s ->
+    ch_assembly_without_plasmids.map { m, s ->
         tuple(m.sample_id, m, s)
     }.join(
         FIND_REFERENCES.out.reference.map { m, r, g, k ->
