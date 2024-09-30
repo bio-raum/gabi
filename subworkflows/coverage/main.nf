@@ -56,6 +56,18 @@ workflow COVERAGE {
     )
     ch_bam = ch_bam.mix(ALIGN_LONG_READS.out.bam)
 
+    bam_mapped = ch_bam.map { meta, bam ->
+        new_meta = [:]
+        new_meta.sample_id = meta.sample_id
+        def groupKey = meta.sample_id
+        tuple( groupKey, new_meta, bam)
+    }.groupTuple(by: [0,1]).map { g ,new_meta ,bam -> [ new_meta, bam ] }
+            
+    bam_mapped.branch {
+        single:   it[1].size() == 1
+        multiple: it[1].size() > 1
+    }.set { bam_to_merge }
+
     // Index the BAM files
     SAMTOOLS_INDEX(
         ch_bam
