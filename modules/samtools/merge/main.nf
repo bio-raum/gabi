@@ -9,7 +9,7 @@ process SAMTOOLS_MERGE {
     tag "${meta.sample_id}"
 
     input:
-    tuple val(meta), path(aligned_bam_list)
+    tuple val(meta), path(aligned_bam_list, stageAs: 'input*/*')
 
     output:
     tuple val(meta), path(merged_bam), emit: bam

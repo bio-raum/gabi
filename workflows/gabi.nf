@@ -234,6 +234,11 @@ workflow GABI {
             m.platform == "PACBIO"
         }.map { m,r -> r }
     )
+    multiqc_files = multiqc_files.mix(
+        COVERAGE.out.report.filter { m,r ->
+            m.platform == "ALL"
+        }.map { m,r -> r }
+    )
  
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
