@@ -254,13 +254,14 @@ workflow GABI {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUB: Map Illumina reads to chromosome-level assembly to check 
-    for polymorphic positions
+    SUB: Map Illumina reads to chromosome assembly to check 
+    for polymorphic positions as indication of read or assembly
+    errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     
     VARIANTS(
-        ch_short_reads_only.map { m,r ->
+        ch_illumina_trimmed.map { m,r ->
             tuple(m.sample_id,m,r)
         }.join(
             ch_assembly_without_plasmids.map { m,a ->
