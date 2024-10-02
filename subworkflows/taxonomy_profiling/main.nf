@@ -48,7 +48,7 @@ def extract_taxon(aFile) {
         // Kraken2 has a laughable data format, let's try to find the first species-level assignment...
         if (elements[3] == 'S' && taxon == 'unknown') {
             def fraction = Float.parseFloat(elements[0])
-            if (fraction >= 40.0) {
+            if (fraction >= 30.0) {
                 taxon = elements[5..-1].join(' ').trim()
             }
         }

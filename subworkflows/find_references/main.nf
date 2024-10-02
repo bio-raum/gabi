@@ -67,6 +67,10 @@ workflow FIND_REFERENCES {
     }
 
 // Crude method to get the best hit from the mash list
+// Basically we take the top hit as the best and only match
+// TODO: Improve this to perhaps look at multiple equally good matches
+// and find th least fragmented one - will require touching the actual assemblies and
+// counting contigs or similar
 def mash_get_best(report) {
     gbk = ''
     lines = file(report).readLines()

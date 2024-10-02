@@ -32,6 +32,7 @@ include { REPORT }                      from './../subworkflows/report'
 include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
+include { VARIANTS }                    from './../subworkflows/variants'
 
 /*
 --------------------
@@ -234,6 +235,11 @@ workflow GABI {
             m.platform == "PACBIO"
         }.map { m,r -> r }
     )
+    multiqc_files = multiqc_files.mix(
+        COVERAGE.out.report.filter { m,r ->
+            m.platform == "ALL"
+        }.map { m,r -> r }
+    )
  
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -244,22 +250,46 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
+    ch_assembly_without_plasmids = PLASMIDS.out.chromosome
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    SUB: Map Illumina reads to chromosome assembly to check 
+    for polymorphic positions as indication of read or assembly
+    errors
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    
+    VARIANTS(
+        ch_illumina_trimmed.map { m,r ->
+            tuple(m.sample_id,m,r)
+        }.join(
+            ch_assembly_without_plasmids.map { m,a ->
+                tuple(m.sample_id,a)
+            }
+        ).map { s,m,r,a ->
+            tuple(m,r,a)
+        }
+    )
+    ch_versions = ch_versions.mix(VARIANTS.out.versions)
+    multiqc_files = multiqc_files.mix(VARIANTS.out.qc)
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Find the appropriate reference genome+annotation for each assembly
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     FIND_REFERENCES(
-        PLASMIDS.out.chromosome,
+        ch_assembly_without_plasmids,
         mashdb
     )
     ch_versions = ch_versions.mix(FIND_REFERENCES.out.versions)
 
     /*
     Combine the assembly with the best reference genome and annotation
-    Here we use the full assembly incl. Plasmids again since we may need that for BUSCO
+    Here we use only the chromosomal assembly, since Plasmids may skew the metrics
     */
-    ch_assemblies_clean.map { m, s ->
+    ch_assembly_without_plasmids.map { m, s ->
         tuple(m.sample_id, m, s)
     }.join(
         FIND_REFERENCES.out.reference.map { m, r, g, k ->

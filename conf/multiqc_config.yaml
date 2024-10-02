@@ -38,3 +38,5 @@ report_section_order:
 remove_sections:
     - mosdepth-coverage-dist-cov
     - mosdepth-coverage-per-contig-section
+    - bcftools-stats_variant_quality_plot
+    - bcftools-stats_indel_plot

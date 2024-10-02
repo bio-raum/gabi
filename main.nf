@@ -19,6 +19,19 @@ params.version = workflow.manifest.version
 
 summary = [:]
 
+summary["MaxContigs"]           = params.skip_failed ? params.max_contigs : "Not applied"
+summary["Busco"]                = params.busco_lineage
+summary["ConfindR DB"]          = params.confindr_db ? params.confindr_db : "built-in"
+summary["Max Coverage"]         = params.subsample_reads ? params.max_coverage : "Not applied"
+summary["Genome size"]          = params.subsample_reads ? params.genome_size : "Not applied"
+summary["Shovill assembler"]    = params.shovill_assembler
+summary["AMRfinder"]            = [:]
+summary["Abricate"]             = [:]
+summary["AMRfinder"]["min_cov"] = params.arg_amrfinderplus_coveragemin
+summary["AMRfinder"]["min_id"]  = params.arg_amrfinderplus_identmin
+summary["Abricate"]["min_id"]   = params.arg_abricate_minid
+summary["Abricate"]["min_cov"]  = params.arg_abricate_mincov
+
 run_name = (params.run_name == false) ? "${workflow.sessionId}" : "${params.run_name}"
 
 WorkflowMain.initialise(workflow, params, log)
@@ -50,10 +63,6 @@ workflow.onComplete {
     emailFields['session'] = workflow.sessionId
     emailFields['runName'] = run_name
     emailFields['Subsampling'] = params.subsample_reads
-    if (params.subsample_reads) {
-        emailFields['Maximum coverage'] = params.max_coverage
-        emailFields['Genome size'] = params.genome_size
-    }
     emailFields['success'] = workflow.success
     emailFields['dateStarted'] = workflow.start
     emailFields['dateComplete'] = workflow.complete
@@ -103,13 +112,11 @@ workflow.onComplete {
             if (workflow.success && !params.skip_multiqc) {
                 mqcReport = multiqc_report.getVal()
                 if (mqcReport.getClass() == ArrayList) {
-                    // TODO: Update name of pipeline
                     log.warn "[bio-raum/gabi] Found multiple reports from process 'multiqc', will use only one"
                     mqcReport = mqcReport[0]
                 }
             }
         } catch (all) {
-            // TODO: Update name of pipeline
             log.warn '[bio-raum/gabi] Could not attach MultiQC report to summary email'
         }
 

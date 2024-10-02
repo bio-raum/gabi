@@ -56,9 +56,36 @@ workflow COVERAGE {
     )
     ch_bam = ch_bam.mix(ALIGN_LONG_READS.out.bam)
 
+    /*
+    We need both platform-specific as well as 
+    sample-level coverage reports. So we combine all bams
+    for one sample to compute a global coverage in addition
+    to the platform-level reports
+    */
+    bam_mapped = ch_bam.map { meta, bam ->
+        new_meta = [:]
+        new_meta.sample_id = meta.sample_id
+        def groupKey = meta.sample_id
+        tuple( groupKey, new_meta, bam)
+    }.groupTuple(by: [0,1]).map { g ,new_meta ,bam -> [ new_meta, bam ] }
+            
+    bam_mapped.branch {
+        single:   it[1].size() == 1
+        multiple: it[1].size() > 1
+    }.set { bam_to_merge }
+
+    SAMTOOLS_MERGE(
+        bam_to_merge.multiple
+    )
+
+    bam_to_merge.single.mix(SAMTOOLS_MERGE.out.bam).map { m,b -> 
+        m.platform = "ALL"
+        tuple(m,b)
+    }.set { ch_bam_all }
+
     // Index the BAM files
     SAMTOOLS_INDEX(
-        ch_bam
+        ch_bam.mix(ch_bam_all)
     )
 
     // Calculate coverage
