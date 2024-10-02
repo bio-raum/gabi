@@ -21,7 +21,7 @@ process SAMTOOLS_MERGE {
     merged_bam_index = merged_bam + '.bai'
 
     """
-    samtools merge -@ 4 $merged_bam ${aligned_bam_list.join(' ')}
+    samtools merge -@ ${task.cpus} $merged_bam ${aligned_bam_list.join(' ')}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

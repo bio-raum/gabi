@@ -31,10 +31,6 @@ workflow FIND_REFERENCES {
         tuple(m, r)
     }.set { mash_with_gbk }
 
-    mash_with_gbk.map { m,r ->
-        "${m.sample_id}\t${r.getBaseName()}"
-    }.view()
-
     mash_with_gbk.map { m, r ->
         m.gbk
     }.unique()

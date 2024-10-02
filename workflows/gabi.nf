@@ -32,6 +32,7 @@ include { REPORT }                      from './../subworkflows/report'
 include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
+include { VARIANTS }                    from './../subworkflows/variants'
 
 /*
 --------------------
@@ -250,6 +251,27 @@ workflow GABI {
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
     ch_assembly_without_plasmids = PLASMIDS.out.chromosome
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    SUB: Map Illumina reads to chromosome-level assembly to check 
+    for polymorphic positions
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    
+    VARIANTS(
+        ch_short_reads_only.map { m,r ->
+            tuple(m.sample_id,m,r)
+        }.join(
+            ch_assembly_without_plasmids.map { m,a ->
+                tuple(m.sample_id,a)
+            }
+        ).map { s,m,r,a ->
+            tuple(m,r,a)
+        }
+    )
+    ch_versions = ch_versions.mix(VARIANTS.out.versions)
+    multiqc_files = multiqc_files.mix(VARIANTS.out.qc)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
