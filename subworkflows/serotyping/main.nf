@@ -1,6 +1,7 @@
 include { ECTYPER }     from './../../modules/ectyper'
 include { SEQSERO2 }    from './../../modules/seqsero2'
 include { LISSERO }     from './../../modules/lissero'
+include { SISTR }       from './../../modules/sistr'
 
 ch_versions = Channel.from([])
 ch_reports = Channel.from([])
@@ -27,13 +28,22 @@ workflow SEROTYPING {
     ch_reports = ch_reports.mix(ECTYPER.out.tsv)
 
     /*
-    Run SeqSero2 - Serotyping for Salonella
+    Run SeqSero2 - Serotyping for Salmonella
     */
     SEQSERO2(
         assembly_by_taxon.salmonella
     )
     ch_versions = ch_versions.mix(SEQSERO2.out.versions)
     ch_reports = ch_reports.mix(SEQSERO2.out.tsv)
+
+    /*
+    Run SISTR - Serotyping for Salmonella
+    */
+    SISTR(
+        assembly_by_taxon.salmonella
+    )
+    ch_versions = ch_versions.mix(SISTR.out.versions)
+    ch_reports = ch_reports.mix(SISTR.out.tsv)
 
     /*
     Run LisSero - Serotyping L. monocytogenes

@@ -38,7 +38,7 @@ If this is already the case for you, then it is more likely that you have not se
 
 ### Why is the pipeline so slow?
 
-We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data. If the latter is a concern, you can check out the [usage](usage.md) information and ensure that the `--subsample_reads` option is not disabled. 
+We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data. If the latter is a concern, you can check out the [usage](usage.md) information and ensure that the `--genome_size` option is not disabled for subsampling. 
 
 Otherwise, if you run this pipeline without a site-specific config file, the pipeline will not know where to cache the various containers or conda environments. In such cases, it will install/download these dependencies into the respective work directory of your pipeline run, every time you run the pipeline. And yes, that is a little slow. Consider adding your own config file to make use of the caching functionality.
 

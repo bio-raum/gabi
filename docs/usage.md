@@ -142,17 +142,13 @@ Skip generation of circos plots.
 
 Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
 
-### `--subsample_reads` [ true|false, default = true]
-
-Perform sub-sampling of (long reads) prior to assembly. This is meant to deal with needlessly deep data sets that could otherwise result in excessive run times or crashes. The degree of sub-sampling is controlled by `--max_coverage` combined with `--genome_size`. 
-
 ### `--max_coverage` [ default = '100x']
 
-If sub-sampling (`--subsample_reads`) is enabled, this is the target coverage. This option is combined with `--genome_size`. 
+If a genome size is specified (`--genome_size`), this is the target coverage for downsampling the read data. 
 
-### `--genome_size` [ default = '6Mb' ]
+### `--genome_size` [ default = null ]
 
-If sub-sampling (`--subsample_reads`) is enabled, this is the assumed genome size against which the coverage is measured. Since this pipeline supports processing of diverse species in parallel, the default of 6Mb is a compromise and should at the very least prevent grossly over-sampled data to bring the workflow to its knees. Of course, if you only sequence a single species, you are welcome to set this to that specific genome size. 
+If enabled, this is the assumed genome size against which the coverage is measured for downsampling the raeds (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size. 
 
 ### `--prokka_proteins` [ default = null ]
 

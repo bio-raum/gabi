@@ -63,8 +63,8 @@ foreach my $file ( @files ) {
     next if (scalar @lines < 1);
 
     if ($filename =~ /.*kraken.*/) {
-        my %data = parse_kraken(\@lines);
-        $matrix{"kraken"} = \%data;
+        my @data = parse_kraken(\@lines);
+        $matrix{"kraken"} = \@data;
     } elsif ( $filename =~ /.*mlst.json/) {
         my %data = parse_mlst(\@lines);
         $matrix{"mlst"} = \%data;
@@ -200,10 +200,7 @@ sub parse_kraken {
 
     my @lines = @{$_[0]} ;
 
-    my %data = (  );
-
-    my $tax = undef;
-    my $perc = undef;
+    my @data = (  );
 
     foreach my $line (@lines) {
     
@@ -213,19 +210,26 @@ sub parse_kraken {
         my $level = @elements[3];
         my $taxon = join(" ",@elements[5..$#elements]);
 
-        next if (defined $tax);
+        #next if (defined $tax);
 
         if ($level eq "S") {
-            $tax = $taxon ; 
-            $perc = @elements[0];
+
+            my %entry;
+
+            my $tax = $taxon ; 
+            my $perc = @elements[0];
+            
+            next if ($perc == "0.0");
+
+            $entry{'taxon'} = $taxon;
+            $entry{'percentage'} = $perc;
+
+            push(@data,\%entry);
         }
 
     }
 
-    $data{"taxon"} = $tax;
-    $data{"percentage"} = $perc;
-
-    return %data;
+    return @data;
     
 }
 
