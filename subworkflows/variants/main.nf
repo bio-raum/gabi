@@ -38,5 +38,6 @@ workflow VARIANTS {
     emit:
     vcf = SNIPPY_RUN.out.vcf
     qc  = multiqc_files
+    stats = BCFTOOLS_STATS.out.stats
     versions = ch_versions
 }

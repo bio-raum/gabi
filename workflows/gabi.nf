@@ -131,10 +131,10 @@ workflow GABI {
         ch_reads_for_taxonomy,
         kraken2_db
     )
-    ch_taxon    = TAXONOMY_PROFILING.out.report
-    ch_versions = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
-    ch_report   = ch_report.mix(TAXONOMY_PROFILING.out.report)
-    multiqc_files = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
+    ch_taxon        = TAXONOMY_PROFILING.out.report
+    ch_versions     = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
+    ch_report       = ch_report.mix(TAXONOMY_PROFILING.out.report)
+    multiqc_files   = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -165,8 +165,8 @@ workflow GABI {
     DRAGONFLYE(
         ch_dragonflye
     )
-    ch_versions = ch_versions.mix(DRAGONFLYE.out.versions)
-    ch_assemblies = ch_assemblies.mix(DRAGONFLYE.out.contigs)
+    ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
+    ch_assemblies   = ch_assemblies.mix(DRAGONFLYE.out.contigs)
 
     /*
     Option: Pacbio HiFi reads
@@ -175,8 +175,8 @@ workflow GABI {
     FLYE(
         ch_pb_reads_only
     )
-    ch_versions = ch_versions.mix(FLYE.out.versions)
-    ch_assemblies = ch_assemblies.mix(FLYE.out.fasta)
+    ch_versions     = ch_versions.mix(FLYE.out.versions)
+    ch_assemblies   = ch_assemblies.mix(FLYE.out.fasta)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,7 +240,8 @@ workflow GABI {
             m.platform == "ALL"
         }.map { m,r -> r }
     )
- 
+    ch_report = ch_report.mix(COVERAGE.out.summary)
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies
@@ -271,8 +272,9 @@ workflow GABI {
             tuple(m,r,a)
         }
     )
-    ch_versions = ch_versions.mix(VARIANTS.out.versions)
-    multiqc_files = multiqc_files.mix(VARIANTS.out.qc)
+    ch_versions     = ch_versions.mix(VARIANTS.out.versions)
+    multiqc_files   = multiqc_files.mix(VARIANTS.out.qc)
+    ch_report       = ch_report.mix(VARIANTS.out.stats)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -320,8 +322,8 @@ workflow GABI {
     SEROTYPING(
         ch_assemblies_with_taxa
     )
-    ch_versions = ch_versions.mix(SEROTYPING.out.versions)
-    ch_report = ch_report.mix(SEROTYPING.out.reports)
+    ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
+    ch_report       = ch_report.mix(SEROTYPING.out.reports)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -367,11 +369,12 @@ workflow GABI {
     )
     ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
     amr_report  = AMR_PROFILING.out.report
-    ch_report = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+    ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Gauge quality of the assembly
+    This does not include the plasmids. 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ASSEMBLY_QC(
@@ -379,10 +382,10 @@ workflow GABI {
         busco_lineage,
         busco_db_path
     )
-    ch_versions = ch_versions.mix(ASSEMBLY_QC.out.versions)
-    ch_assembly_qc = ASSEMBLY_QC.out.quast
-    multiqc_files = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
-    ch_report = ch_report.mix(ch_assembly_qc)
+    ch_versions     = ch_versions.mix(ASSEMBLY_QC.out.versions)
+    ch_assembly_qc  = ASSEMBLY_QC.out.quast
+    multiqc_files   = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
+    ch_report       = ch_report.mix(ch_assembly_qc)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

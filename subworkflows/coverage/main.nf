@@ -74,6 +74,9 @@ workflow COVERAGE {
         multiple: it[1].size() > 1
     }.set { bam_to_merge }
 
+    /*
+    Merge BAM files across technologies
+    */
     SAMTOOLS_MERGE(
         bam_to_merge.multiple
     )
@@ -83,12 +86,16 @@ workflow COVERAGE {
         tuple(m,b)
     }.set { ch_bam_all }
 
-    // Index the BAM files
+    /*
+    Index the BAM files
+    */
     SAMTOOLS_INDEX(
         ch_bam.mix(ch_bam_all)
     )
 
-    // Calculate coverage
+    /*
+    Calculate coverage
+    */
     MOSDEPTH(
         SAMTOOLS_INDEX.out.bam
     )
@@ -96,5 +103,6 @@ workflow COVERAGE {
     emit:
     versions    = ch_versions
     report      = MOSDEPTH.out.global_txt
+    summary     = MOSDEPTH.out.summary_txt
 
 }

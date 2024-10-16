@@ -45,9 +45,10 @@ my %matrix = (
     "date" => $date , 
     "sample" => $sample, 
     "quast" => {},
-    "mlst" => {},
+    "mlst" => [],
     "confindr" => [],
-    "kraken" => {}
+    "kraken" => {},
+    "serotype" => []
 );
 
 my @files = glob '*/*' ;
@@ -67,7 +68,7 @@ foreach my $file ( @files ) {
         $matrix{"kraken"} = \@data;
     } elsif ( $filename =~ /.*mlst.json/) {
         my %data = parse_mlst(\@lines);
-        $matrix{"mlst"} = \%data;
+        push( @{ $matrix{"mlst"} }, \%data );
     } elsif ( $filename =~ /.*confindr.*/ ) {
         my @data = parse_confindr(\@lines);
         # We may see more than one ConfindR report!
@@ -79,14 +80,20 @@ foreach my $file ( @files ) {
         my @data = parse_amrfinder(\@lines);
         $matrix{"amrfinder"} = \@data;
     } elsif ( $filename =~ /.*ectyper.tsv/) {
-        my %data = parse_ectyper(\@lines);
-        $matrix{'ectyper'} = \%data;
+        my %data;
+        $data{'ectyper'} = parse_ectyper(\@lines);
+        push( @{ $matrix{'serotype'}}, \%data);
     } elsif ( $filename =~ /.*seqsero2.tsv/) {
-        my %data = parse_seqsero(\@lines);
-        $matrix{'SeqSero2'} = \%data;
+        my %data;
+        $data{'SeqSero2'} = parse_seqsero(\@lines);
+        push( @{ $matrix{'serotype'} }, \%data);
     } elsif ( $filename =~ /.*lissero.tsv/) {
-        my %data = parse_lissero(\@lines);
-        $matrix{'LisSero'} = \%data;
+        my %data;
+        $data{'Lissero'} = parse_lissero(\@lines);
+        push( @{ $matrix{'serotype'} }, \%data );
+    } elsif ( $filename =~ /.*mosdepth.summary.txt/) {
+        my @data = parse_mosdepth(\@lines);
+        $matrix{'mosdepth'} = \@data;
     }
 
     close($FILE);
@@ -100,6 +107,30 @@ printf $json_out ;
 # Tool-specific parsing methods
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+sub parse_mosdepth {
+
+    my @lines = @{$_[0] };
+
+    my $h = shift @lines;
+    my @header = split "\t", $h ; 
+
+    my @data;
+
+    for my $line (@lines) {
+        my @elements = split "\t", $line ;
+        my %bucket ;
+        for my $i (0..$#header) {
+            my $column = @header[$i];
+            my $entry = @elements[$i];
+            $bucket{$column} = $entry;
+        }
+        if ($bucket{'chrom'} eq "total") {
+            push(@data, \%bucket);
+        }
+    }
+
+    return @data;
+}
 sub parse_lissero {
 
     my @lines = @{$_[0] };
@@ -119,7 +150,7 @@ sub parse_lissero {
         $data{$column} = $entry 
     }
 
-   return %data ;
+   return \%data ;
 }
 
 sub parse_seqsero {
@@ -141,7 +172,7 @@ sub parse_seqsero {
         $data{$column} = $entry 
     }
 
-   return %data ;
+   return \%data ;
 }
 
 sub parse_ectyper {
@@ -164,7 +195,7 @@ sub parse_ectyper {
         $data{$column} = $entry 
     }
 
-    return %data;
+    return \%data;
 }
 sub parse_mlst {
 
@@ -219,7 +250,7 @@ sub parse_kraken {
             my $tax = $taxon ; 
             my $perc = @elements[0];
             
-            next if ($perc == "0.0");
+            next if ($perc < 1.0);
 
             $entry{'taxon'} = $taxon;
             $entry{'percentage'} = $perc;
