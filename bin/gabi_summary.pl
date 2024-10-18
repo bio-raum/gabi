@@ -48,7 +48,8 @@ my %matrix = (
     "mlst" => [],
     "confindr" => [],
     "kraken" => {},
-    "serotype" => []
+    "serotype" => [],
+    "mosdepth" => {}
 );
 
 my @files = glob '*/*' ;
@@ -91,9 +92,23 @@ foreach my $file ( @files ) {
         my %data;
         $data{'Lissero'} = parse_lissero(\@lines);
         push( @{ $matrix{'serotype'} }, \%data );
+    } elsif ( $filename =~ /ILLUMINA.mosdepth.summary.txt/) {
+        my @data = parse_mosdepth(\@lines);
+        $matrix{'mosdepth'}{'illumina'} = \@data;
+    } elsif ( $filename =~ /NANOPORE.mosdepth.summary.txt/) {
+        my @data = parse_mosdepth(\@lines);
+        $matrix{'mosdepth'}{'nanopore'} = \@data;
+    } elsif ( $filename =~ /PACBIO.mosdepth.summary.txt/) {
+        my @data = parse_mosdepth(\@lines);
+        $matrix{'mosdepth'}{'pacbio'} = \@data;      
     } elsif ( $filename =~ /.*mosdepth.summary.txt/) {
         my @data = parse_mosdepth(\@lines);
-        $matrix{'mosdepth'} = \@data;
+        $matrix{'mosdepth'}{'total'} = \@data;
+    } elsif ( $filename =~ /.sistr.tab/) {
+        my %data ;
+        
+        $data{'Sistr'}= parse_sistr(\@lines);
+        push( @{ $matrix{'serotype'} }, \%data );
     }
 
     close($FILE);
@@ -106,6 +121,27 @@ printf $json_out ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Tool-specific parsing methods
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sub parse_sistr {
+    my @lines = @{$_[0] };
+
+    my $h = shift @lines ;
+    my @header = split "\t" , $h ;
+
+    my %data;
+
+    my $this_line = shift @lines;
+
+    my @elements = split "\t", $this_line;
+
+    for my $i (0..$#header) {
+        my $column = @header[$i];
+        my $entry = @elements[$i];
+        $data{$column} = $entry 
+    }
+
+   return \%data ;
+}
 
 sub parse_mosdepth {
 

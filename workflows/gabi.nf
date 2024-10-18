@@ -242,6 +242,11 @@ workflow GABI {
     )
     ch_report = ch_report.mix(COVERAGE.out.summary)
 
+    ch_report = ch_report.mix(
+        COVERAGE.out.summary.filter {m,r ->
+            m.platform != "ALL"
+        }
+    )
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies

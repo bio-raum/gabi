@@ -15,6 +15,7 @@ include { ALIGN_LONG_READS }    from './../align_long_reads'
 ch_bam      = Channel.from([])
 ch_qc       = Channel.from([])
 ch_versions = Channel.from([])
+ch_summary_by_platform = Channel.from([])
 
 workflow COVERAGE {
 
@@ -100,9 +101,12 @@ workflow COVERAGE {
         SAMTOOLS_INDEX.out.bam
     )
 
+
+
     emit:
     versions    = ch_versions
     report      = MOSDEPTH.out.global_txt
     summary     = MOSDEPTH.out.summary_txt
+    summary_by_platform = ch_summary_by_platform
 
 }
