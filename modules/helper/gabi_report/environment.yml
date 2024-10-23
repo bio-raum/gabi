@@ -1,0 +1,7 @@
+name: gabi_report
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconda::multiqc=1.23

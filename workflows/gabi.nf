@@ -55,6 +55,8 @@ if (params.input) {
 ch_multiqc_config = params.multiqc_config   ? Channel.fromPath(params.multiqc_config, checkIfExists: true).collect()    : []
 ch_multiqc_logo   = params.multiqc_logo     ? Channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
 
+ch_report_template = params.template        ? Channel.fromPath(params.template, checkIfExists: true).collect()          : []
+
 ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
 ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
 
@@ -393,6 +395,14 @@ workflow GABI {
     ch_report       = ch_report.mix(ch_assembly_qc)
 
     /*
+    Gather all version information
+    */
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
+
+    /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Make JSON summary report
     This is optonal in case of unforseen
@@ -408,7 +418,9 @@ workflow GABI {
         }.groupTuple().set { ch_reports_grouped }
 
         REPORT(
-            ch_reports_grouped
+            ch_reports_grouped,
+            ch_report_template,
+            CUSTOM_DUMPSOFTWAREVERSIONS.out.yml
         )
     }
 
@@ -418,9 +430,6 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
 
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
 
     multiqc_files = multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml)
 
