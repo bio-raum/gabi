@@ -61,7 +61,10 @@ workflow FIND_REFERENCES {
         tuple(meta, s, a, k)
     }.set { meta_with_sequence }
 
+    meta_with_genbank = meta_with_sequence.map{m,s,a,k -> [m,k]}
+
     emit:
+    gbk = meta_with_genbank
     reference = meta_with_sequence
     versions = ch_versions
     }

@@ -249,6 +249,9 @@ workflow GABI {
             m.platform != "ALL"
         }
     )
+
+    ch_report = ch_report.mix(COVERAGE.out.bam_stats)
+    
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies
@@ -293,6 +296,8 @@ workflow GABI {
         mashdb
     )
     ch_versions = ch_versions.mix(FIND_REFERENCES.out.versions)
+
+    ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
 
     /*
     Combine the assembly with the best reference genome and annotation
@@ -393,6 +398,7 @@ workflow GABI {
     ch_assembly_qc  = ASSEMBLY_QC.out.quast
     multiqc_files   = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
     ch_report       = ch_report.mix(ch_assembly_qc)
+    ch_report       = ch_report.mix(ASSEMBLY_QC.out.busco_json)
 
     /*
     Gather all version information

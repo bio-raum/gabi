@@ -66,6 +66,16 @@ references = {
             "size": 5.7,
             "max_contigs": 300,
             "n50": 200
+        },
+        "Pseudomonas aeruginosa": {
+            "size": 6.2,
+            "max_contigs": 300,
+            "n50": 200
+        },
+        "Clostridium botulinum": {
+            "size": 3.8,
+            "max_contigs": 300,
+            "n50": 200
         }
     },
     "taxon": {
@@ -78,6 +88,7 @@ references = {
 def main(yaml, template, output):
 
     json_files = [pos_json for pos_json in os.listdir('.') if pos_json.endswith('.json')]
+    json_files.sort()
 
     data = {}
     data["summary"] = [ ]
@@ -85,6 +96,10 @@ def main(yaml, template, output):
     samples = []
 
     kraken_data_all = []
+    serotypes_all = {}
+    mlst_all = {}
+    insert_sizes_all = {}
+    min_insert_size_length = 1000
 
     for idx, json_file in enumerate(json_files):
 
@@ -106,18 +121,22 @@ def main(yaml, template, output):
                 for read in set:
                     if read["ContamStatus"] == "True":
                         contaminated = True
-                        perc = float(read["PercentContam"])
+                        if (read["PercentContam"] == "ND"):
+                            perc = "ND"
+                            this_status = status["missing"]
+                        else:
+                            perc = float(read["PercentContam"])
 
-                        if (perc > contaminated):
-                            contaminated = perc
+                            if (perc > contaminated):
+                                contaminated = perc
 
-                        if (perc >= 10.0):
-                            confindr_status = status["fail"]
-                            this_status = status["fail"]
-                        elif (perc > 0.0 and confindr_status == status["pass"]):
-                            confindr_status = status["warn"]
-                            if (this_status == status["pass"]):
-                                this_status = status["warn"]
+                            if (perc >= 10.0):
+                                confindr_status = status["fail"]
+                                this_status = status["fail"]
+                            elif (perc > 0.0 and confindr_status == status["pass"]):
+                                confindr_status = status["warn"]
+                                if (this_status == status["pass"]):
+                                    this_status = status["warn"]
 
             # All the relevant values and optional status classes
             sample = jdata["sample"]
@@ -147,19 +166,30 @@ def main(yaml, template, output):
                 tperc = float(tax["percentage"])
 
                 kraken_results[this_taxon] = tperc
-               
-                if (tperc > 10.0 ):
+
+                if (tperc > 10.0):
                     taxon_count += 1
-            
+
             kraken_data_all.append(kraken_results)
 
             if (taxon_count > 3):
                 taxon_count_status = status["fail"]
                 this_status = status["fail"]
-            elif (taxon_count > 1 ):
+            elif (taxon_count > 1):
                 taxon_count_status = status["warn"]
                 if (this_status == status["pass"]):
                     this_status = status["warn"]
+
+            # Get samtools stats
+            samtools = {"mean_insert_size": "-", }
+            if ("samtools" in jdata):
+                insert_size = float(jdata["samtools"]["insert size average"])
+                insert_stdv = float(jdata["samtools"]["insert size standard deviation"])
+                samtools["mean_insert_size"] = f"{insert_size} (+/-{insert_stdv})"
+                inserts = [int(item) for item in jdata["samtools"]["insert_sizes"]]
+                insert_sizes_all[sample] = inserts
+                if (len(inserts) < min_insert_size_length):
+                    min_insert_size_length = len(inserts)
 
             # Get assembly stats
             assembly = round((int(jdata["quast"]["Total length"])/1000000),2)
@@ -178,10 +208,10 @@ def main(yaml, template, output):
                 this_status = status["fail"]
 
             contigs = int(jdata["quast"]["# contigs"])
-            contigs_status = check_contigs(taxon,contigs)
+            contigs_status = check_contigs(taxon, contigs)
 
             n50 = round((int(jdata["quast"]["N50"])/1000),2)
-            n50_status = check_n50(taxon,n50)
+            n50_status = check_n50(taxon, n50)
 
             quast = {}
             quast["size"] = jdata["quast"]["Total length (>= 0 bp)"]
@@ -190,6 +220,58 @@ def main(yaml, template, output):
             quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
             quast["largest_contig"] = jdata["quast"]["Largest contig"]
             quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
+            quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
+            quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000),2)
+
+            # Get serotype(s)
+            serotypes = jdata["serotype"]
+            for sentry in serotypes:
+                for stool, sresults in sentry.items():
+                    if (stool == "ectyper"):
+                        serotype = sresults["Serotype"]
+                    elif (stool == "SeqSero2"):
+                        serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
+                    elif (stool == "Sistr"):
+                        serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
+                    elif (stool == "Lissero"):
+                        serotype = sresults["SEROTYPE"]
+
+                stool_name = f"{stool} ({taxon})"
+                if (stool_name in serotypes_all):
+                    serotypes_all[stool_name].append({"sample": sample, "serotype": serotype})
+                else:
+                    serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype}]
+
+            # Reference genome
+            reference = jdata["reference"]
+
+            # Busco scores
+            busco = jdata["busco"]
+            busco_status = status["missing"]
+            busco_completeness = round(((int(busco["C"]))/int(busco["dataset_total_buscos"])),2)*100
+            busco["completeness"] = busco_completeness
+            if (busco_completeness > 90.0):
+                busco_status = status["pass"]
+            elif (busco_completeness > 80.0):
+                busco_status = status["warn"]
+                if (this_status == status["pass"]):
+                    this_status = status["warn"]
+            else:
+                busco_status = status["fail"]
+                this_status = status["fail"]
+
+            # MLST types
+            mlst = jdata["mlst"]
+
+            for mentry in mlst:
+                sequence_type = mentry["sequence_type"]
+                scheme = mentry["scheme"]
+
+                scheme_name = f"{scheme} ({taxon})"
+                if (scheme_name in mlst_all):
+                    mlst_all[scheme_name].append({"sample": sample, "sequence_type": sequence_type})
+                else:
+                    mlst_all[scheme_name] = [{"sample": sample, "sequence_type": sequence_type}]
 
             # Get coverage(s)
             coverage_illumina = "-"
@@ -208,7 +290,7 @@ def main(yaml, template, output):
                 coverage_status = status["warn"]
             else:
                 coverage_status = status["pass"]
-            
+
             if ("illumina" in jdata["mosdepth"]):
 
                 coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
@@ -236,12 +318,16 @@ def main(yaml, template, output):
                     coverage_pacbio_status = status["warn"]
                 else:
                     coverage_pacbio_status = status["fail"]
-            
+
             # sample-level dictionary
             rtable = { 
                 "sample": sample,
+                "reference": reference,
                 "status": this_status,
+                "samtools": samtools,
                 "taxon": taxon,
+                "busco": busco,
+                "busco_status": busco_status,
                 "taxon_status": taxon_status,
                 "taxon_count": taxon_count,
                 "taxon_count_status": taxon_count_status,
@@ -263,16 +349,33 @@ def main(yaml, template, output):
                 "assembly_status": assembly_status,
                 "contamination": contaminated,
                 "confindr_status": confindr_status,
-                "quast": quast
+                "quast": quast,
             }
-        
+
         data["summary"].append(rtable)    
 
-    kdata = pd.DataFrame(data=kraken_data_all,index=samples)
-    plot_labels = { "index": "Samples", "value": "Percentage"}
-    fig = px.bar(kdata,orientation='h',labels=plot_labels)
+    # Draw the Kraken abundance table
+    kdata = pd.DataFrame(data=kraken_data_all, index=samples)
+    plot_labels = {"index": "Samples", "value": "Percentage"}
+    h = len(samples)*20 if len(samples) > 10 else 400
+    fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
 
     data["Kraken"] = fig.to_html(full_html=False)
+
+    # Crop all insert size histograms to the shortest common length
+    insert_sizes_all_cropped = {}
+    for s, ins in insert_sizes_all.items():
+        list_end = min_insert_size_length-1
+        insert_sizes_all_cropped[s] = ins[:list_end]
+
+    plot_labels = { "index": "Basepairs", "value": "Count"}
+    hdata = pd.DataFrame(insert_sizes_all_cropped)
+    hfig = px.line(hdata, labels=plot_labels)
+    data["Insertsizes"] = hfig.to_html(full_html=False)    
+    
+    data["serotypes"] = serotypes_all
+
+    data["mlst"] = mlst_all
 
     # Parse the versions YAML file
     software = {}
@@ -287,7 +390,7 @@ def main(yaml, template, output):
             else:
                 s,v = line.strip().split()
                 software[current_module].append(line.strip())
-            
+
     data["packages"] = software
 
     with open(output, "w", encoding="utf-8") as output_file:
@@ -295,7 +398,8 @@ def main(yaml, template, output):
             j2_template = Template(template_file.read())
             output_file.write(j2_template.render(data))
 
-def check_assembly(taxon,size):
+
+def check_assembly(taxon, size):
     if taxon in references["genomes"]:
         ref = float(references["genomes"][taxon]["size"])
         if (size >= (ref*0.9)) and (size <= (ref*1.1)):
@@ -307,7 +411,8 @@ def check_assembly(taxon,size):
     else:
         return status["missing"]
 
-def check_contigs(taxon,contigs):
+
+def check_contigs(taxon, contigs):
     if taxon in references["genomes"]:
         ref = int(references["genomes"][taxon]["max_contigs"])
         if contigs <= ref:
@@ -319,7 +424,8 @@ def check_contigs(taxon,contigs):
     else:
         return status["missing"]
 
-def check_n50(taxon,n50):
+
+def check_n50(taxon, n50):
     if taxon in references["genomes"]:
         ref = int(references["genomes"][taxon]["n50"])
         if n50 >= ref:
@@ -331,6 +437,6 @@ def check_n50(taxon,n50):
     else:
         return status["missing"] 
 
+
 if __name__ == '__main__':
     main(args.input, args.template, args.output)
-

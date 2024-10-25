@@ -30,8 +30,8 @@ workflow TAXONOMY_PROFILING {
     }.set { report_with_taxon }
 
     report_with_taxon.branch { m,r ->
-        pass: m.fraction >= 80.0
-        fail: m.fraction < 80.0
+        pass: m.fraction >= 75.0
+        fail: m.fraction < 75.0
     }.set { report_with_taxon_status }
 
     report_with_taxon_status.fail.subscribe { m,r ->

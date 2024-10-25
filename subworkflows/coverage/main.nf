@@ -5,6 +5,7 @@ Import modules
 include { MOSDEPTH }            from './../../modules/mosdepth'
 include { SAMTOOLS_MERGE }      from './../../modules/samtools/merge'
 include { SAMTOOLS_INDEX }      from './../../modules/samtools/index'
+include { SAMTOOLS_STATS }      from './../../modules/samtools/stats'
 
 /*
 Import Subworkflows
@@ -101,11 +102,17 @@ workflow COVERAGE {
         SAMTOOLS_INDEX.out.bam
     )
 
-
+    /*
+    Compute BAM stats for Illumina reads
+    */
+    SAMTOOLS_STATS(
+        SAMTOOLS_INDEX.out.bam.filter { m,b,i -> m.platform == "ILLUMINA"}
+    )
 
     emit:
     versions    = ch_versions
     report      = MOSDEPTH.out.global_txt
+    bam_stats   = SAMTOOLS_STATS.out.stats
     summary     = MOSDEPTH.out.summary_txt
     summary_by_platform = ch_summary_by_platform
 

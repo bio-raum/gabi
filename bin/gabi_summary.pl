@@ -49,7 +49,8 @@ my %matrix = (
     "confindr" => [],
     "kraken" => {},
     "serotype" => [],
-    "mosdepth" => {}
+    "mosdepth" => {},
+    "reference" => {}
 );
 
 my @files = glob '*/*' ;
@@ -105,10 +106,25 @@ foreach my $file ( @files ) {
         my %data = parse_mosdepth(\@lines);
         $matrix{'mosdepth'}{'total'} = \%data;
     } elsif ( $filename =~ /.sistr.tab/) {
-        my %data ;
-        
+        my %data ; 
         $data{'Sistr'}= parse_sistr(\@lines);
         push( @{ $matrix{'serotype'} }, \%data );
+    } elsif ( $filename =~ /.gbff$/) {
+        my %data = parse_genbank(\@lines);
+        $matrix{'reference'} = \%data;
+    } elsif ( $filename =~ /.stats$/) {
+        my %data = parse_samtools_stats(\@lines);
+        $matrix{'samtools'} = \%data;
+    } elsif ( $filename =~ /^short_summary.*json/) {
+        my $busco;
+        {
+            local $/;
+            open my $fh,"<",$file ;
+            $busco = <$fh>;
+            close $fh;
+        }
+        my $data = decode_json($busco);
+        $matrix{"busco"} = $data;
     }
 
     close($FILE);
@@ -121,6 +137,56 @@ printf $json_out ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Tool-specific parsing methods
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sub parse_samtools_stats {
+    my @lines = @{$_[0] };
+    my %data;
+    my @is;
+
+    foreach my $line (@lines) {
+        if ($line =~ /^SN.*/) {
+            $line =~ s/ \#.*//r;            
+            my ($tag,$key,$value) = split "\t", $line;
+            my $ckey = $key =~ s/\://r ;
+            $data{$ckey} = $value;
+        } elsif ($line =~ /^IS.*/) {
+            my @elements = split("\t",$line);
+            my $pos = @elements[1];
+            # Make sure the insert size lists are all equal, so we set a specific upper limit
+            if ($pos > 0 && $pos < 1000) {
+                push(@is,@elements[2]);
+            }
+        }
+    }
+    $data{"insert_sizes"} = \@is;
+
+    return %data;
+}
+
+sub parse_genbank {
+
+    my @lines = @{$_[0] };
+    my %data;
+
+    foreach my $line (@lines) {
+        if ($line =~ /^LOCUS.*/) {
+            my @elements = split /\s+/, $line;
+            my $locus = @elements[1];
+            $data{'locus'} = $locus;
+        } elsif ($line =~ /^DEFINITION.*/) {
+            my @elements = split /\s+/, $line;       
+            #my $definition = join(" ", @elements);
+            my $definition = $line =~ s/DEFINITION //r;
+            $definition =~ s/\, .*//g;
+            $data{"definition"} = $definition;
+        } elsif ($line =~ /.*Assembly\:.*/) {
+            my $assembly = $line =~ s/.*Assembly\: //r;
+            $data{"assembly"} = $assembly;
+        }
+    }
+    return %data;
+
+}
 
 sub parse_sistr {
     my @lines = @{$_[0] };
