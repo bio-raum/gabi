@@ -8,6 +8,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Script options")
 parser.add_argument("--input", help="An input option")
+parser.add_argument("--references", help="Reference values for various taxa")
 parser.add_argument("--template", help="A JINJA2 template")
 parser.add_argument("--output")
 args = parser.parse_args()
@@ -23,9 +24,9 @@ status = {
 references = {
     "genomes" : {
         "Escherichia coli": {
-            "size": 4.8,
+            "size": 5.0,
             "max_contigs": 500,
-            "n50": 200
+            "n50": 80
         },
         "Listeria monocytogenes": {
             "size": 2.9,
@@ -87,11 +88,12 @@ references = {
 
 def main(yaml, template, output):
 
+    # Read all the JSON files we see in this folder
     json_files = [pos_json for pos_json in os.listdir('.') if pos_json.endswith('.json')]
     json_files.sort()
 
     data = {}
-    data["summary"] = [ ]
+    data["summary"] = []
 
     samples = []
 
@@ -148,15 +150,10 @@ def main(yaml, template, output):
             if taxon_perc >= 80.0:
                 taxon_status = status["pass"]
             elif taxon_perc >= 60.0:
-                taxon_status = status["warn"]
-                if (this_status == status["pass"]):
-                    this_status = status["warn"]
+                taxon_status = status["warn"]    
             else:
                 taxon_status = status["fail"]
-                # probably not an outright fail for the whole analysis
-                if (this_status == status["pass"]):
-                    this_status = status["warn"]
-
+                
             taxon_count = 0
             taxon_count_status = status["pass"]
 
@@ -218,7 +215,7 @@ def main(yaml, template, output):
             quast["duplication"] = jdata["quast"]["Duplication ratio"]
             quast["N"] = jdata["quast"]["# N's per 100 kbp"]
             quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
-            quast["largest_contig"] = jdata["quast"]["Largest contig"]
+            quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000),2)
             quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000),2)
