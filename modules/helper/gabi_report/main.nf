@@ -9,6 +9,7 @@ process GABI_REPORT {
     input:
     path(reports)
     path(template)
+    path(refs)
     path(yml)
 
     output:
@@ -23,6 +24,7 @@ process GABI_REPORT {
     """
     gabi.py --template $template \
     --input $yml \
+    --references $refs \
     $args \
     --output $result
 

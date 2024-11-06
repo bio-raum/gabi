@@ -56,6 +56,7 @@ ch_multiqc_config = params.multiqc_config   ? Channel.fromPath(params.multiqc_co
 ch_multiqc_logo   = params.multiqc_logo     ? Channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
 
 ch_report_template = params.template        ? Channel.fromPath(params.template, checkIfExists: true).collect()          : []
+ch_report_refs     = params.report_refs     ? Channel.fromPath(params.report_refs, checkIfExists: true).collect()          : []
 
 ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
 ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
@@ -426,6 +427,7 @@ workflow GABI {
         REPORT(
             ch_reports_grouped,
             ch_report_template,
+            ch_report_refs,
             CUSTOM_DUMPSOFTWAREVERSIONS.out.yml
         )
     }

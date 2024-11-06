@@ -20,76 +20,11 @@ status = {
     "missing": "missing"
 }
 
-# curated thresholds for relevant bacterial taxa
-references = {
-    "genomes" : {
-        "Escherichia coli": {
-            "size": 5.0,
-            "max_contigs": 500,
-            "n50": 80
-        },
-        "Listeria monocytogenes": {
-            "size": 2.9,
-            "max_contigs": 300,
-            "n50": 200
-        },
-        "Salmonella enterica": {
-            "size": 4.5,
-            "max_contigs": 300,
-            "n50": 200
-        },
-        "Staphylococcus aureus": {
-            "size": 2.8,
-            "max_contigs": 150,
-            "n50": 200
-        },
-        "Bacillus cereus": {
-            "size": 6.0,
-            "max_contigs": 300,
-            "n50": 200
-        },
-        "Campylobacter jejuni": {
-            "size": 1.6,
-            "max_contigs": 300,
-            "n50": 150
-        },
-        "Campylobacter lari": {
-            "size": 1.6,
-            "max_contigs": 300,
-            "n50": 150
-        },
-        "Campylobacter coli": {
-            "size": 1.6,
-            "max_contigs": 300,
-            "n50": 150
-        },
-        "Klebsiella pneumoniae": {
-            "size": 5.7,
-            "max_contigs": 300,
-            "n50": 200
-        },
-        "Pseudomonas aeruginosa": {
-            "size": 6.2,
-            "max_contigs": 300,
-            "n50": 200
-        },
-        "Clostridium botulinum": {
-            "size": 3.8,
-            "max_contigs": 300,
-            "n50": 200
-        }
-    },
-    "taxon": {
-        "pass": 80.0,
-        "warn": 60.0,
-        "fail": 0.0
-    }
-}
 
-def main(yaml, template, output):
+def main(yaml, template, output, reference):
 
     # Read all the JSON files we see in this folder
-    json_files = [pos_json for pos_json in os.listdir('.') if pos_json.endswith('.json')]
+    json_files = [pos_json for pos_json in os.listdir('.') if pos_json.endswith('.json') and "AQUAMIS" not in pos_json]
     json_files.sort()
 
     data = {}
@@ -103,6 +38,10 @@ def main(yaml, template, output):
     insert_sizes_all = {}
     min_insert_size_length = 1000
 
+    with open(reference) as r:
+        ref_data = json.load(r)["thresholds"]
+        r.close
+
     for idx, json_file in enumerate(json_files):
 
         rtable = {}
@@ -113,6 +52,19 @@ def main(yaml, template, output):
 
             # Track the sample status
             this_status = status["pass"]
+            taxon = jdata["kraken"][0]["taxon"]
+            genus, species = taxon.split(" ")
+
+            # The reference data has thresholds for genus and species level; but not always
+            # We take the species first, genus second (if any) and iterate over this list in
+            # the check functions. Whatever hits first, gets returned (species, when in doubt)
+            this_refs = []
+            if species in ref_data:
+                this_refs.append(ref_data[species])
+            elif genus in ref_data:
+                this_refs.append(ref_data[genus])
+            else:
+                this_refs = [{}]
 
             # Check for contaminated reads using confindr
             contaminated = 0
@@ -145,7 +97,7 @@ def main(yaml, template, output):
             samples.append(sample)
 
             # Get Kraken results
-            taxon = jdata["kraken"][0]["taxon"]
+            
             taxon_perc = float(jdata["kraken"][0]["percentage"])
             if taxon_perc >= 80.0:
                 taxon_status = status["pass"]
@@ -190,9 +142,9 @@ def main(yaml, template, output):
 
             # Get assembly stats
             assembly = round((int(jdata["quast"]["Total length"])/1000000),2)
-            assembly_status = check_assembly(taxon,assembly)
+            assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
 
-            genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]),2)
+            genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]), 2)
 
             if (genome_fraction > 90):
                 genome_fraction_status = status["pass"]
@@ -205,10 +157,10 @@ def main(yaml, template, output):
                 this_status = status["fail"]
 
             contigs = int(jdata["quast"]["# contigs"])
-            contigs_status = check_contigs(taxon, contigs)
+            contigs_status = check_contigs(this_refs, int(jdata["quast"]["# contigs"]))
 
             n50 = round((int(jdata["quast"]["N50"])/1000),2)
-            n50_status = check_n50(taxon, n50)
+            n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
 
             quast = {}
             quast["size"] = jdata["quast"]["Total length (>= 0 bp)"]
@@ -219,6 +171,8 @@ def main(yaml, template, output):
             quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000),2)
+            quast["gc"] = float(jdata["quast"]["GC (%)"])
+            quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
 
             # Get serotype(s)
             serotypes = jdata["serotype"]
@@ -369,7 +323,7 @@ def main(yaml, template, output):
     hdata = pd.DataFrame(insert_sizes_all_cropped)
     hfig = px.line(hdata, labels=plot_labels)
     data["Insertsizes"] = hfig.to_html(full_html=False)    
-    
+
     data["serotypes"] = serotypes_all
 
     data["mlst"] = mlst_all
@@ -396,44 +350,75 @@ def main(yaml, template, output):
             output_file.write(j2_template.render(data))
 
 
-def check_assembly(taxon, size):
-    if taxon in references["genomes"]:
-        ref = float(references["genomes"][taxon]["size"])
-        if (size >= (ref*0.9)) and (size <= (ref*1.1)):
+def check_assembly(refs, query):
+
+    for ref in refs:
+
+        if "Total length" in ref:
+
+            ref_intervals = [int(x) for x in ref["Total length"][0]["interval"]]
+
+            # assembly falls between the allowed sizes
+            if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
+                return status["pass"]
+            elif (any(x >= (query*0.8) for x in ref_intervals) and any(x <= (query*1.2) for x in ref_intervals)):
+                return status["warn"]
+            else:
+                return status["fail"]
+
+    return status["missing"]
+
+
+def check_contigs(refs, query):
+
+    for ref in refs:
+
+        if "# contigs (>= 0 bp)" in ref:
+
+            ref_intervals = [int(x) for x in ref["# contigs (>= 0 bp)"][0]["interval"]]
+
+            if (any(x >= query for x in ref_intervals)):
+                return status["pass"]
+            elif (any((x*1.2) >= query for x in ref_intervals)):
+                return status["warn"]
+            else:
+                return status["fail"]
+
+    return status["missing"]
+
+
+def check_n50(refs, query):
+
+    for ref in refs:
+
+        ref_intervals = [int(x) for x in ref["N50"][0]["interval"]]
+
+        if (any(x <= query for x in ref_intervals)):
             return status["pass"]
-        elif (size >= (ref*0.8) and size <= (ref*1.2)):
+        elif (any((x*0.8) <= query for x in ref_intervals)):
             return status["warn"]
         else:
             return status["fail"]
-    else:
-        return status["missing"]
+
+    return status["missing"]
 
 
-def check_contigs(taxon, contigs):
-    if taxon in references["genomes"]:
-        ref = int(references["genomes"][taxon]["max_contigs"])
-        if contigs <= ref:
+def check_gc(refs, query):
+
+    for ref in refs:
+
+        ref_intervals = [float(x) for x in ref["GC (%)"][0]["interval"]]
+
+        # check if gc falls within expected range, or range +/- 5% - else fail
+        if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
             return status["pass"]
-        elif contigs <= (ref*1.1):
+        elif (any(x >= (query*0.95) for x in ref_intervals) and any(x <= (query*1.05) for x in ref_intervals)):
             return status["warn"]
         else:
             return status["fail"]
-    else:
-        return status["missing"]
 
-
-def check_n50(taxon, n50):
-    if taxon in references["genomes"]:
-        ref = int(references["genomes"][taxon]["n50"])
-        if n50 >= ref:
-            return status["pass"]
-        elif n50 >= (ref*0.9):
-            return status["warn"]
-        else:
-            return status["fail"]
-    else:
-        return status["missing"] 
+    return status["missing"]
 
 
 if __name__ == '__main__':
-    main(args.input, args.template, args.output)
+    main(args.input, args.template, args.output, args.references)

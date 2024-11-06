@@ -10,25 +10,28 @@
     a:hover {color: darkgrey ; text-decoration: none;}
     h1 strong { display: block; font-size: 75%; opacity: 0.25; }
     h2 {background: lightslategray; color: white; padding-left: 5px ;}
+    .nav td { border-top: 1px solid; border-bottom: 1px solid ; border-left: 5px solid white;}
     .ground {background: white ; display: block; padding: 5px; height: fit-content}
     .impressum {background: lightgrey; display: block; padding: 5px; vertical-align: bottom; font-size: 10px;}
-    td, td, th { padding: 5px;}
+    .general { border-style: none; border-spacing: 0px ;}
     .table-caption { font-weight: bold; display: block;}
-    tr td[scope="row"] {background-color: rgb(233, 233, 233);}
+    table { border-collapse: collapse;}
+    tr.row { border-bottom: 1px solid grey;}
+    td { padding-left: 5px; padding-right: 5px;}
+    th { border-left: 1px solid white; padding-right: 5px;}
     tr td[scope="sample-id"] {background-color: rgb(233, 233, 233); font-weight: bold;}
-    tr td[scope="warn"] {background-color: rgb(233, 233, 233); border-left: 4px solid rgb(240, 184, 80);}
-    tr td[scope="pass"] {background-color: rgb(233, 233, 233); border-left: 4px solid rgb(65, 156, 65);} 
-    tr td[scope="fail"] {background-color: rgb(233, 233, 233); border-left: 4px solid rgb(236, 74, 74);}
+    tr td[scope="warn"] {background-color: rgb(255, 227, 195); border-left: 4px solid rgb(240, 184, 80);}
+    tr td[scope="pass"] {background-color: rgb(204, 255, 206); border-left: 4px solid rgb(65, 156, 65);} 
+    tr td[scope="fail"] {background-color: rgb(248, 187, 187); border-left: 4px solid rgb(236, 74, 74);}
     tr td[scope="missing"] {background-color: rgb(233, 233, 233); border-left: 4px solid lightgray;}
-    tr th[scope="col"] {background-color: #505050; color: #fff;}
-    tr th[scope="subcol"] {background-color: #888686; color: #fff;}
+    tr th[scope="col"] {background-color: #505050; color: #fff; padding-left: 5px;}
+    tr th[scope="subcol"] {background-color: #888686; color: #fff; padding-left: 5px;}
     tr th[scope="subcol-inactive"] {background-color: #6e6e6e; color: #fff;}
-    .nav td { border-top: 1px solid; border-bottom: 1px solid ;}
     .versions { font-size: 9px; }
     .versions td { padding: 0px; }
     /* Tooltip container */
     .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted black; }
-    .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: darkgrey; color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
+    .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: rgb(189, 186, 186); color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
     .tooltip:hover .tooltiptext { visibility: visible; }
 </style>
 </head>
@@ -62,33 +65,34 @@
 The summary table with all key metrics per sample
 -->
 <h2>Summary</h2>
-<table>
+<table class="general">
     <tr>
         <th scope="col">Sample</th>
         <th scope="col"><div class="tooltip">Status<span class="tooltiptext">The overall analysis status: pass: ok to use, warn: potential issues found, fail: most probably not usable</span></div></th>
         <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon in the Kraken2 analysis - green: robust call, orange: weak call, red: very weak call</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Reference genome<span class="tooltiptext">The highest matching hit in RefSeq to this assembly</span></div></th>
-        <th colspan=4 scope="col"><div class="tooltip">Assembly (Mb)<span class="tooltiptext">The size of the chromosomal assembly (i.e. without plasmids). If reference sizes are configured, colors indicate concordance (green: within expected range, orange: <= 20% deviation, red: more than 20% deviation)</span></div></th>
+        <th colspan=5 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Mean coverage<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
         <th scope="col"><div class="tooltip">Mean insert size<span class="tooltiptext">The mean insert size as determined from mapped reads</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Contamination<span class="tooltiptext">Indicators of contamination</span></div></th>
     </tr>
-    <tr>
+    <tr class="row">
         <th scope="subcol-inactive"></th>
         <th scope="subcol-inactive"></th>
         <th scope="subcol-inactive"></th>
         <th scope="subcol">Assembly</th>
         <th scope="subcol">% Cov</th>
         <th scope="subcol">Size (Mb)</th>
-        <th scope="subcol">#Contigs</th>
-        <th scope="subcol">N50 (Kb)</th>
-        <th scope="subcol">Gene space (%)</th>
+        <th scope="subcol"><div class="tooltip">#Contigs<span class="tooltiptext">The number of chromosomal contigs, i.e. without plasmids.</span></div></th>
+        <th scope="subcol"><div class="tooltip">N50 (Kb)<span class="tooltiptext">The size of contigs (>=)in which 50% of the assembly are represented.</span><div></th>
+        <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes fully covered in this assembly (BUSCO).</span></div></th>
+        <th scope="subcol">GC (%)</th>
         <th scope="subcol">Total</th>
         <th scope="subcol">Illumina</th>
         <th scope="subcol">ONT</th>
         <th scope="subcol">HiFi</th>
         <th scope="subcol">Illumina</th>
-        <th scope="subcol">Confindr %</th>
+        <th scope="subcol">Confindr (%)</th>
         <th scope="subcol">Taxa >10%</th>
     </tr>
 <!--
@@ -96,16 +100,17 @@ Our data structure is a list of dictionaries; where each dictionary holds
 all the information for one sample    
 -->
 {% for row in summary %}
-    <tr>
+    <tr class="row">
         <td scope="sample-id">{{row.sample}}</td>
         <td scope={{row.status}}>{{row.status}}</td>
-        <td scope={{row.taxon_status}}>{{row.taxon}}</td>
+        <td scope="missing">{{row.taxon}}</td>
         <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{{row.reference.assembly}}" target="_blank" alt="Genome in GenBank">{{row.reference.assembly}}<br>{{row.reference.definition}}</a></td>
         <td scope={{row.fraction_status}}>{{row.fraction}}</td>
         <td scope={{row.assembly_status}}>{{row.assembly}}</td>
         <td scope={{row.contigs_status}}>{{row.contigs}}</td>
         <td scope={{row.n50_status}}>{{row.n50}}</td>
         <td scope={{row.busco_status}}>{{row.busco.completeness}}</td>
+        <td scope={{row.quast.gc_status}}>{{row.quast.gc}}</td>
         <td scope={{row.coverage_status}}>{{row.coverage}}</td>
         <td scope={{row.coverage_illumina_status}}>{{row.coverage_illumina}}</td>
         <td scope={{row.coverage_nanopore_status}}>{{row.coverage_nanopore}}</td>
