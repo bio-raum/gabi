@@ -2,6 +2,7 @@ include { ECTYPER }     from './../../modules/ectyper'
 include { SEQSERO2 }    from './../../modules/seqsero2'
 include { LISSERO }     from './../../modules/lissero'
 include { SISTR }       from './../../modules/sistr'
+include { STECFINDER }  from './../../modules/stecfinder'
 
 ch_versions = Channel.from([])
 ch_reports = Channel.from([])
@@ -27,6 +28,15 @@ workflow SEROTYPING {
     ch_versions = ch_versions.mix(ECTYPER.out.versions)
     ch_reports = ch_reports.mix(ECTYPER.out.tsv)
 
+    /*
+    Run Stecfinder for E. coli
+    */
+    STECFINDER(
+        assembly_by_taxon.ecoli
+    )
+    ch_versions = ch_versions.mix(STECFINDER.out.versions)
+    ch_reports = ch_reports.mix(STECFINDER.out.tsv)
+    
     /*
     Run SeqSero2 - Serotyping for Salmonella
     */

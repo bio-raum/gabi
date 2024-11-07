@@ -93,6 +93,10 @@ foreach my $file ( @files ) {
         my %data;
         $data{'Lissero'} = parse_lissero(\@lines);
         push( @{ $matrix{'serotype'} }, \%data );
+    } elsif ( $filename =~ /.stecfinder.tsv/ ) {
+        my %data;
+        $data{'Stecfinder'} = parse_stecfinder(\@lines);
+        push( @{ $matrix{'serotype'} }, \%data );
     } elsif ( $filename =~ /ILLUMINA.mosdepth.summary.txt/) {
         my %data = parse_mosdepth(\@lines);
         $matrix{'mosdepth'}{'illumina'} = \%data;
@@ -137,6 +141,27 @@ printf $json_out ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Tool-specific parsing methods
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sub parse_stecfinder {
+    my @lines = @{$_[0]} ;
+
+    my $h = shift @lines ;
+    my @header = split "\t" , $h ;
+
+    my %data;
+
+    my $this_line = shift @lines;
+
+    my @elements = split "\t", $this_line;
+
+    for my $i (0..$#header) {
+        my $column = @header[$i];
+        my $entry = @elements[$i];
+        $data{$column} = $entry 
+    }
+
+   return \%data ;
+}
 
 sub parse_samtools_stats {
     my @lines = @{$_[0] };

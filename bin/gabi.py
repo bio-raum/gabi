@@ -169,7 +169,9 @@ def main(yaml, template, output, reference):
             quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
             quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000),2)
             quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
+            quast["contigs_1k"] = jdata["quast"]["# contigs (>= 1000 bp)"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
+            quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"])/1000000),2)
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000),2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
@@ -179,6 +181,8 @@ def main(yaml, template, output, reference):
             for sentry in serotypes:
                 for stool, sresults in sentry.items():
                     if (stool == "ectyper"):
+                        serotype = sresults["Serotype"]
+                    elif (stool == "Stecfinder"):
                         serotype = sresults["Serotype"]
                     elif (stool == "SeqSero2"):
                         serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"

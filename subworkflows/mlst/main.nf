@@ -168,7 +168,7 @@ workflow MLST_TYPING {
         }.groupTuple(by: [0, 2])
         .set { ch_assemblies_chewie_grouped }
 
-        ch_assemblies_chewie_grouped.filter { m, a, d -> (a.size() > 2) }
+        ch_assemblies_chewie_grouped.filter { m, a, d -> (a.size() >= 3) }
         .set { ch_assemblies_chewie_call }
 
         CHEWBBACA_ALLELECALL(

@@ -138,7 +138,9 @@ The assembly metrics computed by QUAST
         <th scope="col">Ns per 100kb</th>
         <th scope="col">Largest contig (Kb)</th>
         <th scope="col">Misassembled contigs</th>
+        <th scope="col">Contigs > 1kb</th>
         <th scope="col">Contigs > 5kb</th>
+        <th scope="col">Size (Mb) in contigs > 1kb</th>
         <th scope="col">Size (Mb) in contigs > 5kb</th>
     </tr>
 
@@ -150,7 +152,9 @@ The assembly metrics computed by QUAST
         <td scope="col">{{row.quast.N}}</td>
         <td scope="col">{{row.quast.largest_contig}}</td>
         <td scope="col">{{row.quast.misassembled}}</td>
+        <td scope="col">{{row.quast.contigs_1k}}</td>
         <td scope="col">{{row.quast.contigs_5k}}</td>
+        <td scope="col">{{row.quast.size_1k}}</td>
         <td scope="col">{{row.quast.size_5k}}</td>
     </tr>
 {% endfor %}
