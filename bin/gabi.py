@@ -2,7 +2,9 @@
 import plotly.express as px
 from jinja2 import Template
 import pandas as pd
-import os,json,re
+import os
+import json
+import re
 import argparse
 
 
@@ -97,15 +99,15 @@ def main(yaml, template, output, reference):
             samples.append(sample)
 
             # Get Kraken results
-            
+
             taxon_perc = float(jdata["kraken"][0]["percentage"])
             if taxon_perc >= 80.0:
                 taxon_status = status["pass"]
             elif taxon_perc >= 60.0:
-                taxon_status = status["warn"]    
+                taxon_status = status["warn"]
             else:
                 taxon_status = status["fail"]
-                
+
             taxon_count = 0
             taxon_count_status = status["pass"]
 
@@ -141,7 +143,7 @@ def main(yaml, template, output, reference):
                     min_insert_size_length = len(inserts)
 
             # Get assembly stats
-            assembly = round((int(jdata["quast"]["Total length"])/1000000),2)
+            assembly = round((int(jdata["quast"]["Total length"])/1000000), 2)
             assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
 
             genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]), 2)
@@ -159,7 +161,7 @@ def main(yaml, template, output, reference):
             contigs = int(jdata["quast"]["# contigs"])
             contigs_status = check_contigs(this_refs, int(jdata["quast"]["# contigs"]))
 
-            n50 = round((int(jdata["quast"]["N50"])/1000),2)
+            n50 = round((int(jdata["quast"]["N50"])/1000), 2)
             n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
 
             quast = {}
@@ -167,12 +169,12 @@ def main(yaml, template, output, reference):
             quast["duplication"] = jdata["quast"]["Duplication ratio"]
             quast["N"] = jdata["quast"]["# N's per 100 kbp"]
             quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
-            quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000),2)
+            quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000), 2)
             quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
             quast["contigs_1k"] = jdata["quast"]["# contigs (>= 1000 bp)"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
-            quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"])/1000000),2)
-            quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000),2)
+            quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"])/1000000), 2)
+            quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
 
@@ -203,7 +205,7 @@ def main(yaml, template, output, reference):
             # Busco scores
             busco = jdata["busco"]
             busco_status = status["missing"]
-            busco_completeness = round(((int(busco["C"]))/int(busco["dataset_total_buscos"])),2)*100
+            busco_completeness = round(((int(busco["C"]))/int(busco["dataset_total_buscos"])), 2)*100
             busco["completeness"] = busco_completeness
             if (busco_completeness > 90.0):
                 busco_status = status["pass"]
@@ -275,7 +277,7 @@ def main(yaml, template, output, reference):
                     coverage_pacbio_status = status["fail"]
 
             # sample-level dictionary
-            rtable = { 
+            rtable = {
                 "sample": sample,
                 "reference": reference,
                 "status": this_status,
@@ -307,7 +309,7 @@ def main(yaml, template, output, reference):
                 "quast": quast,
             }
 
-        data["summary"].append(rtable)    
+        data["summary"].append(rtable)
 
     # Draw the Kraken abundance table
     kdata = pd.DataFrame(data=kraken_data_all, index=samples)
@@ -323,10 +325,10 @@ def main(yaml, template, output, reference):
         list_end = min_insert_size_length-1
         insert_sizes_all_cropped[s] = ins[:list_end]
 
-    plot_labels = { "index": "Basepairs", "value": "Count"}
+    plot_labels = {"index": "Basepairs", "value": "Count"}
     hdata = pd.DataFrame(insert_sizes_all_cropped)
     hfig = px.line(hdata, labels=plot_labels)
-    data["Insertsizes"] = hfig.to_html(full_html=False)    
+    data["Insertsizes"] = hfig.to_html(full_html=False)
 
     data["serotypes"] = serotypes_all
 
@@ -343,7 +345,7 @@ def main(yaml, template, output, reference):
                 current_module = line.split(":")[0]
                 software[current_module] = []
             else:
-                s,v = line.strip().split()
+                s, v = line.strip().split()
                 software[current_module].append(line.strip())
 
     data["packages"] = software
