@@ -397,22 +397,9 @@ def check_n50(refs, query):
 
     for ref in refs:
 
-<<<<<<< HEAD
         if "N50" in ref:
 
             ref_intervals = [int(x) for x in ref["N50"][0]["interval"]]
-=======
-        # Not all references have a min. N50 value
-        if "N50" in ref:
-            ref_intervals = [int(x) for x in ref["N50"][0]["interval"]]
-
-            if (any(x <= query for x in ref_intervals)):
-                return status["pass"]
-            elif (any((x*0.8) <= query for x in ref_intervals)):
-                return status["warn"]
-            else:
-                return status["fail"]
->>>>>>> c42ac2ed4a1277a80e42145e2f50a8c6a3db46ad
 
             if (any(x <= query for x in ref_intervals)):
                 return status["pass"]
