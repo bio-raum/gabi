@@ -8,9 +8,11 @@ include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/c
 include { GUNZIP as GUNZIP_MASHDB }                         from './../modules/gunzip'
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
+include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
+sourmash_db_url     = Channel.fromPath(params.references['sourmashdb'].url)
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 mashdb              = Channel.fromPath(file(params.references['mashdb'].url)).map { f -> [ [target: 'MashDB'], f] }
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
@@ -32,6 +34,13 @@ workflow BUILD_REFERENCES {
         GUNZIP.out.gunzip.map { m,f -> f }
     )
     
+    /*
+    Download SourmashDB
+    */
+    DOWNLOAD_SOURMASH_DB(
+        sourmash_db_url
+    )
+
     /*
     Download MashDB refseq database
     */
