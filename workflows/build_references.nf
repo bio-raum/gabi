@@ -9,9 +9,9 @@ include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/h
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
-sourmash_db_url     = Channel.fromPath(params.references['sourmashdb'].url)
+sourmash_db_url     = params.references['sourmashdb'].url
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
-mashdb              = Channel.fromPath(file(params.references['mashdb'].url)).map { f -> [ [target: 'MashDB'], f] }
+host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
 // The IDs currently mapped to Chewbbaca schemas
 chewie_ids = Channel.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
@@ -19,6 +19,17 @@ chewie_ids = Channel.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 workflow BUILD_REFERENCES {
     main:
 
+    /*
+    Download Horse genome from EnsEMBL and build index
+    */
+    GUNZIP_GENOME(
+        host_genome
+    )
+
+    BIOBLOOM_MAKER(
+        GUNZIP.out.gunzip.map { m,f -> f }
+    )
+    
     /*
     Download SourmashDB
     */

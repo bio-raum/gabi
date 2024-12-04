@@ -411,8 +411,8 @@ def check_n50(refs, query):
 
     for ref in refs:
 
-        # Not all references have a min. N50 value
         if "N50" in ref:
+
             ref_intervals = [int(x) for x in ref["N50"][0]["interval"]]
 
             if (any(x <= query for x in ref_intervals)):
@@ -422,8 +422,8 @@ def check_n50(refs, query):
             else:
                 return status["fail"]
 
-    return status["missing"]
-
+        return status["missing"]
+    
 
 def check_gc(refs, query):
 

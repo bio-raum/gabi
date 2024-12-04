@@ -13,6 +13,7 @@ include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
+include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
 /*
@@ -72,6 +73,8 @@ if (params.input) {
 
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
+    ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
+
 }
 
 ch_versions     = Channel.from([])
@@ -112,12 +115,31 @@ workflow GABI {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Clean reads against a bloom filter to remove any
+    potential host contaminations - currently: horse, from
+    blood medium used during growth of campylobacter
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+
+    if (params.remove_host) {
+        BIOBLOOM_CATEGORIZER(
+            ch_illumina_trimmed,
+            ch_bloom_filter
+        )
+        ch_illumina_clean = BIOBLOOM_CATEGORIZER.out.reads
+        ch_versions = ch_versions.mix(BIOBLOOM_CATEGORIZER.out.versions)
+    } else {
+        ch_illumina_clean = ch_illumina_trimmed
+    }
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: See which samples are Illumina-only, ONT-only, Pacbio-only
     or have a mix of both for hybrid assembly
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     GROUP_READS(
-        ch_illumina_trimmed,
+        ch_illumina_clean,
         ch_ont_trimmed,
         ch_pacbio_trimmed
     )
