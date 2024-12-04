@@ -5,7 +5,6 @@ include { BUSCO_DOWNLOAD as BUSCO_INSTALL }                 from './../modules/b
 include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/amrfinderplus/update'
 include { PYMLST_WGMLST_INSTALL }                           from './../modules/pymlst/wgmlst_install'
 include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/chewbbaca/downloadschema'
-include { GUNZIP as GUNZIP_MASHDB }                         from './../modules/gunzip'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
@@ -25,13 +24,6 @@ workflow BUILD_REFERENCES {
     */
     DOWNLOAD_SOURMASH_DB(
         sourmash_db_url
-    )
-
-    /*
-    Download MashDB refseq database
-    */
-    GUNZIP_MASHDB(
-        mashdb
     )
 
     /*

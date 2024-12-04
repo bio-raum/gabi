@@ -65,8 +65,6 @@ if (params.input) {
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
 
-    mashdb          = params.reference_base ? file(params.references['mashdb'].db, checkIfExists:true)        : []
-
     sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
 
     busco_db_path   = params.reference_base ? file(params.references['busco'].db, checkIfExists:true)         : []
@@ -88,6 +86,9 @@ workflow GABI {
     main:
 
     INPUT_CHECK(samplesheet)
+
+    // If we pass existing assemblies instead of raw reads:
+    ch_assemblies = ch_assemblies.mix(INPUT_CHECK.out.assemblies)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -299,11 +300,9 @@ workflow GABI {
     */
     FIND_REFERENCES(
         ch_assembly_without_plasmids,
-        mashdb,
         sourmashdb
     )
-    ch_versions = ch_versions.mix(FIND_REFERENCES.out.versions)
-
+    ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
     ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
 
     /*
@@ -311,26 +310,19 @@ workflow GABI {
     Here we use only the chromosomal assembly, since Plasmids may skew the metrics
     */
     ch_assembly_without_plasmids.map { m, s ->
-        tuple(m.sample_id, m, s)
+        tuple(m.sample_id, s)
     }.join(
         FIND_REFERENCES.out.reference.map { m, r, g, k ->
-            tuple(m.sample_id, r, g, k)
+            tuple(m.sample_id, m, r, g, k)
         }
-    ).map { i, m, s, r, g, k ->
+    ).map { i,s, m, r, g, k ->
         tuple(m, s, r, g, k)
     }.set { ch_assemblies_with_reference_and_gbk }
 
-    /*
-    Join the assembly channel with taxonomic assignment information
-    [ meta, assembly ] <-> [ meta, taxreport]
-    */
-    ch_assemblies_clean_grouped = ch_assemblies_clean.map { m, f -> [ m.sample_id, m, f] }
-    ch_assemblies_clean_grouped_tax = ch_assemblies_clean_grouped.join(ch_taxon.map { m, t -> [ m.sample_id, m] })
-    ch_assemblies_clean_grouped_tax.map { s, m, f, t ->
-        m.taxon = t.taxon
-        m.domain = t.domain
-        tuple(m, f)
-    }.set { ch_assemblies_with_taxa }
+    // and we create a channel with taxon-enriched metadata and assembly for other analyses
+    ch_assemblies_with_reference_and_gbk.map { m,s, r, g, k ->
+        tuple(m,s)
+    }.set { ch_assemblies_without_plasmids_with_taxa }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -339,7 +331,7 @@ workflow GABI {
     */
 
     SEROTYPING(
-        ch_assemblies_with_taxa
+        ch_assemblies_without_plasmids_with_taxa
     )
     ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
     ch_report       = ch_report.mix(SEROTYPING.out.reports)
@@ -352,7 +344,7 @@ workflow GABI {
 
     if (!params.skip_mlst) {
         MLST_TYPING(
-            ch_assemblies_with_taxa
+            ch_assemblies_without_plasmids_with_taxa
         )
         ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
@@ -367,7 +359,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ANNOTATE(
-        ch_assemblies_with_taxa,
+        ch_assemblies_without_plasmids_with_taxa,
         ch_prokka_proteins,
         ch_prokka_prodigal
     )
@@ -382,13 +374,15 @@ workflow GABI {
     SUB: Identify antimocrobial resistance genes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    AMR_PROFILING(
-        ch_assemblies_clean,
-        amrfinder_db
-    )
-    ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
-    amr_report  = AMR_PROFILING.out.report
-    ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+
+    if (!params.skip_amr) {
+        AMR_PROFILING(
+            ch_assemblies_clean,
+            amrfinder_db
+        )
+        ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
+        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -417,7 +411,7 @@ workflow GABI {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUB: Make JSON summary report
+    SUB: Make summary report
     This is optonal in case of unforseen
     issues.
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -428,7 +422,15 @@ workflow GABI {
             def meta = [:]
             meta.sample_id = m.sample_id
             tuple(meta, r)
-        }.groupTuple().set { ch_reports_grouped }
+        }.groupTuple().map { meta,r ->
+            tuple(meta.sample_id,r)
+        }.join(
+            FIND_REFERENCES.out.taxon.map { m ->
+                tuple(m.sample_id,m)
+            }
+        ).map { sid,r,meta ->
+            tuple (meta,r)
+        }.set { ch_reports_grouped }
 
         REPORT(
             ch_reports_grouped,
@@ -443,7 +445,6 @@ workflow GABI {
     Generate QC reports
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
 
     multiqc_files = multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml)
 
@@ -478,4 +479,4 @@ workflow GABI {
 
     emit:
     qc = MULTIQC.out.report
-    }
+}
