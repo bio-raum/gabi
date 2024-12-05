@@ -166,7 +166,9 @@ workflow MLST_TYPING {
             meta.db_name = m.db_name
             tuple(meta, a, d)
         }.groupTuple(by: [0, 2])
-        .filter { m, a, d -> a.size() > 2 }
+        .set { ch_assemblies_chewie_grouped }
+
+        ch_assemblies_chewie_grouped.filter { m, a, d -> (a.size() >= 3) }
         .set { ch_assemblies_chewie_call }
 
         CHEWBBACA_ALLELECALL(

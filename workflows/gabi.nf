@@ -13,6 +13,7 @@ include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
+include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
 /*
@@ -43,6 +44,8 @@ samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:t
 
 /*
 Check that the reference directory is actually present
+and only populate variables if we are actually running the main
+workflow - else this will break on a fresh install 
 */
 if (params.input) {
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
@@ -50,23 +53,29 @@ if (params.input) {
         log.info 'The required reference directory was not found on your system, exiting!'
         System.exit(1)
     }
+
+    ch_multiqc_config = params.multiqc_config   ? Channel.fromPath(params.multiqc_config, checkIfExists: true).collect()    : []
+    ch_multiqc_logo   = params.multiqc_logo     ? Channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
+
+    ch_report_template = params.template        ? Channel.fromPath(params.template, checkIfExists: true).collect()          : []
+    ch_report_refs     = params.report_refs     ? Channel.fromPath(params.report_refs, checkIfExists: true).collect()          : []
+
+    ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
+    ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
+
+    amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
+    kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
+
+    sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
+
+    busco_db_path   = params.reference_base ? file(params.references['busco'].db, checkIfExists:true)         : []
+    busco_lineage   = params.busco_lineage
+
+    confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
+
+    ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
+
 }
-
-ch_multiqc_config = params.multiqc_config   ? Channel.fromPath(params.multiqc_config, checkIfExists: true).collect()    : []
-ch_multiqc_logo   = params.multiqc_logo     ? Channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
-
-ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
-ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
-
-amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
-kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
-
-mashdb          = params.reference_base ? file(params.references['mashdb'].db, checkIfExists:true)        : []
-
-busco_db_path   = params.reference_base ? file(params.references['busco'].db, checkIfExists:true)         : []
-busco_lineage   = params.busco_lineage
-
-confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
 ch_versions     = Channel.from([])
 multiqc_files   = Channel.from([])
@@ -80,6 +89,9 @@ workflow GABI {
     main:
 
     INPUT_CHECK(samplesheet)
+
+    // If we pass existing assemblies instead of raw reads:
+    ch_assemblies = ch_assemblies.mix(INPUT_CHECK.out.assemblies)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,12 +115,31 @@ workflow GABI {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Clean reads against a bloom filter to remove any
+    potential host contaminations - currently: horse, from
+    blood medium used during growth of campylobacter
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+
+    if (params.remove_host) {
+        BIOBLOOM_CATEGORIZER(
+            ch_illumina_trimmed,
+            ch_bloom_filter
+        )
+        ch_illumina_clean = BIOBLOOM_CATEGORIZER.out.reads
+        ch_versions = ch_versions.mix(BIOBLOOM_CATEGORIZER.out.versions)
+    } else {
+        ch_illumina_clean = ch_illumina_trimmed
+    }
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: See which samples are Illumina-only, ONT-only, Pacbio-only
     or have a mix of both for hybrid assembly
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     GROUP_READS(
-        ch_illumina_trimmed,
+        ch_illumina_clean,
         ch_ont_trimmed,
         ch_pacbio_trimmed
     )
@@ -131,10 +162,10 @@ workflow GABI {
         ch_reads_for_taxonomy,
         kraken2_db
     )
-    ch_taxon    = TAXONOMY_PROFILING.out.report
-    ch_versions = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
-    ch_report   = ch_report.mix(TAXONOMY_PROFILING.out.report)
-    multiqc_files = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
+    ch_taxon        = TAXONOMY_PROFILING.out.report
+    ch_versions     = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
+    ch_report       = ch_report.mix(TAXONOMY_PROFILING.out.report)
+    multiqc_files   = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -165,8 +196,8 @@ workflow GABI {
     DRAGONFLYE(
         ch_dragonflye
     )
-    ch_versions = ch_versions.mix(DRAGONFLYE.out.versions)
-    ch_assemblies = ch_assemblies.mix(DRAGONFLYE.out.contigs)
+    ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
+    ch_assemblies   = ch_assemblies.mix(DRAGONFLYE.out.contigs)
 
     /*
     Option: Pacbio HiFi reads
@@ -175,8 +206,8 @@ workflow GABI {
     FLYE(
         ch_pb_reads_only
     )
-    ch_versions = ch_versions.mix(FLYE.out.versions)
-    ch_assemblies = ch_assemblies.mix(FLYE.out.fasta)
+    ch_versions     = ch_versions.mix(FLYE.out.versions)
+    ch_assemblies   = ch_assemblies.mix(FLYE.out.fasta)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,7 +271,16 @@ workflow GABI {
             m.platform == "ALL"
         }.map { m,r -> r }
     )
- 
+    ch_report = ch_report.mix(COVERAGE.out.summary)
+
+    ch_report = ch_report.mix(
+        COVERAGE.out.summary.filter {m,r ->
+            m.platform != "ALL"
+        }
+    )
+
+    ch_report = ch_report.mix(COVERAGE.out.bam_stats)
+    
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies
@@ -271,8 +311,9 @@ workflow GABI {
             tuple(m,r,a)
         }
     )
-    ch_versions = ch_versions.mix(VARIANTS.out.versions)
-    multiqc_files = multiqc_files.mix(VARIANTS.out.qc)
+    ch_versions     = ch_versions.mix(VARIANTS.out.versions)
+    multiqc_files   = multiqc_files.mix(VARIANTS.out.qc)
+    ch_report       = ch_report.mix(VARIANTS.out.stats)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -281,35 +322,29 @@ workflow GABI {
     */
     FIND_REFERENCES(
         ch_assembly_without_plasmids,
-        mashdb
+        sourmashdb
     )
-    ch_versions = ch_versions.mix(FIND_REFERENCES.out.versions)
+    ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
+    ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
 
     /*
     Combine the assembly with the best reference genome and annotation
     Here we use only the chromosomal assembly, since Plasmids may skew the metrics
     */
     ch_assembly_without_plasmids.map { m, s ->
-        tuple(m.sample_id, m, s)
+        tuple(m.sample_id, s)
     }.join(
         FIND_REFERENCES.out.reference.map { m, r, g, k ->
-            tuple(m.sample_id, r, g, k)
+            tuple(m.sample_id, m, r, g, k)
         }
-    ).map { i, m, s, r, g, k ->
+    ).map { i,s, m, r, g, k ->
         tuple(m, s, r, g, k)
     }.set { ch_assemblies_with_reference_and_gbk }
 
-    /*
-    Join the assembly channel with taxonomic assignment information
-    [ meta, assembly ] <-> [ meta, taxreport]
-    */
-    ch_assemblies_clean_grouped = ch_assemblies_clean.map { m, f -> [ m.sample_id, m, f] }
-    ch_assemblies_clean_grouped_tax = ch_assemblies_clean_grouped.join(ch_taxon.map { m, t -> [ m.sample_id, m] })
-    ch_assemblies_clean_grouped_tax.map { s, m, f, t ->
-        m.taxon = t.taxon
-        m.domain = t.domain
-        tuple(m, f)
-    }.set { ch_assemblies_with_taxa }
+    // and we create a channel with taxon-enriched metadata and assembly for other analyses
+    ch_assemblies_with_reference_and_gbk.map { m,s, r, g, k ->
+        tuple(m,s)
+    }.set { ch_assemblies_without_plasmids_with_taxa }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -318,10 +353,10 @@ workflow GABI {
     */
 
     SEROTYPING(
-        ch_assemblies_with_taxa
+        ch_assemblies_without_plasmids_with_taxa
     )
-    ch_versions = ch_versions.mix(SEROTYPING.out.versions)
-    ch_report = ch_report.mix(SEROTYPING.out.reports)
+    ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
+    ch_report       = ch_report.mix(SEROTYPING.out.reports)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -331,7 +366,7 @@ workflow GABI {
 
     if (!params.skip_mlst) {
         MLST_TYPING(
-            ch_assemblies_with_taxa
+            ch_assemblies_without_plasmids_with_taxa
         )
         ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
@@ -346,7 +381,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ANNOTATE(
-        ch_assemblies_with_taxa,
+        ch_assemblies_without_plasmids_with_taxa,
         ch_prokka_proteins,
         ch_prokka_prodigal
     )
@@ -361,17 +396,20 @@ workflow GABI {
     SUB: Identify antimocrobial resistance genes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    AMR_PROFILING(
-        ch_assemblies_clean,
-        amrfinder_db
-    )
-    ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
-    amr_report  = AMR_PROFILING.out.report
-    ch_report = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+
+    if (!params.skip_amr) {
+        AMR_PROFILING(
+            ch_assemblies_clean,
+            amrfinder_db
+        )
+        ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
+        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Gauge quality of the assembly
+    This does not include the plasmids. 
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ASSEMBLY_QC(
@@ -379,14 +417,23 @@ workflow GABI {
         busco_lineage,
         busco_db_path
     )
-    ch_versions = ch_versions.mix(ASSEMBLY_QC.out.versions)
-    ch_assembly_qc = ASSEMBLY_QC.out.quast
-    multiqc_files = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
-    ch_report = ch_report.mix(ch_assembly_qc)
+    ch_versions     = ch_versions.mix(ASSEMBLY_QC.out.versions)
+    ch_assembly_qc  = ASSEMBLY_QC.out.quast
+    multiqc_files   = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
+    ch_report       = ch_report.mix(ch_assembly_qc)
+    ch_report       = ch_report.mix(ASSEMBLY_QC.out.busco_json)
+
+    /*
+    Gather all version information
+    */
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUB: Make JSON summary report
+    SUB: Make summary report
     This is optonal in case of unforseen
     issues.
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,10 +444,21 @@ workflow GABI {
             def meta = [:]
             meta.sample_id = m.sample_id
             tuple(meta, r)
-        }.groupTuple().set { ch_reports_grouped }
+        }.groupTuple().map { meta,r ->
+            tuple(meta.sample_id,r)
+        }.join(
+            FIND_REFERENCES.out.taxon.map { m ->
+                tuple(m.sample_id,m)
+            }
+        ).map { sid,r,meta ->
+            tuple (meta,r)
+        }.set { ch_reports_grouped }
 
         REPORT(
-            ch_reports_grouped
+            ch_reports_grouped,
+            ch_report_template,
+            ch_report_refs,
+            CUSTOM_DUMPSOFTWAREVERSIONS.out.yml
         )
     }
 
@@ -409,10 +467,6 @@ workflow GABI {
     Generate QC reports
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
 
     multiqc_files = multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml)
 
@@ -447,4 +501,4 @@ workflow GABI {
 
     emit:
     qc = MULTIQC.out.report
-    }
+}
