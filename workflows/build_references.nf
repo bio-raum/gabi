@@ -6,6 +6,8 @@ include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/a
 include { PYMLST_WGMLST_INSTALL }                           from './../modules/pymlst/wgmlst_install'
 include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/chewbbaca/downloadschema'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
+include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
+include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
@@ -27,7 +29,7 @@ workflow BUILD_REFERENCES {
     )
 
     BIOBLOOM_MAKER(
-        GUNZIP.out.gunzip.map { m,f -> f }
+        GUNZIP_GENOME.out.gunzip.map { m,f -> f }
     )
     
     /*
