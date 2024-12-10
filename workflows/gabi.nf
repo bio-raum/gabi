@@ -11,6 +11,7 @@ include { MULTIQC as MULTIQC_PACBIO }   from './../modules/multiqc'
 include { SHOVILL }                     from './../modules/shovill'
 include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
+include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
@@ -66,7 +67,11 @@ if (params.input) {
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
 
-    sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
+    if (params.fast_ref) {
+        sourmashdb      = params.reference_base ? file(params.references['sourmashdb_nr'].db, checkIfExists:true)    : []
+    } else {
+        sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
+    }
 
     busco_db_path   = params.reference_base ? file(params.references['busco'].db, checkIfExists:true)         : []
     busco_lineage   = params.busco_lineage
@@ -197,7 +202,12 @@ workflow GABI {
         ch_dragonflye
     )
     ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
-    ch_assemblies   = ch_assemblies.mix(DRAGONFLYE.out.contigs)
+    
+    RENAME_DRAGONFLYE_CTG(
+        DRAGONFLYE.out.contigs,
+        'fasta'
+    )
+    ch_assemblies   = ch_assemblies.mix(RENAME_DRAGONFLYE_CTG.out)
 
     /*
     Option: Pacbio HiFi reads
@@ -290,7 +300,12 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
-    ch_assembly_without_plasmids = PLASMIDS.out.chromosome
+
+    RENAME_PLASMID_CTG(
+        PLASMIDS.out.chromosome,
+        'fasta'        
+    )
+    ch_assembly_without_plasmids = RENAME_PLASMID_CTG.out
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -363,7 +378,7 @@ workflow GABI {
     SUB: Perform MLST typing of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
+    
     if (!params.skip_mlst) {
         MLST_TYPING(
             ch_assemblies_without_plasmids_with_taxa

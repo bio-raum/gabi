@@ -15,7 +15,13 @@ workflow QC_ILLUMINA {
     main:
 
     // Split trimmed reads by sample to find multi-lane data set
-    reads.groupTuple().branch { meta, reads ->
+    reads.map {m,r ->
+        def newMeta = [:]
+        newMeta.sample_id = m.sample_id
+        newMeta.platform = m.platform
+        newMeta.single_end = m.single_end
+        tuple(newMeta,r)
+    }.groupTuple().branch { meta, reads ->
         single: reads.size() == 1
             return [ meta, reads.flatten()]
         multi: reads.size() > 1

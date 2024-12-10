@@ -27,7 +27,7 @@ process QUAST {
     def features  = gff             ?  "--features $gff" : ''
     def reference = fasta           ?  "-r $fasta"       : ''
     """
-    ln -s $assembly ${prefix}.fasta
+    
     quast.py \\
         --output-dir $prefix \\
         $reference \\
