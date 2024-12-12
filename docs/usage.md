@@ -166,6 +166,10 @@ If you analyse a single species and wish to optimize the quality of the genome a
 
 If you analyse a single species and wish to optimize the quality of the genome annotation, you can pass a custom prodigal training file using this option, as described [here](https://github.com/tseemann/prokka?tab=readme-ov-file#option---prodigaltf).
 
+### `--remove_host` [ default = false ]
+
+This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an isse and we will consider adding it. 
+
 ### `--skip_failed` [ default = false ]
 
 By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:

@@ -24,7 +24,6 @@ process SOURMASH_COMPARE {
 
     script:
     def args   = task.ext.args     ?: ''
-    def prefix = task.ext.prefix   ?: "${meta.sample_id}"
     def comp   = save_numpy_matrix ? "--output comp.npy"  : ''
     def csv    = save_csv          ? "--csv comp.csv" : ''
     if ( !save_numpy_matrix && !save_csv ) error "Supply either save_numpy_matrix, save_csv, or both or no output will be created"

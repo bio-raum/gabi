@@ -9,9 +9,6 @@ Version 1.19, [doi](https://doi.org/10.1093/bioinformatics/btw354) | [PubMed](ht
 **Samtools**
 Version 1.19, [doi](https://doi.org/10.1093/bioinformatics/btp352) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/19505943/) | [github](https://github.com/samtools/samtools)
 
-**pyMLST**
-Version 2.1.6, [doi](https://doi.org/10.1099/mgen.0.001126) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/37966168/) | [github](https://github.com/bvalot/pyMLST)
-
 **Flye**
 Version 2.9, [doi](https://doi.org/10.1038/s41587-019-0072-8) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/30936562/) |  [github](https://github.com/fenderglass/Flye/tree/flye)
 

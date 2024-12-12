@@ -67,6 +67,7 @@ if (params.input) {
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
 
+    // Sourmash DB choice - either the full thing or a smaller "nr" one to speed up searches at the cost of some precision
     if (params.fast_ref) {
         sourmashdb      = params.reference_base ? file(params.references['sourmashdb_nr'].db, checkIfExists:true)    : []
     } else {
@@ -303,7 +304,7 @@ workflow GABI {
 
     RENAME_PLASMID_CTG(
         PLASMIDS.out.chromosome,
-        'fasta'        
+        'chromosomes.fasta'        
     )
     ch_assembly_without_plasmids = RENAME_PLASMID_CTG.out
 
@@ -314,7 +315,6 @@ workflow GABI {
     errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    
     VARIANTS(
         ch_illumina_trimmed.map { m,r ->
             tuple(m.sample_id,m,r)
@@ -366,7 +366,6 @@ workflow GABI {
     SUB: Perform serotyping of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
     SEROTYPING(
         ch_assemblies_without_plasmids_with_taxa
     )

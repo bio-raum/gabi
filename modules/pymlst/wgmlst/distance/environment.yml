@@ -1,7 +1,0 @@
-name: pymlst_wgmlst_distance
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - bioconda::pymlst=2.1.6

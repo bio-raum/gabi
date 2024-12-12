@@ -3,7 +3,6 @@ include { KRAKEN2_DOWNLOAD }                                from './../modules/k
 include { CONFINDR_INSTALL  }                               from './../modules/helper/confindr_install'
 include { BUSCO_DOWNLOAD as BUSCO_INSTALL }                 from './../modules/busco/download'
 include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/amrfinderplus/update'
-include { PYMLST_WGMLST_INSTALL }                           from './../modules/pymlst/wgmlst_install'
 include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/chewbbaca/downloadschema'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
@@ -72,11 +71,6 @@ workflow BUILD_REFERENCES {
     CONFINDR_INSTALL(
         confindr_db_url
     )
-
-    /*
-    Install cgMLST schemas
-    */
-    PYMLST_WGMLST_INSTALL()
 
     /*
     Install Chewbbaca schemas based on schema ID
