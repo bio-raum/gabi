@@ -76,7 +76,7 @@ def main(yaml, template, output, reference):
                 confindr_status = status["missing"]
 
                 for set in confindr:
-                    
+
                     if confindr_status == status["missing"]:
                         confindr_status = status["pass"]
 
@@ -322,7 +322,6 @@ def main(yaml, template, output, reference):
 
         data["summary"].append(rtable)
 
-    
     if "kraken" in jdata:
         # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
@@ -423,7 +422,7 @@ def check_n50(refs, query):
                 return status["fail"]
 
         return status["missing"]
-    
+
 
 def check_gc(refs, query):
 

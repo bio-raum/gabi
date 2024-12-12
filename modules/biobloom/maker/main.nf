@@ -23,7 +23,7 @@ process BIOBLOOM_MAKER {
     """
     biobloommaker -p $prefix \\
     -t $task.cpus \\
-    $fasta
+    $fasta $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

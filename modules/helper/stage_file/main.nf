@@ -19,7 +19,7 @@ process STAGE_FILE {
     def args = task.ext.args ?: ''
 
     """
-    touch dummy.txt
+    touch dummy.txt $args
     
     """
 }
