@@ -326,7 +326,7 @@ def main(yaml, template, output, reference):
         # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*20 if len(samples) > 10 else 400
+        h = len(samples)*25 if len(samples) > 10 else 450
         fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
 
         data["Kraken"] = fig.to_html(full_html=False)

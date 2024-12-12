@@ -7,6 +7,8 @@ include { HAMRONIZATION_AMRFINDERPLUS }     from './../../modules/hamronization/
 include { HAMRONIZATION_ABRICATE }          from './../../modules/hamronization/abricate'
 include { HAMRONIZATION_SUMMARIZE }         from './../../modules/hamronization/summarize'
 include { ABRICATE_RUN }                    from './../../modules/abricate/run'
+include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_VIRULENCE } from './../../modules/abricate/run'
+
 
 ch_versions = Channel.from([])
 multiqc_files = Channel.from([])
@@ -18,6 +20,12 @@ workflow AMR_PROFILING {
     db
 
     main:
+
+     assembly.branch { m, a ->
+        ecoli: m.taxon ==~ /^Escherichia.*/
+        salmonella: m.taxon ==~ /^Salmonella.*/
+        listeria: m.taxon ==~ /^Listeria.*/
+    }.set { assembly_by_taxon }
 
     /*
     Run AMRFinderPlus and make JSON report
@@ -55,8 +63,18 @@ workflow AMR_PROFILING {
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN.out.versions)
 
+    /*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Taxon-specific abricate analyses
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~  */ 
+    // E. coli
+    ABRICATE_RUN_ECOLI_VIRULENCE(
+        assembly_by_taxon.ecoli
+    )
+    ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.versions)
+
+    // Join basic Abricate results
     HAMRONIZATION_ABRICATE(
-        ABRICATE_RUN.out.report,
+        ABRICATE_RUN.out.report.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.report),
         'json',
         '1.0.1',
         '2021-Mar-27'
