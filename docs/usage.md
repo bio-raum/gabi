@@ -116,7 +116,7 @@ This option is only used when installing the pipelines references as described [
 
 ### `--fast_ref` [ default = false ]
 
-By default, Gabi uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics will notably deteriorate.
+By default, Gabi uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
 
 ### `--run_name` [ default = null]
 
@@ -128,13 +128,13 @@ This option should point to the base directory in which you have installed the p
 
 ### `--onthq` [ default = false ]
 
-Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default..
+Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default.
 
 ### `--ont_min_q` [ default = 10 ]
 
-Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data. 
+Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
 
-### `--ont_min_length`  [ default = 5000 ]
+### `--ont_min_length`  [ default = 1000 ]
 
 Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths. If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
 
@@ -148,7 +148,7 @@ A local version of the ConfindR rMLST database, available [here](https://olc-bio
 
 ### `--genome_size` [ default = null ]
 
-If enabled, this is the assumed genome size against which the coverage is measured for downsampling the raeds (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size. 
+If enabled, this is the assumed genome size against which the coverage is measured for downsampling the reads (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size.
 
 ### `--max_coverage` [ default = '100x']
 
@@ -168,7 +168,7 @@ If you analyse a single species and wish to optimize the quality of the genome a
 
 ### `--remove_host` [ default = false ]
 
-This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an isse and we will consider adding it. 
+This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an issue and we will consider adding it. 
 
 ### `--skip_failed` [ default = false ]
 

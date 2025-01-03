@@ -83,22 +83,31 @@ def main(yaml, template, output, reference):
                     for read in set:
                         if read["ContamStatus"] == "True":
                             contaminated = True
-                            if (read["PercentContam"] == "ND"):
-                                perc = "ND"
-                                this_status = status["missing"]
-                            else:
-                                perc = float(read["PercentContam"])
 
-                                if (perc > contaminated):
-                                    contaminated = perc
-
-                                if (perc >= 10.0):
-                                    confindr_status = status["fail"]
+                            if "PercentContam" in read:
+                                if (read["PercentContam"] == "ND"):
+                                    perc = "ND"
+                                    if ":" in read["Genus"]:
+                                        perc = read["Genus"]
                                     this_status = status["fail"]
-                                elif (perc > 0.0 and confindr_status == status["pass"]):
-                                    confindr_status = status["warn"]
-                                    if (this_status == status["pass"]):
-                                        this_status = status["warn"]
+                                    confindr_status = status["fail"]
+                                    contaminated = perc
+                                else:
+                                    perc = float(read["PercentContam"])
+
+                                    if (perc > contaminated):
+                                        contaminated = perc
+
+                                    if (perc >= 10.0):
+                                        confindr_status = status["fail"]
+                                        this_status = status["fail"]
+                                    elif (perc > 0.0 and confindr_status == status["pass"]):
+                                        confindr_status = status["warn"]
+                                        if (this_status == status["pass"]):
+                                            this_status = status["warn"]
+                            else:
+                                contaminated = "ND"
+                                confindr_status = status["warn"]
 
             # All the relevant values and optional status classes
             sample = jdata["sample"]
@@ -113,9 +122,9 @@ def main(yaml, template, output, reference):
             if "kraken" in jdata:
 
                 taxon_perc = float(jdata["kraken"][0]["percentage"])
-                if taxon_perc >= 80.0:
+                if taxon_perc >= 90.0:
                     taxon_status = status["pass"]
-                elif taxon_perc >= 60.0:
+                elif taxon_perc >= 70.0:
                     taxon_status = status["warn"]
                 else:
                     taxon_status = status["fail"]
@@ -130,7 +139,7 @@ def main(yaml, template, output, reference):
 
                     kraken_results[this_taxon] = tperc
 
-                    if (tperc > 10.0):
+                    if (tperc > 5.0):
                         taxon_count += 1
 
                 kraken_data_all.append(kraken_results)
