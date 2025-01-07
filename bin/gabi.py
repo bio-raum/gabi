@@ -132,14 +132,14 @@ def main(yaml, template, output, reference, version, call, wd):
             if "fastp" in jdata:
                 fastp_q30_status = status["pass"]
                 fastp_summary = jdata["fastp"]["summary"]
-                fastp_q30 = round(fastp_summary["after_filtering"]["q30_rate"],2)
+                fastp_q30 = round(fastp_summary["after_filtering"]["q30_rate"], 2)
                 if fastp_q30 < 0.85:
                     fastp_q30_status = status["warn"]
 
             # Read stats from NanoStat
             nanostat_q15 = "-"
-            nanostat_q15_status = status["missing"]
-            nanostat_mean_read_length = "-"
+            #nanostat_q15_status = status["missing"]
+            #nanostat_mean_read_length = "-"
             nanostat_read_n50 = "-"
 
             if "nanostat" in jdata:
