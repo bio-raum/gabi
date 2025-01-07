@@ -181,12 +181,25 @@ By default, all samples are processed all the way to the end of the pipeline. Th
 
 Skip generation of circos plots.
 
+### `--skip_serotyping` [ default = false ]
+
+Skip Serotyping
+
+### `--skip_cgmlst` [ default = false ]
+
+Skip cgMLST analysis
+
+### `--skip_mlst` [ default = false ]
+
+Skip all MLST analyses (incl. cgMLST)
+
+### `--skip_amr` [ default = false ]
+
+Skip prediction of AMR genes
+
 ### `--shovill_assembler` [ default = spades ]
 
 Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
-
-### `--skip_mlst` [ default = false ]
-Do not run MLST typing tools (chewbbaca, MLST)
 
 ## Resources
 

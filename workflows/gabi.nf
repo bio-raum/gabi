@@ -113,7 +113,7 @@ workflow GABI {
     ch_ont_trimmed      = QC.out.ont
     ch_pacbio_trimmed   = QC.out.pacbio
     multiqc_files       = multiqc_files.mix(QC.out.qc)
-    ch_report           = ch_report.mix(QC.out.confindr_reports)
+    ch_report           = ch_report.mix(QC.out.confindr_reports, QC.out.fastp_json, QC.out.nanoplot_stats)
 
     ch_multiqc_illumina = ch_multiqc_illumina.mix(QC.out.qc_illumina)
     ch_multiqc_nanopore = ch_multiqc_nanopore.mix(QC.out.qc_nanopore)
@@ -366,11 +366,13 @@ workflow GABI {
     SUB: Perform serotyping of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    SEROTYPING(
-        ch_assemblies_without_plasmids_with_taxa
-    )
-    ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
-    ch_report       = ch_report.mix(SEROTYPING.out.reports)
+    if (!params.skip_serotyping) {
+        SEROTYPING(
+            ch_assemblies_without_plasmids_with_taxa
+        )
+        ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
+        ch_report       = ch_report.mix(SEROTYPING.out.reports)
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

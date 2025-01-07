@@ -88,7 +88,8 @@ workflow QC_NANOPORE {
     emit:
     //confindr_report = CONTAMINATION.out.report
     //confindr_json   = CONTAMINATION.out.json
-    reads = ch_processed_reads
-    qc = multiqc_files
-    versions = ch_versions
+    reads           = ch_processed_reads
+    qc              = multiqc_files
+    nanoplot_stats  = NANOPLOT.out.txt
+    versions        = ch_versions
     }

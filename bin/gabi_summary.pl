@@ -71,6 +71,12 @@ foreach my $file ( @files ) {
     if ($filename =~ /.*kraken.*/) {
         my @data = parse_kraken(\@lines);
         $matrix{"kraken"} = \@data;
+    } elsif ( $filename =~ /.NanoStats.txt/) {
+        my %data = parse_nanostat(\@lines);
+        $matrix{"nanostat"} = \%data;
+    } elsif ( $filename =~ /.fastp.json/) {
+        my %data = parse_fastp(\@lines);
+        $matrix{"fastp"} = \%data;
     } elsif ( $filename =~ /.*mlst.json/) {
         my %data = parse_mlst(\@lines);
         push( @{ $matrix{"mlst"} }, \%data );
@@ -144,6 +150,44 @@ printf $json_out ;
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Tool-specific parsing methods
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sub parse_nanostat {
+    my @lines = @{$_[0]} ;
+
+    my %data ;
+
+    foreach my $line (@lines) {
+        my @elements = split /\t/, $line ;
+        if ( scalar(@elements) > 1) {
+            my $key = @elements[0];
+            if ( $key =~ /^>Q.*/) {
+                $key =~ s/^>//g ;
+                $key =~ s/\://g ;
+                my $value = (split /\s+/, @elements[1])[0];
+                $data{$key} = $value ;
+            }
+        }  else {
+            my @elements = split /\s+/, $line ;
+            my $value = @elements[-1];
+            $value =~ s/,// ;
+            if ($line =~ /^Mean read length.*/) {
+                $data{"mean_read_length"} = $value ;
+            } elsif ($line =~ /^Read length N50/) {
+                $data{'read_length_n50'} = $value ;
+            }
+        }
+    }
+
+   return %data ;
+}
+
+sub parse_fastp {
+
+    my @lines = @{$_[0]} ;
+    my $text = join " ",@lines;
+    my $json = JSON::XS->new->utf8->decode($text);
+    return  %$json{'summary'};
+}
 
 sub parse_stecfinder {
     my @lines = @{$_[0]} ;

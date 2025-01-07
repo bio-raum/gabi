@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import plotly.express as px
 from jinja2 import Template
+import datetime
 import pandas as pd
 import os
 import json
@@ -12,7 +13,11 @@ parser = argparse.ArgumentParser(description="Script options")
 parser.add_argument("--input", help="An input option")
 parser.add_argument("--references", help="Reference values for various taxa")
 parser.add_argument("--template", help="A JINJA2 template")
+parser.add_argument("--version", help="Pipeline version")
+parser.add_argument("--call", help="Command line call")
+parser.add_argument("--wd", help="work directory")
 parser.add_argument("--output")
+
 args = parser.parse_args()
 
 status = {
@@ -23,13 +28,20 @@ status = {
 }
 
 
-def main(yaml, template, output, reference):
+def main(yaml, template, output, reference, version, call, wd):
 
     # Read all the JSON files we see in this folder
     json_files = [pos_json for pos_json in os.listdir('.') if pos_json.endswith('.json') and "AQUAMIS" not in pos_json]
     json_files.sort()
 
     data = {}
+
+    data["user"] = os.getlogin()
+    data["date"] = datetime.datetime.now()
+    data["version"] = version
+    data["call"] = call
+    data["wd"] = wd
+
     data["summary"] = []
 
     samples = []
@@ -113,6 +125,29 @@ def main(yaml, template, output, reference):
             sample = jdata["sample"]
             samples.append(sample)
 
+            fastp_q30 = "-"
+            fastp_q30_status = status["missing"]
+
+            # Read quality via FastP
+            if "fastp" in jdata:
+                fastp_q30_status = status["pass"]
+                fastp_summary = jdata["fastp"]["summary"]
+                fastp_q30 = round(fastp_summary["after_filtering"]["q30_rate"],2)
+                if fastp_q30 < 0.85:
+                    fastp_q30_status = status["warn"]
+
+            # Read stats from NanoStat
+            nanostat_q15 = "-"
+            nanostat_q15_status = status["missing"]
+            nanostat_mean_read_length = "-"
+            nanostat_read_n50 = "-"
+
+            if "nanostat" in jdata:
+                nanostat_data = jdata["nanostat"]
+                nanostat_q15 = int(nanostat_data["Q15"])
+                nanostat_mean_read_length = nanostat_data["mean_read_length"]
+                nanostat_read_n50 = nanostat_data["read_length_n50"]
+
             # Get Kraken results
 
             taxon_status = status["missing"]
@@ -195,25 +230,26 @@ def main(yaml, template, output, reference):
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
 
             # Get serotype(s)
-            serotypes = jdata["serotype"]
-            for sentry in serotypes:
-                for stool, sresults in sentry.items():
-                    if (stool == "ectyper"):
-                        serotype = sresults["Serotype"]
-                    elif (stool == "Stecfinder"):
-                        serotype = sresults["Serotype"]
-                    elif (stool == "SeqSero2"):
-                        serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
-                    elif (stool == "Sistr"):
-                        serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
-                    elif (stool == "Lissero"):
-                        serotype = sresults["SEROTYPE"]
+            if "serotype" in jdata:
+                serotypes = jdata["serotype"]
+                for sentry in serotypes:
+                    for stool, sresults in sentry.items():
+                        if (stool == "ectyper"):
+                            serotype = sresults["Serotype"]
+                        elif (stool == "Stecfinder"):
+                            serotype = sresults["Serotype"]
+                        elif (stool == "SeqSero2"):
+                            serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
+                        elif (stool == "Sistr"):
+                            serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
+                        elif (stool == "Lissero"):
+                            serotype = sresults["SEROTYPE"]
 
-                stool_name = f"{stool} ({taxon})"
-                if (stool_name in serotypes_all):
-                    serotypes_all[stool_name].append({"sample": sample, "serotype": serotype})
-                else:
-                    serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype}]
+                    stool_name = f"{stool} ({taxon})"
+                    if (stool_name in serotypes_all):
+                        serotypes_all[stool_name].append({"sample": sample, "serotype": serotype})
+                    else:
+                        serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype}]
 
             # Reference genome
             reference = jdata["reference"]
@@ -304,6 +340,10 @@ def main(yaml, template, output, reference):
                 "samtools": samtools,
                 "taxon": taxon,
                 "busco": busco,
+                "quality_illumina": fastp_q30,
+                "quality_illumina_status": fastp_q30_status,
+                "quality_nanopore": nanostat_q15,
+                "nanopore_n50": nanostat_read_n50,
                 "busco_status": busco_status,
                 "taxon_status": taxon_status,
                 "taxon_count": taxon_count,
@@ -335,7 +375,7 @@ def main(yaml, template, output, reference):
         # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 450
+        h = len(samples)*25 if len(samples) > 10 else 550
         fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
 
         data["Kraken"] = fig.to_html(full_html=False)
@@ -451,4 +491,4 @@ def check_gc(refs, query):
 
 
 if __name__ == '__main__':
-    main(args.input, args.template, args.output, args.references)
+    main(args.input, args.template, args.output, args.references, args.version, args.call, args.wd)
