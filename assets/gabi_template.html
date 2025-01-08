@@ -29,6 +29,8 @@
     tr th[scope="subcol-inactive"] {background-color: #6e6e6e; color: #fff;}
     .versions { font-size: 9px; }
     .versions td { padding: 0px; }
+    .infotext { color:#6e6e6e; font-size: 10px ;}
+    .infotext a { text-decoration: underline;}
     /* Tooltip container */
     .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted black; }
     .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: rgb(189, 186, 186); color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
@@ -57,10 +59,11 @@
         {% if Insertsizes %}
             <td><a href="#insert-sizes">Insert sizes</a></td>
         {% endif %}
-        <td><a href="#mlst">MLST</a></td>
+        <td><a href="#busco">Busco</a></td>
         {% if Kraken %}
             <td><a href="#kraken">Kraken2</a></td>
         {% endif %}
+        <td><a href="#mlst">MLST</a></td>
         {% if serotypes %}
             <td><a href="#serotypes">Serotypes</a></td>
         {% endif %}
@@ -162,6 +165,10 @@ The assembly metrics computed by QUAST
 -->
 <div id="assembly"></div>
 <h2>Assembly metrics</h2>
+<div class="infotext">
+   Descriptive metrics of individual assemblies determined by <a href="https://quast.sourceforge.net/" target="_new">Quast</a>. 
+   <p></p>
+</div>
 
 <table>
     <tr>
@@ -196,10 +203,19 @@ The assembly metrics computed by QUAST
 <p></p>
 <a href="#navigation">top</a>
 
+<!-- 
+Check if insert sizes are present, then render the relevant secion
+-->
 {% if Insertsizes %}
     <div id="insert-sizes"></div>
 
     <h2>Insert size distribution (Illumina)</h2>
+    <div class="infotext">
+        Insert size refers to the size of the sequenced DNA fragment. Depending on the exact library protocol, this size will fall fairly uniformly around a mean value (~300-500bp). 
+        For Illumina data, that value should typically be (slightly) larger than the combined length of forward and reverse read for optimal data yield. Very flat curves may (depending on the protocol!) 
+        indicate a failure during fragment size selection/enrichment. Neither small insert sizes nor flat curves are a clear predictor for subsequent assembly issues, but can inform any potential debugging efforts. 
+    </div>
+    <p></p>
 
     {{Insertsizes}}
 
@@ -208,10 +224,53 @@ The assembly metrics computed by QUAST
 {% endif %}
 
 <!--
+Busco scores
+-->
+<div id="busco"></div>
+<h2>BUSCO scores</h2>
+
+<div class="infotext">
+    <a href="https://busco.ezlab.org/" target="_new">BUSCO</a> scores describe the coverage of the assemblied gene space against a set of broadly conserved singleton genes (here: bacteria_odb10). A perfect assembly should 
+    have a complete coverage of the gene space (complete: 100%), without any fragmentation or, worse, duplication. A high value of duplication may indicate assembly errors or contamination. Some taxa with very 
+    streamlined gene content, such as <i>Campylobacter</i>, will typically have a completeness score of less than 100%. The Completeness estimates may include duplicated genes, so values greater than 100% are 
+    possible (i.e. all genes present, of which x % are duplicated). 
+</div>
+
+{{Busco}}
+
+<p></p>
+<a href="#navigation">top</a>
+
+<!--
+Check if Kraken data is present, then render the relevant section
+-->
+{% if Kraken %}
+    <div id="kraken"></div>
+    
+    <h2>Kraken2 - taxonomic composition</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a> matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
+    </div>
+
+    {{Kraken}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
 MLST sequence types by schema
 -->
 <div id="mlst"></div>
 <h2>MLST</h2>
+
+<div class="infotext">
+    Taxa-specific <a href="https://github.com/tseemann/mlst" target="_new">MLST schemas</a> classify assemblies into pre-defined types or groups. Results are divided by typing schema (and consequently taxa). 
+</div>
+
+<p></p>
 
 {% for scheme,mtypes in mlst.items() %}
 
@@ -233,21 +292,18 @@ MLST sequence types by schema
 <p></p>
 <a href="#navigation">top</a>
 
-{% if Kraken %}
-    <div id="kraken"></div>
-
-    <h2>Kraken2 - taxonomic composition</h2>
-
-    {{Kraken}}
-
-    <a href="#navigation">top</a>
-{% endif %}
 <!--
 Results from one or multiple serotyping tools
 -->
 {% if serotypes %}
     <div id="serotypes"></div>
     <h2>Serotyping</h2>
+
+    <div class="infotext">
+        Serotyes, similar to MLST types, classify assemblies based on a set of predefined gene profiles.
+    </div>
+
+    <p></p>
 
     {% for stool,stypes in serotypes.items() %}
         <div class="table-caption">{{stool}}</div>

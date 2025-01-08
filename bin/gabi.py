@@ -51,6 +51,7 @@ def main(yaml, template, output, reference, version, call, wd):
     mlst_all = {}
     insert_sizes_all = {}
     min_insert_size_length = 1000
+    busco_data_all = []
 
     with open(reference) as r:
         ref_data = json.load(r)["thresholds"]
@@ -112,11 +113,9 @@ def main(yaml, template, output, reference, version, call, wd):
 
                                     if (perc >= 10.0):
                                         confindr_status = status["fail"]
-                                        this_status = status["fail"]
                                     elif (perc > 0.0 and confindr_status == status["pass"]):
                                         confindr_status = status["warn"]
-                                        if (this_status == status["pass"]):
-                                            this_status = status["warn"]
+
                             else:
                                 contaminated = "ND"
                                 confindr_status = status["warn"]
@@ -128,7 +127,10 @@ def main(yaml, template, output, reference, version, call, wd):
             fastp_q30 = "-"
             fastp_q30_status = status["missing"]
 
+            ########################
             # Read quality via FastP
+            ########################
+
             if "fastp" in jdata:
                 fastp_q30_status = status["pass"]
                 fastp_summary = jdata["fastp"]["summary"]
@@ -136,19 +138,22 @@ def main(yaml, template, output, reference, version, call, wd):
                 if fastp_q30 < 0.85:
                     fastp_q30_status = status["warn"]
 
+            ##########################
             # Read stats from NanoStat
+            ##########################
+
             nanostat_q15 = "-"
-            #nanostat_q15_status = status["missing"]
-            #nanostat_mean_read_length = "-"
             nanostat_read_n50 = "-"
 
             if "nanostat" in jdata:
                 nanostat_data = jdata["nanostat"]
                 nanostat_q15 = int(nanostat_data["Q15"])
-                nanostat_mean_read_length = nanostat_data["mean_read_length"]
+                # nanostat_mean_read_length = nanostat_data["mean_read_length"]
                 nanostat_read_n50 = nanostat_data["read_length_n50"]
 
+            ####################
             # Get Kraken results
+            ####################
 
             taxon_status = status["missing"]
             taxon_count = "-"
@@ -181,13 +186,13 @@ def main(yaml, template, output, reference, version, call, wd):
 
                 if (taxon_count > 3):
                     taxon_count_status = status["fail"]
-                    this_status = status["fail"]
                 elif (taxon_count > 1):
                     taxon_count_status = status["warn"]
-                    if (this_status == status["pass"]):
-                        this_status = status["warn"]
 
+            ####################
             # Get samtools stats
+            ####################
+
             samtools = {"mean_insert_size": "-", }
             if ("samtools" in jdata):
                 insert_size = float(jdata["samtools"]["insert size average"])
@@ -198,7 +203,10 @@ def main(yaml, template, output, reference, version, call, wd):
                 if (len(inserts) < min_insert_size_length):
                     min_insert_size_length = len(inserts)
 
+            ####################
             # Get assembly stats
+            ####################
+
             assembly = round((int(jdata["quast"]["Total length"])/1000000), 2)
             assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
 
@@ -229,7 +237,10 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
 
+            #################
             # Get serotype(s)
+            #################
+
             if "serotype" in jdata:
                 serotypes = jdata["serotype"]
                 for sentry in serotypes:
@@ -254,22 +265,35 @@ def main(yaml, template, output, reference, version, call, wd):
             # Reference genome
             reference = jdata["reference"]
 
+            ##############
             # Busco scores
+            ##############
+
             busco = jdata["busco"]
             busco_status = status["missing"]
-            busco_completeness = round(((int(busco["C"]))/int(busco["dataset_total_buscos"])), 2)*100
+            busco_total= int(busco["dataset_total_buscos"])
+            busco_completeness = round(((int(busco["C"]))/int(busco_total)), 2)*100
+            busco_fragmented = round((int(busco["F"])/busco_total), 2)*100
+            busco_missing = round((int(busco["M"])/busco_total), 2)*100
+            busco_duplicated = round((int(busco["D"])/busco_total), 2)*100
             busco["completeness"] = busco_completeness
+            busco_data_all.append({ "Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated })
+
             if (busco_completeness > 90.0):
                 busco_status = status["pass"]
             elif (busco_completeness > 80.0):
                 busco_status = status["warn"]
-                if (this_status == status["pass"]):
-                    this_status = status["warn"]
             else:
                 busco_status = status["fail"]
-                this_status = status["fail"]
 
+            # Warn if there are duplications in the gene set and busco wasnt already failed
+            if (busco_duplicated > 5.0) & (busco_status != status["fail"]):
+                busco_status = status["warn"]
+
+            ##############
             # MLST types
+            ##############
+
             mlst = jdata["mlst"]
 
             for mentry in mlst:
@@ -282,7 +306,10 @@ def main(yaml, template, output, reference, version, call, wd):
                 else:
                     mlst_all[scheme_name] = [{"sample": sample, "sequence_type": sequence_type}]
 
+            ##############
             # Get coverage(s)
+            ##############
+
             coverage = "-"
             coverage_status = status["missing"]
 
@@ -332,7 +359,28 @@ def main(yaml, template, output, reference, version, call, wd):
                     else:
                         coverage_pacbio_status = status["fail"]
 
+            ######################################
+            # Set the overall status of the sample
+            ######################################
+
+            # The metrics that by themselves determine overall status:
+            for estatus in [ confindr_status,  taxon_count_status, assembly_status ]:
+                # if any one metric failed, the whole sample failed
+                if estatus == status["fail"]:
+                   this_status = estatus
+                # if a metric is dubious, the entire sample is dubious, unless it already failed or warned
+                elif (estatus == status["warn"]) & (this_status == status["pass"]):
+                    this_status = estatus
+
+            # The other metrics should at most warn, but never fail the sample
+            for estatus in [ busco_status, contigs_status ]:
+                if (estatus != status["missing"]) & (this_status != status["fail"]) & (estatus != status["pass"]):
+                    this_status = status["warn"]
+
+            #########################
             # sample-level dictionary
+            #########################
+
             rtable = {
                 "sample": sample,
                 "reference": reference,
@@ -371,11 +419,15 @@ def main(yaml, template, output, reference, version, call, wd):
 
         data["summary"].append(rtable)
 
+    #############
+    # Plots
+    #############
+
     if "kraken" in jdata:
         # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 550
+        h = len(samples)*25 if len(samples) > 10 else 300
         fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
 
         data["Kraken"] = fig.to_html(full_html=False)
@@ -392,11 +444,23 @@ def main(yaml, template, output, reference, version, call, wd):
         hfig = px.line(hdata, labels=plot_labels)
         data["Insertsizes"] = hfig.to_html(full_html=False)
 
+
+    if busco_data_all:
+        # Draw the busco stats graph
+        bdata = pd.DataFrame(data=busco_data_all, index=samples)
+        plot_labels = { "index": "Samples", "value": "Percentage"}
+        h = len(samples)*25 if len(samples) > 10 else 300
+        fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
+        data["Busco"] = fig.to_html(full_html=False)
+
     data["serotypes"] = serotypes_all
 
     data["mlst"] = mlst_all
 
+    ##############################
     # Parse the versions YAML file
+    ##############################
+
     software = {}
     current_module = ""
     rmod = re.compile('^[A-Za-z0.*/]')
@@ -411,6 +475,10 @@ def main(yaml, template, output, reference, version, call, wd):
                 software[current_module].append(line.strip())
 
     data["packages"] = software
+
+    ########################
+    # Render Jinja2 template
+    ########################
 
     with open(output, "w", encoding="utf-8") as output_file:
         with open(template) as template_file:
