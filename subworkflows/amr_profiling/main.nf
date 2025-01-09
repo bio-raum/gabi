@@ -17,7 +17,8 @@ ch_hamronization_input = Channel.from([])
 workflow AMR_PROFILING {
     take:
     assembly
-    db
+    db              // The AMRfinder database to run
+    abricate_dbs    // A list of abricate databases to run (should be generic!)
 
     main:
 
@@ -58,17 +59,19 @@ workflow AMR_PROFILING {
     /*
     Run Abricate and make JSON report
     */
+
+    assembly_with_db = assembly.combine(abricate_dbs)
     ABRICATE_RUN(
-        assembly
+        assembly_with_db
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN.out.versions)
 
     /*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Taxon-specific abricate analyses
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~  */ 
-    // E. coli
+    // E. coli - here we use a specific database!
     ABRICATE_RUN_ECOLI_VIRULENCE(
-        assembly_by_taxon.ecoli
+        assembly_by_taxon.ecoli.map { m,a -> [ m, a, 'ecoli_vf']}
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.versions)
 

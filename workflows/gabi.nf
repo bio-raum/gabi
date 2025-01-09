@@ -64,6 +64,7 @@ if (params.input) {
     ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
     ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
 
+    abricate_dbs    = Channel.from(params.abricate_dbs)
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
 
@@ -416,7 +417,8 @@ workflow GABI {
     if (!params.skip_amr) {
         AMR_PROFILING(
             ch_assemblies_clean,
-            amrfinder_db
+            amrfinder_db,
+            abricate_dbs
         )
         ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
         ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)

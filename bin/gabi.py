@@ -5,6 +5,7 @@ import datetime
 import pandas as pd
 import os
 import json
+import getpass
 import re
 import argparse
 
@@ -36,7 +37,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
     data = {}
 
-    data["user"] = os.getlogin()
+    data["user"] = getpass.getuser()
     data["date"] = datetime.datetime.now()
     data["version"] = version
     data["call"] = call
@@ -271,13 +272,13 @@ def main(yaml, template, output, reference, version, call, wd):
 
             busco = jdata["busco"]
             busco_status = status["missing"]
-            busco_total= int(busco["dataset_total_buscos"])
+            busco_total = int(busco["dataset_total_buscos"])
             busco_completeness = round(((int(busco["C"]))/int(busco_total)), 2)*100
             busco_fragmented = round((int(busco["F"])/busco_total), 2)*100
             busco_missing = round((int(busco["M"])/busco_total), 2)*100
             busco_duplicated = round((int(busco["D"])/busco_total), 2)*100
             busco["completeness"] = busco_completeness
-            busco_data_all.append({ "Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated })
+            busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
             if (busco_completeness > 90.0):
                 busco_status = status["pass"]
@@ -364,16 +365,16 @@ def main(yaml, template, output, reference, version, call, wd):
             ######################################
 
             # The metrics that by themselves determine overall status:
-            for estatus in [ confindr_status,  taxon_count_status, assembly_status ]:
+            for estatus in [confindr_status,  taxon_count_status, assembly_status]:
                 # if any one metric failed, the whole sample failed
                 if estatus == status["fail"]:
-                   this_status = estatus
+                    this_status = estatus
                 # if a metric is dubious, the entire sample is dubious, unless it already failed or warned
                 elif (estatus == status["warn"]) & (this_status == status["pass"]):
                     this_status = estatus
 
             # The other metrics should at most warn, but never fail the sample
-            for estatus in [ busco_status, contigs_status ]:
+            for estatus in [busco_status, contigs_status]:
                 if (estatus != status["missing"]) & (this_status != status["fail"]) & (estatus != status["pass"]):
                     this_status = status["warn"]
 
@@ -443,7 +444,6 @@ def main(yaml, template, output, reference, version, call, wd):
         hdata = pd.DataFrame(insert_sizes_all_cropped)
         hfig = px.line(hdata, labels=plot_labels)
         data["Insertsizes"] = hfig.to_html(full_html=False)
-
 
     if busco_data_all:
         # Draw the busco stats graph

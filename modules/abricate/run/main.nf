@@ -1,5 +1,5 @@
 process ABRICATE_RUN {
-    tag "$meta.sample_id"
+    tag "${meta.sample_id}|$db"
     label 'short_serial'
 
     conda "${moduleDir}/environment.yml"
@@ -8,7 +8,7 @@ process ABRICATE_RUN {
         'quay.io/biocontainers/abricate:1.0.1--ha8f3691_1' }"
 
     input:
-    tuple val(meta), path(assembly)
+    tuple val(meta), path(assembly), val(db)
 
     output:
     tuple val(meta), path('*.txt'), emit: report
@@ -19,12 +19,13 @@ process ABRICATE_RUN {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}.${db}"
     """
     abricate \\
         $args \\
         --threads $task.cpus \\
         $assembly \\
+        --db $db \\
         > ${prefix}.txt
 
     cat <<-END_VERSIONS > versions.yml
