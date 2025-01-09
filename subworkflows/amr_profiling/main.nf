@@ -21,8 +21,8 @@ workflow AMR_PROFILING {
     abricate_dbs    // A list of abricate databases to run (should be generic!)
 
     main:
-
-     assembly.branch { m, a ->
+    
+    assembly.branch { m, a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/

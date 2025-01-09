@@ -362,6 +362,15 @@ workflow GABI {
         tuple(m,s)
     }.set { ch_assemblies_without_plasmids_with_taxa }
 
+    // as well as a channel with the clean assembly and taxon information
+    ch_assemblies_clean.map {m,s ->
+        tuple(m.sample_id, s)
+    }.join(
+        FIND_REFERENCES.out.reference.map { m, r, g, k ->
+            tuple(m.sample_id, m)
+        }
+    ).map { m,s,n -> tuple(n,s) }
+    .set { ch_assemblies_clean_with_taxa }
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Perform serotyping of assemblies
@@ -416,7 +425,7 @@ workflow GABI {
 
     if (!params.skip_amr) {
         AMR_PROFILING(
-            ch_assemblies_clean,
+            ch_assemblies_clean_with_taxa,
             amrfinder_db,
             abricate_dbs
         )
