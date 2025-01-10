@@ -23,6 +23,11 @@ workflow INPUT_CHECK {
 
 def input_channel(LinkedHashMap row) {
     meta = [:]
+
+    if (!row.sample_id) {
+        exit 1, "ERROR: Please check input samplesheet -> no sample_id column found!\n"
+    }
+
     meta.sample_id    = row.sample_id
     meta.assembly     = false
     meta.reads        = false

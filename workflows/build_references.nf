@@ -3,13 +3,16 @@ include { KRAKEN2_DOWNLOAD }                                from './../modules/k
 include { CONFINDR_INSTALL  }                               from './../modules/helper/confindr_install'
 include { BUSCO_DOWNLOAD as BUSCO_INSTALL }                 from './../modules/busco/download'
 include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/amrfinderplus/update'
-include { PYMLST_WGMLST_INSTALL }                           from './../modules/pymlst/wgmlst_install'
 include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/chewbbaca/downloadschema'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
+include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
+include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
+include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
 sourmash_db_url     = params.references['sourmashdb'].url
+sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
@@ -27,7 +30,7 @@ workflow BUILD_REFERENCES {
     )
 
     BIOBLOOM_MAKER(
-        GUNZIP.out.gunzip.map { m,f -> f }
+        GUNZIP_GENOME.out.gunzip.map { m,f -> f }
     )
     
     /*
@@ -37,6 +40,9 @@ workflow BUILD_REFERENCES {
         sourmash_db_url
     )
 
+    DOWNLOAD_SOURMASH_NR_DB(
+        sourmash_nr_db_url
+    )
     /*
     Download the latest version of the AMRfinderplus DB
     This is not ideal since we cannot select specific versions -  but it works
@@ -65,11 +71,6 @@ workflow BUILD_REFERENCES {
     CONFINDR_INSTALL(
         confindr_db_url
     )
-
-    /*
-    Install cgMLST schemas
-    */
-    PYMLST_WGMLST_INSTALL()
 
     /*
     Install Chewbbaca schemas based on schema ID

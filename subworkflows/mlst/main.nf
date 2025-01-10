@@ -1,5 +1,3 @@
-include { PYMLST_WGMLST_ADD }               from './../../modules/pymlst/wgmlst/add'
-include { PYMLST_WGMLST_DISTANCE }          from './../../modules/pymlst/wgmlst/distance'
 include { CHEWBBACA_ALLELECALL }            from './../../modules/chewbbaca/allelecall'
 include { CHEWBBACA_ALLELECALL as CHEWBBACA_ALLELECALL_SINGLE }            from './../../modules/chewbbaca/allelecall'
 include { CHEWBBACA_JOINPROFILES }          from './../../modules/chewbbaca/joinprofiles'
@@ -43,28 +41,6 @@ workflow MLST_TYPING {
 
     /*
     We use the previously attempted taxonomic classification
-    to choose the appropriate cgMLST schema, if any
-    */
-    ch_assembly_filtered.annotated.map { m, a ->
-        def (genus,species) = m.taxon.toLowerCase().split(' ')
-        def cg_db = null
-        if (params.cgmlst[genus]) {
-            cg_db = params.cgmlst[genus]
-            m.db_name = genus
-        } else if (params.cgmlst["${genus}_${species}"]) {
-            cg_db = params.cgmlst["${genus}_${species}"]
-            m.db_name = "${genus}_${species}"
-        } else {
-            cg_db = null
-        }
-        tuple(m, a, cg_db)
-    }.branch { m, a, db ->
-        fail: db == null
-        pass: db
-    }.set { assembly_with_cg_db }
-
-    /*
-    We use the previously attempted taxonomic classification
     to choose the appropriate Chewbbaca cgMLST schema, if any
     Assemblies are grouped by taxon to create a multi-sample
     call matrix per species
@@ -105,44 +81,10 @@ workflow MLST_TYPING {
         /*
         Inform users about to-be-skipped samples due to a lack of a matching cgMLST database
         */
-        assembly_with_cg_db.fail.subscribe { m, s, d ->
-            log.warn "${m.sample_id} - could not match a pyMLST cgMLST database to ${m.taxon}."
-        }
+       
         assembly_with_chewie_db.fail.subscribe { m, s, d ->
             log.warn "${m.sample_id} - could not match a Chewbbaca cgMLST database to ${m.taxon}."
         }
-
-        /*
-        Run wgMLST on assemblies for which we have taxonomic information
-        and a matching cgMLST schema configured, i.e. the last element must
-        not be null
-        */
-        PYMLST_WGMLST_ADD(
-            assembly_with_cg_db.pass
-        )
-        ch_versions = ch_versions.mix(PYMLST_WGMLST_ADD.out.versions)
-
-        /*
-        Get the databases for which we have assemblies to
-        perform cgMLST clustering
-        */
-        assembly_with_cg_db.pass.map { m, a, d ->
-            tuple(m, d)
-        }
-        .groupTuple(by: 1)
-        .map { metas, db ->
-            def meta = [:]
-            meta.db_name = file(db).getSimpleName()
-            meta.sample_id = file(db).getSimpleName()
-            tuple(meta, db)
-        }.set { ch_cgmlst_database }
-        /*
-        Perform clustering on the given database
-        */
-        PYMLST_WGMLST_DISTANCE(
-            ch_cgmlst_database
-        )
-        ch_versions = ch_versions.mix(PYMLST_WGMLST_DISTANCE.out.versions)
 
         /*
         Perform cgMLST calling with Chewbbaca
@@ -153,7 +95,6 @@ workflow MLST_TYPING {
             assembly_with_chewie_db.pass
         )
         ch_versions = ch_versions.mix(CHEWBBACA_ALLELECALL_SINGLE.out.versions)
-
     
         /* Join assemblies and databases to generate
         [ meta, [ assemblies ], db ] and filter out all
@@ -187,4 +128,4 @@ workflow MLST_TYPING {
     emit:
     versions = ch_versions
     report = MLST.out.json
-    }
+}

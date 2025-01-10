@@ -11,6 +11,7 @@ include { MULTIQC as MULTIQC_PACBIO }   from './../modules/multiqc'
 include { SHOVILL }                     from './../modules/shovill'
 include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
+include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
@@ -63,10 +64,16 @@ if (params.input) {
     ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
     ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
 
+    abricate_dbs    = Channel.from(params.abricate_dbs)
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
 
-    sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
+    // Sourmash DB choice - either the full thing or a smaller "nr" one to speed up searches at the cost of some precision
+    if (params.fast_ref) {
+        sourmashdb      = params.reference_base ? file(params.references['sourmashdb_nr'].db, checkIfExists:true)    : []
+    } else {
+        sourmashdb      = params.reference_base ? file(params.references['sourmashdb'].db, checkIfExists:true)    : []
+    }
 
     busco_db_path   = params.reference_base ? file(params.references['busco'].db, checkIfExists:true)         : []
     busco_lineage   = params.busco_lineage
@@ -107,7 +114,7 @@ workflow GABI {
     ch_ont_trimmed      = QC.out.ont
     ch_pacbio_trimmed   = QC.out.pacbio
     multiqc_files       = multiqc_files.mix(QC.out.qc)
-    ch_report           = ch_report.mix(QC.out.confindr_reports)
+    ch_report           = ch_report.mix(QC.out.confindr_reports, QC.out.fastp_json, QC.out.nanoplot_stats)
 
     ch_multiqc_illumina = ch_multiqc_illumina.mix(QC.out.qc_illumina)
     ch_multiqc_nanopore = ch_multiqc_nanopore.mix(QC.out.qc_nanopore)
@@ -197,7 +204,12 @@ workflow GABI {
         ch_dragonflye
     )
     ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
-    ch_assemblies   = ch_assemblies.mix(DRAGONFLYE.out.contigs)
+    
+    RENAME_DRAGONFLYE_CTG(
+        DRAGONFLYE.out.contigs,
+        'fasta'
+    )
+    ch_assemblies   = ch_assemblies.mix(RENAME_DRAGONFLYE_CTG.out)
 
     /*
     Option: Pacbio HiFi reads
@@ -290,7 +302,12 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
-    ch_assembly_without_plasmids = PLASMIDS.out.chromosome
+
+    RENAME_PLASMID_CTG(
+        PLASMIDS.out.chromosome,
+        'chromosomes.fasta'        
+    )
+    ch_assembly_without_plasmids = RENAME_PLASMID_CTG.out
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -299,7 +316,6 @@ workflow GABI {
     errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    
     VARIANTS(
         ch_illumina_trimmed.map { m,r ->
             tuple(m.sample_id,m,r)
@@ -346,24 +362,34 @@ workflow GABI {
         tuple(m,s)
     }.set { ch_assemblies_without_plasmids_with_taxa }
 
+    // as well as a channel with the clean assembly and taxon information
+    ch_assemblies_clean.map {m,s ->
+        tuple(m.sample_id, s)
+    }.join(
+        FIND_REFERENCES.out.reference.map { m, r, g, k ->
+            tuple(m.sample_id, m)
+        }
+    ).map { m,s,n -> tuple(n,s) }
+    .set { ch_assemblies_clean_with_taxa }
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Perform serotyping of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
-    SEROTYPING(
-        ch_assemblies_without_plasmids_with_taxa
-    )
-    ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
-    ch_report       = ch_report.mix(SEROTYPING.out.reports)
+    if (!params.skip_serotyping) {
+        SEROTYPING(
+            ch_assemblies_without_plasmids_with_taxa
+        )
+        ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
+        ch_report       = ch_report.mix(SEROTYPING.out.reports)
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Perform MLST typing of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
+    
     if (!params.skip_mlst) {
         MLST_TYPING(
             ch_assemblies_without_plasmids_with_taxa
@@ -399,8 +425,9 @@ workflow GABI {
 
     if (!params.skip_amr) {
         AMR_PROFILING(
-            ch_assemblies_clean,
-            amrfinder_db
+            ch_assemblies_clean_with_taxa,
+            amrfinder_db,
+            abricate_dbs
         )
         ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
         ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)

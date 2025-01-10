@@ -1,11 +1,11 @@
 process SOURMASH_COMPARE {
-    tag "$meta.id"
+    tag "$meta.sample_id"
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/sourmash:4.8.4--hdfd78af_0':
-        'biocontainers/sourmash:4.8.4--hdfd78af_0' }"
+        'quay.io/biocontainers/sourmash:4.8.4--hdfd78af_0' }"
 
     input:
     tuple val(meta), path(signatures)
@@ -24,7 +24,6 @@ process SOURMASH_COMPARE {
 
     script:
     def args   = task.ext.args     ?: ''
-    def prefix = task.ext.prefix   ?: "${meta.id}"
     def comp   = save_numpy_matrix ? "--output comp.npy"  : ''
     def csv    = save_csv          ? "--csv comp.csv" : ''
     if ( !save_numpy_matrix && !save_csv ) error "Supply either save_numpy_matrix, save_csv, or both or no output will be created"
@@ -46,15 +45,4 @@ process SOURMASH_COMPARE {
     END_VERSIONS
     """
 
-    stub:
-    """
-    touch comp.npy.labels.txt
-    touch comp.npy
-    touch comp.csv
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        sourmash: \$(echo \$(sourmash --version 2>&1) | sed 's/^sourmash //' )
-    END_VERSIONS
-    """
 }

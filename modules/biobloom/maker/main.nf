@@ -1,5 +1,4 @@
 process BIOBLOOM_MAKER {
-    tag "$meta.sample_id"
 
     label 'medium_parallel'
 
@@ -23,8 +22,8 @@ process BIOBLOOM_MAKER {
     def prefix = task.ext.prefix ?: "host_genomes"
     """
     biobloommaker -p $prefix \\
-    -f $fasta \\
-    -t $task.cpus
+    -t $task.cpus \\
+    $fasta $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -42,6 +42,10 @@ We assume you mean the overall start-up time - the performance of the individual
 
 Otherwise, if you run this pipeline without a site-specific config file, the pipeline will not know where to cache the various containers or conda environments. In such cases, it will install/download these dependencies into the respective work directory of your pipeline run, every time you run the pipeline. And yes, that is a little slow. Consider adding your own config file to make use of the caching functionality.
 
+## Sourmash `search` is very slow
+
+We use sourmash to identify the best matching reference genome for each assembly. This database is currently over 10GB in size and highly contigious assemblies can produce very long run times (30mins+). If you do not care about the best reference genome, but are happy to just find a closely related one so GABI knows which species this is, use the `--fast_ref` option. 
+
 ### My ONT assembly crashes with an obscure error
 
 Please check if the option `--onthq` is set to `true` (this is the default!). It's possible that this setting is not appropriate for your data, which can lead Dragonflye to exit on an empty Fasta file halfway through the assembly process; you can disable this option by setting `--onthq false` and resume the pipeline (`-resume`).

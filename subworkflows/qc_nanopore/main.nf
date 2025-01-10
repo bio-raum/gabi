@@ -29,10 +29,15 @@ workflow QC_NANOPORE {
     } else {
         ch_porechop_reads   = reads
     }
-   
 
     // Merge Nanopore reads per sample
-    ch_porechop_reads.groupTuple().branch { meta, reads ->
+    ch_porechop_reads.map { m,r ->
+        def newMeta = [:]
+        newMeta.sample_id = m.sample_id
+        newMeta.platform = m.platform
+        newMeta.single_end = m.single_end
+        tuple(newMeta,r)
+    }.groupTuple().branch { meta, reads ->
         single: reads.size() == 1
             return [ meta, reads.flatten()]
         multi: reads.size() > 1
@@ -83,7 +88,8 @@ workflow QC_NANOPORE {
     emit:
     //confindr_report = CONTAMINATION.out.report
     //confindr_json   = CONTAMINATION.out.json
-    reads = ch_processed_reads
-    qc = multiqc_files
-    versions = ch_versions
+    reads           = ch_processed_reads
+    qc              = multiqc_files
+    nanoplot_stats  = NANOPLOT.out.txt
+    versions        = ch_versions
     }

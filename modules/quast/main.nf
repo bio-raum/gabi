@@ -27,14 +27,14 @@ process QUAST {
     def features  = gff             ?  "--features $gff" : ''
     def reference = fasta           ?  "-r $fasta"       : ''
     """
-    ln -s $assembly ${prefix}.fasta
+    
     quast.py \\
         --output-dir $prefix \\
         $reference \\
         $features \\
         --threads $task.cpus \\
         $args \\
-        ${prefix}.fasta
+        $assembly
 
     ln -s ${prefix}/report.tsv ${prefix}.tsv
     [ -f  ${prefix}/contigs_reports/all_alignments_transcriptome.tsv ] && ln -s ${prefix}/contigs_reports/all_alignments_transcriptome.tsv ${prefix}_transcriptome.tsv

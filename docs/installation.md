@@ -6,7 +6,7 @@ If you are new to our pipeline ecosystem, we recommend you first check out our g
 
 Nextflow is a highly portable pipeline engine. Please see the official [installation guide](https://www.nextflow.io/docs/latest/getstarted.html#installation) to learn how to set it up.
 
-This pipeline expects Nextflow version 23.10.1, available [here](https://github.com/nextflow-io/nextflow/releases/tag/v23.10.1).
+This pipeline expects Nextflow version 24.04.4, available [here](https://github.com/nextflow-io/nextflow/releases/tag/v24.04.4).
 
 ## Software provisioning
 
@@ -45,7 +45,7 @@ If you do not have singularity on your system, you can also specify docker, podm
 
 Please note that the build process will create a pipeline-specific subfolder (`gabi`) that must not be given as part of the `--reference_base` argument. GABI is part of a collection of pipelines that use a shared reference directory and it will choose/create the appropriate subfolder automatically. 
 
-Finally, depending on your internet connection, the installation process can take a little while - primarily because of the Kraken2 database (8GB). However, once installed you are all set and ready to go. 
+Finally, depending on your internet connection, the installation process can take a little while - some of the reference databases are "fairly" large (8-10GB). However, once installed you are all set and ready to go. 
 
 ## Site-specific config file
 
@@ -78,3 +78,5 @@ conda {
   cacheDir = "/path/to/conda_cache"
 }
 ``` 
+
+This would be for a single computer, with 16 cores and 64GB Ram, using Conda/Mamba. Conda environments are cached to the specified location and can be re-used for subsequent pipeline runs. 

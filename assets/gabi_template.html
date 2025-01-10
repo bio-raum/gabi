@@ -16,7 +16,7 @@
     .general { border-style: none; border-spacing: 0px ;}
     .table-caption { font-weight: bold; display: block;}
     table { border-collapse: collapse;}
-    tr.row { border-bottom: 1px solid grey;}
+    tr.row td { border-bottom: 1px solid grey; padding-top: 5px; padding-bottom: 5px;}
     td { padding-left: 5px; padding-right: 5px;}
     th { border-left: 1px solid white; padding-right: 5px;}
     tr td[scope="sample-id"] {background-color: rgb(233, 233, 233); font-weight: bold;}
@@ -29,6 +29,8 @@
     tr th[scope="subcol-inactive"] {background-color: #6e6e6e; color: #fff;}
     .versions { font-size: 9px; }
     .versions td { padding: 0px; }
+    .infotext { color:#6e6e6e; font-size: 10px ;}
+    .infotext a { text-decoration: underline;}
     /* Tooltip container */
     .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted black; }
     .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: rgb(189, 186, 186); color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
@@ -57,14 +59,40 @@
         {% if Insertsizes %}
             <td><a href="#insert-sizes">Insert sizes</a></td>
         {% endif %}
-        <td><a href="#mlst">MLST</a></td>
+        <td><a href="#busco">Busco</a></td>
         {% if Kraken %}
             <td><a href="#kraken">Kraken2</a></td>
         {% endif %}
-        <td><a href="#serotypes">Serotypes</a></td>
+        <td><a href="#mlst">MLST</a></td>
+        {% if serotypes %}
+            <td><a href="#serotypes">Serotypes</a></td>
+        {% endif %}
         <td><a href="#software">Software</a></td>
     </tr>
 </table>
+
+<!--
+Some basic information about the analysis run
+-->
+<h2>Run Infos</h2>
+<table class="general">
+    <tr>
+        <td>User</td><td>{{user}}</td>
+    </tr>
+    <tr>
+        <td>Date</td><td>{{date}}</td>
+    </tr>
+    <tr>
+        <td>Pipeline version</td><td>{{version}}</td>
+    </tr>
+    <tr>
+        <td>Command line call</td><td>{{call}}</td>
+    </tr>
+    <tr>
+        <td>Work directory</td><td>{{wd}}</td>
+    </tr>
+</table>
+
 <!--
 The summary table with all key metrics per sample
 -->
@@ -73,11 +101,11 @@ The summary table with all key metrics per sample
     <tr>
         <th scope="col">Sample</th>
         <th scope="col"><div class="tooltip">Status<span class="tooltiptext">The overall analysis status: pass: ok to use, warn: potential issues found, fail: most probably not usable</span></div></th>
-        <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon in the Kraken2 analysis - green: robust call, orange: weak call, red: very weak call</span></div></th>
+        <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon using kmer matching (S/MASH)</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Reference genome<span class="tooltiptext">The highest matching hit in RefSeq to this assembly</span></div></th>
         <th colspan=5 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Mean coverage<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
-        <th scope="col"><div class="tooltip">Mean insert size<span class="tooltiptext">The mean insert size as determined from mapped reads</span></div></th>
+        <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Contamination<span class="tooltiptext">Indicators of contamination</span></div></th>
     </tr>
     <tr class="row">
@@ -90,12 +118,14 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">#Contigs<span class="tooltiptext">The number of chromosomal contigs, i.e. without plasmids.</span></div></th>
         <th scope="subcol"><div class="tooltip">N50 (Kb)<span class="tooltiptext">The size of contigs (>=)in which 50% of the assembly are represented.</span><div></th>
         <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes fully covered in this assembly (BUSCO).</span></div></th>
-        <th scope="subcol">GC (%)</th>
+        <th scope="subcol"><div class="tooltip">GC (%)<span class="tooltiptext">GC content of the assembly. Deviations from the species default are highlighted in orange (mild) and red (strong, something likely wrong)</span></div></th>
         <th scope="subcol">Total</th>
-        <th scope="subcol">Illumina</th>
+        <th scope="subcol">ILM</th>
         <th scope="subcol">ONT</th>
         <th scope="subcol">HiFi</th>
-        <th scope="subcol">Illumina</th>
+        <th scope="subcol"><div class="tooltip">ILM Q30 (%)<span class="tooltiptext">Fraction of Illumina reads above Q30.</span></div></th>
+        <th scope="subcol"><div class="tooltip">ONT Q15 (#)<span class="tooltiptext">Number of ONT reads above Q15.</span></div></th>
+        <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
         <th scope="subcol">Confindr (%)</th>
         <th scope="subcol">Taxa >10%</th>
     </tr>
@@ -108,7 +138,7 @@ all the information for one sample
         <td scope="sample-id">{{row.sample}}</td>
         <td scope={{row.status}}>{{row.status}}</td>
         <td scope="missing">{{row.taxon}}</td>
-        <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{{row.reference.assembly}}" target="_blank" alt="Genome in GenBank">{{row.reference.assembly}}<br>{{row.reference.definition}}</a></td>
+        <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{{row.reference.assembly}}" target="_blank" title="{{row.reference.definition}}" alt="Genome in GenBank">{{row.reference.assembly}}</a></td>
         <td scope={{row.fraction_status}}>{{row.fraction}}</td>
         <td scope={{row.assembly_status}}>{{row.assembly}}</td>
         <td scope={{row.contigs_status}}>{{row.contigs}}</td>
@@ -119,7 +149,9 @@ all the information for one sample
         <td scope={{row.coverage_illumina_status}}>{{row.coverage_illumina}}</td>
         <td scope={{row.coverage_nanopore_status}}>{{row.coverage_nanopore}}</td>
         <td scope={{row.coverage_pacbio_status}}>{{row.coverage_pacbio}}</td>
-        <td scope="missing">{{row.samtools.mean_insert_size}}</td>
+        <td scope={{row.quality_illumina_status}}>{{row.quality_illumina}}</td>
+        <td scope="missing">{{row.quality_nanopore}}</td>
+        <td scope="missing">{{row.nanopore_n50}}</td>
         <td scope={{row.confindr_status}}>{{row.contamination}}</td>
         <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
     </tr>
@@ -133,6 +165,10 @@ The assembly metrics computed by QUAST
 -->
 <div id="assembly"></div>
 <h2>Assembly metrics</h2>
+<div class="infotext">
+   Descriptive metrics of individual assemblies determined by <a href="https://quast.sourceforge.net/" target="_new">Quast</a>. 
+   <p></p>
+</div>
 
 <table>
     <tr>
@@ -167,10 +203,19 @@ The assembly metrics computed by QUAST
 <p></p>
 <a href="#navigation">top</a>
 
+<!-- 
+Check if insert sizes are present, then render the relevant secion
+-->
 {% if Insertsizes %}
     <div id="insert-sizes"></div>
 
     <h2>Insert size distribution (Illumina)</h2>
+    <div class="infotext">
+        Insert size refers to the size of the sequenced DNA fragment. Depending on the exact library protocol, this size will fall fairly uniformly around a mean value (~300-500bp). 
+        For Illumina data, that value should typically be (slightly) larger than the combined length of forward and reverse read for optimal data yield. Very flat curves may (depending on the protocol!) 
+        indicate a failure during fragment size selection/enrichment. Neither small insert sizes nor flat curves are a clear predictor for subsequent assembly issues, but can inform any potential debugging efforts. 
+    </div>
+    <p></p>
 
     {{Insertsizes}}
 
@@ -179,10 +224,53 @@ The assembly metrics computed by QUAST
 {% endif %}
 
 <!--
+Busco scores
+-->
+<div id="busco"></div>
+<h2>BUSCO scores</h2>
+
+<div class="infotext">
+    <a href="https://busco.ezlab.org/" target="_new">BUSCO</a> scores describe the coverage of the assemblied gene space against a set of broadly conserved singleton genes (here: bacteria_odb10). A perfect assembly should 
+    have a complete coverage of the gene space (complete: 100%), without any fragmentation or, worse, duplication. A high value of duplication may indicate assembly errors or contamination. Some taxa with very 
+    streamlined gene content, such as <i>Campylobacter</i>, will typically have a completeness score of less than 100%. The Completeness estimates may include duplicated genes, so values greater than 100% are 
+    possible (i.e. all genes present, of which x % are duplicated). 
+</div>
+
+{{Busco}}
+
+<p></p>
+<a href="#navigation">top</a>
+
+<!--
+Check if Kraken data is present, then render the relevant section
+-->
+{% if Kraken %}
+    <div id="kraken"></div>
+    
+    <h2>Kraken2 - taxonomic composition</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a> matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
+    </div>
+
+    {{Kraken}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
 MLST sequence types by schema
 -->
 <div id="mlst"></div>
 <h2>MLST</h2>
+
+<div class="infotext">
+    Taxa-specific <a href="https://github.com/tseemann/mlst" target="_new">MLST schemas</a> classify assemblies into pre-defined types or groups. Results are divided by typing schema (and consequently taxa). 
+</div>
+
+<p></p>
 
 {% for scheme,mtypes in mlst.items() %}
 
@@ -204,40 +292,39 @@ MLST sequence types by schema
 <p></p>
 <a href="#navigation">top</a>
 
-{% if Kraken %}
-    <div id="kraken"></div>
-
-    <h2>Kraken2 - taxonomic composition</h2>
-
-    {{Kraken}}
-
-    <a href="#navigation">top</a>
-{% endif %}
 <!--
 Results from one or multiple serotyping tools
 -->
-<div id="serotypes"></div>
-<h2>Serotyping</h2>
+{% if serotypes %}
+    <div id="serotypes"></div>
+    <h2>Serotyping</h2>
 
-{% for stool,stypes in serotypes.items() %}
-    <div class="table-caption">{{stool}}</div>
-    <table>
-        <tr>
-            <th scope="col">Sample</th>
-            <th scope="col">Serotype</th>
-        </tr>
-        {% for stype in stypes %}
-            <tr>
-                <td scope="sample-id">{{stype.sample}}</td>
-                <td scope="col">{{stype.serotype}}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="infotext">
+        Serotyes, similar to MLST types, classify assemblies based on a set of predefined gene profiles.
+    </div>
+
     <p></p>
-{% endfor %}
 
-<p></p>
-<a href="#navigation">top</a>
+    {% for stool,stypes in serotypes.items() %}
+        <div class="table-caption">{{stool}}</div>
+        <table>
+            <tr>
+                <th scope="col">Sample</th>
+                <th scope="col">Serotype</th>
+            </tr>
+            {% for stype in stypes %}
+                <tr>
+                    <td scope="sample-id">{{stype.sample}}</td>
+                    <td scope="col">{{stype.serotype}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p></p>
+    {% endfor %}
+
+    <p></p>
+    <a href="#navigation">top</a>
+{% endif %}
 
 <!-- 
 Information on used software packages

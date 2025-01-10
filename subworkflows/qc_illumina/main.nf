@@ -15,7 +15,13 @@ workflow QC_ILLUMINA {
     main:
 
     // Split trimmed reads by sample to find multi-lane data set
-    reads.groupTuple().branch { meta, reads ->
+    reads.map {m,r ->
+        def newMeta = [:]
+        newMeta.sample_id = m.sample_id
+        newMeta.platform = m.platform
+        newMeta.single_end = m.single_end
+        tuple(newMeta,r)
+    }.groupTuple().branch { meta, reads ->
         single: reads.size() == 1
             return [ meta, reads.flatten()]
         multi: reads.size() > 1
@@ -34,7 +40,7 @@ workflow QC_ILLUMINA {
         ch_reads_merged
     )
     ch_versions = ch_versions.mix(FASTP.out.versions)
-    multiqc_files = multiqc_files.mix(FASTP.out.json)
+    multiqc_files = multiqc_files.mix(FASTP.out.json.map{ m,j -> j})
 
     FASTQC(
         FASTP.out.reads
@@ -62,8 +68,9 @@ workflow QC_ILLUMINA {
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
-    confindr_qc = CONTAMINATION.out.qc
-    reads = ch_processed_reads
-    versions = ch_versions
-    qc = multiqc_files
+    fastp_json      = FASTP.out.json
+    confindr_qc     = CONTAMINATION.out.qc
+    reads           = ch_processed_reads
+    versions        = ch_versions
+    qc              = multiqc_files
     }

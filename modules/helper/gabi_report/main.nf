@@ -21,10 +21,17 @@ process GABI_REPORT {
     def prefix = task.ext.prefix ?: params.run_name
     result = prefix + '.html'
 
+    version = workflow.manifest.version
+    call = workflow.commandLine
+    wd = workflow.workDir
+
     """
     gabi.py --template $template \
     --input $yml \
     --references $refs \
+    --version $version \
+    --call '$call' \
+    --wd $wd \
     $args \
     --output $result
 

@@ -63,7 +63,7 @@ The `-r` option specifies a github [release tag](https://github.com/bio-raum/gab
 
 ## Choosing an assembly method
 
-How do you choose the assembly method for your data? Well, you don't - the pipeline will take care of that automatically. GABI currently supports three kinds of scenarios:
+GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
 
 - Samples with only short reads (Assembler: Shovill)
 - Samples with Nanopore reads and **optional** short reads (Assembler: Dragonflye)
@@ -71,11 +71,13 @@ How do you choose the assembly method for your data? Well, you don't - the pipel
 
 This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
 
+Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary)
+
 ## Options
 
 ### `--input samples.csv` [default = null]
 
-This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data
+This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data:
 
 #### Raw reads
 If you want to assemble genomes "from scratch", you can pass raw reads:
@@ -94,9 +96,8 @@ Allowed platforms and data types are:
 * ILLUMINA (expecting PE Illumina reads in fastq format, fastq.gz)
 * NANOPORE (expecting ONT reads in fastq format, fastq.gz)
 * PACBIO (expecting Pacbio CCS/HiFi reads in fastq format, fastq.gz)
-* TORRENT (expecting single-end IonTorrent reads in fastq format, fastq.gz) (tbd!)
 
-Read data in formats other than FastQ are not currently supported and would have to be converted into the appropriate FastQ format prior to launching the pipeline. If you have a recurring use case where the input must be something other than FastQ, please let us know and we will consider it.
+Read data in formats other than FastQ are not currently supported and would have to be converted into FastQ format prior to launching the pipeline. If you have a recurring use case where the input must be something other than FastQ, please let us know and we will consider it.
 
 #### Pre-assembled genomes
 
@@ -109,6 +110,14 @@ sample_id,assembly
 S100,/path/to/S100.fasta
 ```
 
+### `--build_references` [ default = null ]
+
+This option is only used when installing the pipelines references as described [here](installation.md).
+
+### `--fast_ref` [ default = false ]
+
+By default, Gabi uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
+
 ### `--run_name` [ default = null]
 
 A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
@@ -117,52 +126,37 @@ A name to use for various output files. This tend to be useful to relate analyse
 
 This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
 
-### `--onthq` [ default = true ]
+### `--onthq` [ default = false ]
 
-Set this option to true if you believe your ONT data to be of "high quality". This is typically the case for data generated with chemistry version 10.4.1 or later. This option is set to true by default because chemistry version 10.4.1 is the standard kit distributed by ONT at the time of writing. You can disable this option by setting it to `false`. 
+Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default.
 
 ### `--ont_min_q` [ default = 10 ]
 
-Discard nanopore reads below this mean quality.
+Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
 
-### `--ont_min_length`  [ default = 5000 ]
+### `--ont_min_length`  [ default = 1000 ]
 
-Discard nanopore reads below this length.
-
-### `--build_references` [ default = null ]
-
-This option is only used when installing the pipelines references as described [here](installation.md).
+Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths. If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
 
 ## Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 
 
-### `--skip_failed` [ default = false ]
+### `--confindr_db` [ default = null ]
 
-By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:
+A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria and Salmonella. 
 
-- Remove highly fragmented assemblies (see [--max_contigs](#--max_contigs))
-- Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)
+### `--genome_size` [ default = null ]
 
-### `--max_contigs` [ default = 150 ]
-
-If `--skip_failed` is enabled, this parameter controls the maximum number of contigs an assembly is allowed to have before it is stopped. High contig numbers are typically a sign of insufficient coverage and/or read length (in some cases it can also be a sign of excessive contamination).
-
-### `--skip_circos` [ default = false ]
-
-Skip generation of circos plots.
-
-### `--shovill_assembler` [ default = spades ]
-
-Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
+If enabled, this is the assumed genome size against which the coverage is measured for downsampling the reads (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size.
 
 ### `--max_coverage` [ default = '100x']
 
 If a genome size is specified (`--genome_size`), this is the target coverage for downsampling the read data. 
 
-### `--genome_size` [ default = null ]
+### `--max_contigs` [ default = 150 ]
 
-If enabled, this is the assumed genome size against which the coverage is measured for downsampling the raeds (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size. 
+If `--skip_failed` is enabled, this parameter controls the maximum number of contigs an assembly is allowed to have before it is stopped. High contig numbers are typically a sign of insufficient coverage and/or read length (in some cases it can also be a sign of excessive contamination).
 
 ### `--prokka_proteins` [ default = null ]
 
@@ -172,12 +166,40 @@ If you analyse a single species and wish to optimize the quality of the genome a
 
 If you analyse a single species and wish to optimize the quality of the genome annotation, you can pass a custom prodigal training file using this option, as described [here](https://github.com/tseemann/prokka?tab=readme-ov-file#option---prodigaltf).
 
-### `--confindr_db` [ default = null ]
+### `--remove_host` [ default = false ]
 
-A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria and Salmonella. 
+This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an issue and we will consider adding it. 
+
+### `--skip_failed` [ default = false ]
+
+By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:
+
+- Remove highly fragmented assemblies (see [--max_contigs](#--max_contigs))
+- Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)
+
+### `--skip_circos` [ default = false ]
+
+Skip generation of circos plots.
+
+### `--skip_serotyping` [ default = false ]
+
+Skip Serotyping
+
+### `--skip_cgmlst` [ default = false ]
+
+Skip cgMLST analysis
 
 ### `--skip_mlst` [ default = false ]
-Do not run MLST typing tools (chewbbaca, MLST)
+
+Skip all MLST analyses (incl. cgMLST)
+
+### `--skip_amr` [ default = false ]
+
+Skip prediction of AMR genes
+
+### `--shovill_assembler` [ default = spades ]
+
+Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
 
 ## Resources
 

@@ -12,7 +12,7 @@ GABI provides software on-the-fly. Use whatever profile (`-profile`) is appropri
 - docker
 - podman
 
-We will use `-profile apptainer` for the examples below. Use a container framework over conda, if at all possible. 
+We will use `-profile apptainer` for the examples below. Use a container framework over conda, if at all possible. Contribute a site-specific profile to our [central repository](https://github.com/bio-raum/nf-configs) if you would like to take advantage of container/environment caching. 
 
 ## Three steps
 
@@ -28,7 +28,7 @@ nextflow run bio-raum/gabi -profile apptainer \
 -r main
 ```
 
-This will download and install the pipeline references to `/path/to/references` (choose an appropriate path here).
+This will download and install the pipeline references to `/path/to/references` (choose an appropriate path here; must be on a shared mount when running in a cluster setting).
 
 ### Run test
 

@@ -112,6 +112,7 @@ workflow COVERAGE {
     emit:
     versions    = ch_versions
     report      = MOSDEPTH.out.global_txt
+    bam         = SAMTOOLS_INDEX.out.bam
     bam_stats   = SAMTOOLS_STATS.out.stats
     summary     = MOSDEPTH.out.summary_txt
     summary_by_platform = ch_summary_by_platform
