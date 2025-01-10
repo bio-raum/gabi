@@ -8,7 +8,7 @@ process HAMRONIZATION_ABRICATE {
         'quay.io/biocontainers/hamronization:1.1.4--pyhdfd78af_0' }"
 
     input:
-    tuple val(meta), path(report)
+    tuple val(meta), path(reports)
     val(format)
     val(software_version)
     val(reference_db_version)
@@ -23,16 +23,16 @@ process HAMRONIZATION_ABRICATE {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}"
+    def prefix = task.ext.prefix ?: "${report.getBaseName()}"
     """
     hamronize \\
         abricate \\
-        ${report} \\
+        ${reports} \\
         $args \\
         --format ${format} \\
         --analysis_software_version ${software_version} \\
         --reference_database_version ${reference_db_version} \\
-        > ${prefix}.${format}
+        --output ${prefix}.${format}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

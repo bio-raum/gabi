@@ -448,7 +448,7 @@ def main(yaml, template, output, reference, version, call, wd):
     if busco_data_all:
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
-        plot_labels = { "index": "Samples", "value": "Percentage"}
+        plot_labels = {"index": "Samples", "value": "Percentage"}
         h = len(samples)*25 if len(samples) > 10 else 300
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)

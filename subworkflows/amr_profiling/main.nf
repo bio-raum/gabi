@@ -77,7 +77,7 @@ workflow AMR_PROFILING {
 
     // Join basic Abricate results
     HAMRONIZATION_ABRICATE(
-        ABRICATE_RUN.out.report.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.report),
+        ABRICATE_RUN.out.report.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.report).groupTuple(),
         'json',
         '1.0.1',
         '2021-Mar-27'
