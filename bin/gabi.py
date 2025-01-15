@@ -211,9 +211,21 @@ def main(yaml, template, output, reference, version, call, wd):
             assembly = round((int(jdata["quast"]["Total length"])/1000000), 2)
             assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
 
-            genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]), 2)
+            genome_fraction = "-"
+            genome_fraction_status = status["missing"]
 
-            genome_fraction_status = status["pass"]
+            quast = {}
+
+            quast["duplication"] = "-"
+            quast["misassembled"] = "-"
+            quast["mismatches"] = "-"
+
+            if "Genome fraction (%)" in jdata["quast"]:
+                genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]), 2)
+                genome_fraction_status = status["pass"]
+                quast["duplication"] = jdata["quast"]["Duplication ratio"]
+                quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
+                quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
 
             # Highlight if a reference coverage is less than 90%
             # This might indicate a problem with our assembly (or the mash database...)
@@ -224,13 +236,9 @@ def main(yaml, template, output, reference, version, call, wd):
             n50 = round((int(jdata["quast"]["N50"])/1000), 2)
             n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
 
-            quast = {}
             quast["size"] = jdata["quast"]["Total length (>= 0 bp)"]
-            quast["duplication"] = jdata["quast"]["Duplication ratio"]
             quast["N"] = jdata["quast"]["# N's per 100 kbp"]
-            quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
             quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000), 2)
-            quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
             quast["contigs_1k"] = jdata["quast"]["# contigs (>= 1000 bp)"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
             quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"])/1000000), 2)
@@ -428,7 +436,7 @@ def main(yaml, template, output, reference, version, call, wd):
         # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 300
+        h = len(samples)*25 if len(samples) > 10 else 400
         fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
 
         data["Kraken"] = fig.to_html(full_html=False)
@@ -449,7 +457,7 @@ def main(yaml, template, output, reference, version, call, wd):
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 300
+        h = len(samples)*25 if len(samples) > 10 else 400
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)
 

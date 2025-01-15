@@ -53,7 +53,8 @@ my %matrix = (
     "confindr" => [],
     "serotype" => [],
     "mosdepth" => {},
-    "reference" => {}
+    "reference" => {},
+    "mosdepth_global" => {}
 );
 
 my @files = glob '*/*' ;
@@ -118,6 +119,18 @@ foreach my $file ( @files ) {
     } elsif ( $filename =~ /.*mosdepth.summary.txt/) {
         my %data = parse_mosdepth(\@lines);
         $matrix{'mosdepth'}{'total'} = \%data;
+    } elsif ( $filename =~ /ILLUMINA.mosdepth.global.dist.txt/ ) {
+        my %data = parse_mosdepth_global(\@lines);
+        $matrix{'mosdepth_global'}{'illumina'} = \%data;
+    } elsif ( $filename =~ /NANOPORE.mosdepth.global.dist.txt/ ) {
+        my %data = parse_mosdepth_global(\@lines);
+        $matrix{'mosdepth_global'}{'nanopore'} = \%data;
+    } elsif ( $filename =~ /PACBIO.mosdepth.global.dist.txt/ ) {
+        my %data = parse_mosdepth_global(\@lines);
+        $matrix{'mosdepth_global'}{'pacbio'} = \%data;
+    } elsif ( $filename =~ /mosdepth.global.dist.txt/ ) {
+        my %data = parse_mosdepth_global(\@lines);
+        $matrix{'mosdepth_global'}{'total'} = \%data;
     } elsif ( $filename =~ /.sistr.tab/) {
         my %data ; 
         $data{'Sistr'}= parse_sistr(\@lines);
@@ -279,6 +292,28 @@ sub parse_sistr {
     }
 
    return \%data ;
+}
+
+sub parse_mosdepth_global {
+
+    my @lines = @{$_[0] };
+
+    my $h = shift @lines;
+    my @header = split "\t", $h ; 
+
+    my %data;
+
+    # Limit to 100X so the json doesnt get too large for no reason. 
+    for my $line (@lines) {
+        my ($chr,$cov,$perc) = split "\t", $line ;
+        if ($chr eq "total") {
+            if ($cov <= 100) {
+                $data{$cov} = ($perc*100);
+            }
+        }
+    }
+
+    return %data;
 }
 
 sub parse_mosdepth {

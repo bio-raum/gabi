@@ -34,10 +34,6 @@ workflow TAXONOMY_PROFILING {
         fail: m.fraction < 75.0
     }.set { report_with_taxon_status }
 
-    report_with_taxon_status.fail.subscribe { m,r ->
-        log.warn "${m.sample_id} - weak taxonomic assignment (${m.fraction})!"
-    }
-
     emit:
     report = report_with_taxon
     versions = ch_versions
