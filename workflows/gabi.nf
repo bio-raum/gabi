@@ -283,12 +283,11 @@ workflow GABI {
             m.platform == "ALL"
         }.map { m,r -> r }
     )
-    ch_report = ch_report.mix(COVERAGE.out.summary)
+    //ch_report = ch_report.mix(COVERAGE.out.summary)
 
     ch_report = ch_report.mix(
-        COVERAGE.out.summary.filter {m,r ->
-            m.platform != "ALL"
-        }
+        COVERAGE.out.summary,
+        COVERAGE.out.report
     )
 
     ch_report = ch_report.mix(COVERAGE.out.bam_stats)
@@ -389,7 +388,6 @@ workflow GABI {
     SUB: Perform MLST typing of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    
     if (!params.skip_mlst) {
         MLST_TYPING(
             ch_assemblies_without_plasmids_with_taxa
@@ -422,7 +420,6 @@ workflow GABI {
     SUB: Identify antimocrobial resistance genes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
     if (!params.skip_amr) {
         AMR_PROFILING(
             ch_assemblies_clean_with_taxa,
@@ -453,7 +450,6 @@ workflow GABI {
     /*
     Gather all version information
     */
-
     CUSTOM_DUMPSOFTWAREVERSIONS(
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -494,7 +490,6 @@ workflow GABI {
     Generate QC reports
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
     multiqc_files = multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml)
 
     MULTIQC(
