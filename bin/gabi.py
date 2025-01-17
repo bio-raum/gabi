@@ -135,8 +135,8 @@ def main(yaml, template, output, reference, version, call, wd):
             if "fastp" in jdata:
                 fastp_q30_status = status["pass"]
                 fastp_summary = jdata["fastp"]["summary"]
-                fastp_q30 = round(fastp_summary["after_filtering"]["q30_rate"], 2)
-                if fastp_q30 < 0.85:
+                fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
+                if fastp_q30 < 85:
                     fastp_q30_status = status["warn"]
 
             ##########################
@@ -208,7 +208,7 @@ def main(yaml, template, output, reference, version, call, wd):
             # Get assembly stats
             ####################
 
-            assembly = round((int(jdata["quast"]["Total length"])/1000000), 2)
+            assembly = round((int(jdata["quast"]["Total length"]) / 1000000), 2)
             assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
 
             genome_fraction = "-"
@@ -222,7 +222,6 @@ def main(yaml, template, output, reference, version, call, wd):
 
             if "Genome fraction (%)" in jdata["quast"]:
                 genome_fraction = round(float(jdata["quast"]["Genome fraction (%)"]), 2)
-                genome_fraction_status = status["pass"]
                 quast["duplication"] = jdata["quast"]["Duplication ratio"]
                 quast["misassembled"] = jdata["quast"]["# misassembled contigs"]
                 quast["mismatches"] = jdata["quast"]["# mismatches per 100 kbp"]
@@ -233,16 +232,16 @@ def main(yaml, template, output, reference, version, call, wd):
             contigs = int(jdata["quast"]["# contigs"])
             contigs_status = check_contigs(this_refs, int(jdata["quast"]["# contigs"]))
 
-            n50 = round((int(jdata["quast"]["N50"])/1000), 2)
+            n50 = round((int(jdata["quast"]["N50"]) / 1000), 2)
             n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
 
             quast["size"] = jdata["quast"]["Total length (>= 0 bp)"]
             quast["N"] = jdata["quast"]["# N's per 100 kbp"]
-            quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"])/1000), 2)
+            quast["largest_contig"] = round((int(jdata["quast"]["Largest contig"]) / 1000), 2)
             quast["contigs_1k"] = jdata["quast"]["# contigs (>= 1000 bp)"]
             quast["contigs_5k"] = jdata["quast"]["# contigs (>= 5000 bp)"]
-            quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"])/1000000), 2)
-            quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"])/1000000), 2)
+            quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"]) / 1000000), 2)
+            quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"]) / 1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
 
@@ -281,10 +280,10 @@ def main(yaml, template, output, reference, version, call, wd):
             busco = jdata["busco"]
             busco_status = status["missing"]
             busco_total = int(busco["dataset_total_buscos"])
-            busco_completeness = round(((int(busco["C"]))/int(busco_total)), 2)*100
-            busco_fragmented = round((int(busco["F"])/busco_total), 2)*100
-            busco_missing = round((int(busco["M"])/busco_total), 2)*100
-            busco_duplicated = round((int(busco["D"])/busco_total), 2)*100
+            busco_completeness = round(((int(busco["C"])) / int(busco_total)), 2) * 100
+            busco_fragmented = round((int(busco["F"]) / busco_total), 2) * 100
+            busco_missing = round((int(busco["M"]) / busco_total), 2) * 100
+            busco_duplicated = round((int(busco["D"]) / busco_total), 2) * 100
             busco["completeness"] = busco_completeness
             busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
@@ -331,6 +330,8 @@ def main(yaml, template, output, reference, version, call, wd):
             coverage_pacbio = "-"
             coverage_pacbio_status = status["missing"]
 
+            # mean coverages
+
             if "total" in jdata["mosdepth"]:
                 coverage = float(jdata["mosdepth"]["total"]["mean"])
                 if coverage >= 40:
@@ -340,40 +341,78 @@ def main(yaml, template, output, reference, version, call, wd):
                 else:
                     coverage_status = status["pass"]
 
-                if ("illumina" in jdata["mosdepth"]):
+            if "illumina" in jdata["mosdepth"]:
+                coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
+                if coverage_illumina >= 40:
+                    coverage_illumina_status = status["pass"]
+                elif coverage_illumina >= 20:
+                    coverage_illumina_status = status["warn"]
+                else:
+                    coverage_illumina_status = status["fail"]
 
-                    coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
-                    if coverage_illumina >= 40:
-                        coverage_illumina_status = status["pass"]
-                    elif coverage_illumina >= 20:
-                        coverage_illumina_status = status["warn"]
-                    else:
-                        coverage_illumina_status = status["fail"]
+            if "nanopore" in jdata["mosdepth"]:
+                coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
+                if coverage_nanopore >= 40:
+                    coverage_nanopore_status = status["pass"]
+                elif coverage_nanopore >= 20:
+                    coverage_nanopore_status = status["warn"]
+                else:
+                    coverage_nanopore_status = status["fail"]
 
-                if ("nanopore" in jdata["mosdepth"]):
-                    coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
-                    if coverage_nanopore >= 40:
-                        coverage_nanopore_status = status["pass"]
-                    elif coverage_nanopore >= 20:
-                        coverage_nanopore_status = status["warn"]
-                    else:
-                        coverage_nanopore_status = status["fail"]
+            if "pacbio" in jdata["mosdepth"]:
+                coverage_pacbio = float(jdata["mosdepth"]["pacbio"]["mean"])
+                if coverage_pacbio >= 40:
+                    coverage_pacbio_status = status["pass"]
+                elif coverage_pacbio >= 20:
+                    coverage_pacbio_status = status["warn"]
+                else:
+                    coverage_pacbio_status = status["fail"]
 
-                if ("pacbio" in jdata["mosdepth"]):
-                    coverage_pacbio = float(jdata["mosdepth"]["pacbio"]["mean"])
-                    if coverage_pacbio >= 40:
-                        coverage_pacbio_status = status["pass"]
-                    elif coverage_pacbio >= 20:
-                        coverage_pacbio_status = status["warn"]
+            # fraction covered at 40X
+
+            coverage_40 = "-"
+            coverage_40_status = status["missing"]
+            coverage_40_illumina = "-"
+            coverage_40_illumina_status = status["missing"]
+            coverage_40_nanopore = "-"
+            coverage_40_nanopore_status = status["missing"]
+            coverage_40_pacbio = "-"
+            coverage_40_pacbio_status = status["missing"]
+
+            if "mosdepth_global" in jdata:
+                if "illumina" in jdata["mosdepth_global"]:
+                    coverage_40_illumina = jdata["mosdepth_global"]["illumina"]["40"]
+                    if coverage_40_illumina < 90:
+                        coverage_40_illumina_status = status["warn"]
                     else:
-                        coverage_pacbio_status = status["fail"]
+                        coverage_40_illumina_status = status["pass"]
+                if "nanopore" in jdata["mosdepth_global"]:
+                    coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
+                    if coverage_40_nanopore < 90:
+                        coverage_40_nanopore_status = status["warn"]
+                    else:
+                        coverage_40_nanopore_status = status["pass"]
+                if "pacbio" in jdata["mosdepth_global"]:
+                    coverage_40_pacbio = jdata["mosdepth_global"]["pacbio"]["40"]
+                    if coverage_40_pacbio < 90:
+                        coverage_40_pacbio_status = status["warn"]
+                    else:
+                        coverage_40_pacbio_status = status["pass"]
+                if "total" in jdata["mosdepth_global"]:
+                    coverage_40 = jdata["mosdepth_global"]["total"]["40"]
+                    if coverage_40 < 90:
+                        coverage_40_status = status["warn"]
+                    elif coverage_40 < 75:
+                        coverage_40_status = status["fail"]
+                    else:
+                        coverage_40_status = status["pass"]
 
             ######################################
             # Set the overall status of the sample
             ######################################
 
             # The metrics that by themselves determine overall status:
-            for estatus in [confindr_status,  taxon_count_status, assembly_status]:
+            for estatus in [confindr_status, taxon_count_status, assembly_status]:
                 # if any one metric failed, the whole sample failed
                 if estatus == status["fail"]:
                     this_status = estatus
@@ -413,6 +452,14 @@ def main(yaml, template, output, reference, version, call, wd):
                 "coverage_nanopore_status": coverage_nanopore_status,
                 "coverage_pacbio": coverage_pacbio,
                 "coverage_pacbio_status": coverage_pacbio_status,
+                "coverage_40": coverage_40,
+                "coverage_40_status": coverage_40_status,
+                "coverage_40_illumina": coverage_40_illumina,
+                "coverage_40_illumina_status": coverage_40_illumina_status,
+                "coverage_40_nanopore": coverage_40_nanopore,
+                "coverage_40_nanopore_status": coverage_40_nanopore_status,
+                "coverage_40_pacbio": coverage_40_pacbio,
+                "coverage_40_pacbio_status": coverage_40_pacbio_status,
                 "n50": n50,
                 "n50_status": n50_status,
                 "fraction": genome_fraction,
@@ -432,20 +479,20 @@ def main(yaml, template, output, reference, version, call, wd):
     # Plots
     #############
 
+    # Kraken abundances
     if "kraken" in jdata:
-        # Draw the Kraken abundance table
         kdata = pd.DataFrame(data=kraken_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 400
+        h = len(samples) * 25 if len(samples) > 10 else 400
         fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
-
         data["Kraken"] = fig.to_html(full_html=False)
 
+    # Insert size distribution
     if "samtools" in jdata:
         # Crop all insert size histograms to the shortest common length
         insert_sizes_all_cropped = {}
         for s, ins in insert_sizes_all.items():
-            list_end = min_insert_size_length-1
+            list_end = min_insert_size_length - 1
             insert_sizes_all_cropped[s] = ins[:list_end]
 
         plot_labels = {"index": "Basepairs", "value": "Count"}
@@ -453,11 +500,12 @@ def main(yaml, template, output, reference, version, call, wd):
         hfig = px.line(hdata, labels=plot_labels)
         data["Insertsizes"] = hfig.to_html(full_html=False)
 
+    # busco score
     if busco_data_all:
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples)*25 if len(samples) > 10 else 400
+        h = len(samples) * 25 if len(samples) > 10 else 400
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)
 
@@ -505,7 +553,7 @@ def check_assembly(refs, query):
             # assembly falls between the allowed sizes
             if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
                 return status["pass"]
-            elif (any(x >= (query*0.8) for x in ref_intervals) and any(x <= (query*1.2) for x in ref_intervals)):
+            elif (any(x >= (query * 0.8) for x in ref_intervals) and any(x <= (query * 1.2) for x in ref_intervals)):
                 return status["warn"]
             else:
                 return status["fail"]
@@ -523,7 +571,7 @@ def check_contigs(refs, query):
 
             if (any(x >= query for x in ref_intervals)):
                 return status["pass"]
-            elif (any((x*1.2) >= query for x in ref_intervals)):
+            elif (any((x * 1.2) >= query for x in ref_intervals)):
                 return status["warn"]
             else:
                 return status["fail"]
@@ -541,7 +589,7 @@ def check_n50(refs, query):
 
             if (any(x <= query for x in ref_intervals)):
                 return status["pass"]
-            elif (any((x*0.8) <= query for x in ref_intervals)):
+            elif (any((x * 0.8) <= query for x in ref_intervals)):
                 return status["warn"]
             else:
                 return status["fail"]
@@ -558,7 +606,7 @@ def check_gc(refs, query):
         # check if gc falls within expected range, or range +/- 5% - else fail
         if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
             return status["pass"]
-        elif (any(x >= (query*0.95) for x in ref_intervals) and any(x <= (query*1.05) for x in ref_intervals)):
+        elif (any(x >= (query * 0.95) for x in ref_intervals) and any(x <= (query * 1.05) for x in ref_intervals)):
             return status["warn"]
         else:
             return status["fail"]

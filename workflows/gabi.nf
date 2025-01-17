@@ -286,9 +286,8 @@ workflow GABI {
     //ch_report = ch_report.mix(COVERAGE.out.summary)
 
     ch_report = ch_report.mix(
-        COVERAGE.out.summary.mix(COVERAGE.out.report).filter {m,r ->
-            m.platform != "ALL"
-        }
+        COVERAGE.out.summary,
+        COVERAGE.out.report
     )
 
     ch_report = ch_report.mix(COVERAGE.out.bam_stats)

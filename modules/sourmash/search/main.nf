@@ -1,6 +1,7 @@
 process SOURMASH_SEARCH {
     tag "$meta.sample_id"
     label 'medium_serial'
+    maxForks 8  // this is abritrary and meant to prevent the database from being accessed by too many jobs
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

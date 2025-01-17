@@ -30,7 +30,7 @@ workflow FIND_REFERENCES {
         m.taxon = taxon
         tuple(m,c)
     }.set { mash_with_gbk}
-    
+        
     mash_with_gbk.map { m, r ->
         m.gbk
     }.unique()
@@ -49,7 +49,7 @@ workflow FIND_REFERENCES {
     map to the same reference genome
     */
     mash_with_gbk.map { m, r ->
-        tuple(gbk, m, r)
+        tuple(m.gbk, m, r)
     }.combine(
         ch_genome_with_gff, by: 0
     ).map { g, m, r, s, a, k ->
@@ -72,8 +72,8 @@ workflow FIND_REFERENCES {
 }
 
 def sourmash_get_acc(csv) {
-    gbk = ''
-    taxon = 'unknown'
+    def gbk = ''
+    def taxon = 'unknown'
     lines = file(csv).readLines()
     if (lines.size() > 1 ) {
         def elements = lines[1].trim().split(",")

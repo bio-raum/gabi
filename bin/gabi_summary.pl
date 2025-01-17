@@ -128,7 +128,7 @@ foreach my $file ( @files ) {
     } elsif ( $filename =~ /PACBIO.mosdepth.global.dist.txt/ ) {
         my %data = parse_mosdepth_global(\@lines);
         $matrix{'mosdepth_global'}{'pacbio'} = \%data;
-    } elsif ( $filename =~ /mosdepth.global.dist.txt/ ) {
+    } elsif ( $filename =~ /.*mosdepth.global.dist.txt/ ) {
         my %data = parse_mosdepth_global(\@lines);
         $matrix{'mosdepth_global'}{'total'} = \%data;
     } elsif ( $filename =~ /.sistr.tab/) {
