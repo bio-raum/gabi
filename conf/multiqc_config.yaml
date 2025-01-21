@@ -19,6 +19,7 @@ extra_fn_clean_exts:
     - .ILLUMINA
     - .PACBIO
     - .NANOPORE
+    - .chromosomes
 
 kraken:
     top_n: 15

@@ -150,6 +150,11 @@ foreach my $file ( @files ) {
             close $fh;
         }
         my $data = decode_json($busco);
+        # These keys have full paths as value which makes reproducibility checks impossible - so we clean them. 
+        my $ds = (split "/", %$data{'dataset'})[-1];
+        my $if = (split "/", %$data{'input_file'})[-1];
+        $data->{'dataset'} = $ds;
+        $data->{'input_file'} = $if;
         $matrix{"busco"} = $data;
     }
 

@@ -6,6 +6,7 @@ include { AMRFINDERPLUS_UPDATE }            from './../../modules/amrfinderplus/
 include { HAMRONIZATION_AMRFINDERPLUS }     from './../../modules/hamronization/amrfinderplus'
 include { HAMRONIZATION_ABRICATE }          from './../../modules/hamronization/abricate'
 include { HAMRONIZATION_SUMMARIZE }         from './../../modules/hamronization/summarize'
+include { HAMRONIZATION_SUMMARIZE as HAMRONIZATION_SUMMARIZE_HTML } from './../../modules/hamronization/summarize'
 include { ABRICATE_RUN }                    from './../../modules/abricate/run'
 include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_VIRULENCE } from './../../modules/abricate/run'
 
@@ -93,6 +94,11 @@ workflow AMR_PROFILING {
         params.arg_hamronization_summarizeformat
     )
     ch_versions = ch_versions.mix(HAMRONIZATION_SUMMARIZE.out.versions)
+
+    HAMRONIZATION_SUMMARIZE_HTML(
+        ch_hamronization_input.map { m, j -> j }.collect(),
+        "interactive"
+    )
 
     emit:
     report = HAMRONIZATION_SUMMARIZE.out.json
