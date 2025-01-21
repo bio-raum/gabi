@@ -27,6 +27,7 @@ workflow AMR_PROFILING {
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/
+        campylobacter: m.taxon ==~ /^Campylobacter.*/
     }.set { assembly_by_taxon }
 
     /*
