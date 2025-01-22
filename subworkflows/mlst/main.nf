@@ -2,6 +2,7 @@ include { CHEWBBACA_ALLELECALL }            from './../../modules/chewbbaca/alle
 include { CHEWBBACA_ALLELECALL as CHEWBBACA_ALLELECALL_SINGLE }            from './../../modules/chewbbaca/allelecall'
 include { CHEWBBACA_JOINPROFILES }          from './../../modules/chewbbaca/joinprofiles'
 include { CHEWBBACA_ALLELECALLEVALUATOR }   from './../../modules/chewbbaca/allelecallevaluator'
+include { CHEWBBACA_REMOVEGENES }           from './../../modules/chewbbaca/removegenes'
 include { MLST }                            from './../../modules/mlst'
 
 ch_versions = Channel.from([])
@@ -95,6 +96,30 @@ workflow MLST_TYPING {
             assembly_with_chewie_db.pass
         )
         ch_versions = ch_versions.mix(CHEWBBACA_ALLELECALL_SINGLE.out.versions)
+
+        /*
+        Single samples: filter wgMLST down to cgMLST, if we have a list of cgMLST loci
+        */
+        CHEWBBACA_ALLELECALL_SINGLE.out.profile.map { m, a ->
+            def (genus,species) = m.taxon.toLowerCase().split(' ')
+            def filter_list = null
+            if (params.chewbbaca_filters[genus]) {
+                filter_list = params.chewbbaca_filters[genus]
+            } else if (params.chewbbaca_filters["${genus}_${species}"]) {
+                filter_list = params.chewbbaca_filters["${genus}_${species}"]
+            }
+            tuple(m, a, filter_list)
+        }.branch { m, a, f ->
+            fail: f == null
+            pass: f
+        }.set { chewie_report_with_filter }
+
+        /*
+        Remove genes that are not part of the cgMLST scheme, if any
+        */
+        CHEWBBACA_REMOVEGENES(
+            chewie_report_with_filter.pass
+        )
     
         /* Join assemblies and databases to generate
         [ meta, [ assemblies ], db ] and filter out all
