@@ -17,7 +17,26 @@ ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
 // The IDs currently mapped to Chewbbaca schemas
-chewie_ids = Channel.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+chewie_ids = Channel.fromList([ 
+    [ [ taxon: "Streptococcus pyogenes" ], 1 ], 
+    [ [ taxon: "Acinetobacter baumannii" ], 2 ], 
+    [ [ taxon: "Arcobacter butzleri" ], 3 ], 
+    [ [ taxon: "Campylobacter jejuni" ], 4 ], 
+    [ [ taxon: "Escherichia coli" ], 5 ], 
+    [ [ taxon: "Listeria monocytogenes" ], 6 ],
+    [ [ taxon: "Yersinia enterocolitica" ], 7 ],
+    [ [ taxon: "Salmonella enterica" ], 8 ], 
+    [ [ taxon: "Streptococcus agalactiae" ], 9 ],
+    [ [ taxon: "Brucella melitensis" ], 10],
+    [ [ taxon: "Brucella" ], 11],
+    [ [ taxon: "Clostridium perfringens" ], 12], 
+    [ [ taxon: "Clostridium chauvoei" ], 13]
+    [ [ taxon: "Bacillus anthracis" ], 14], 
+    [ [ taxon: "Klebsiella oxytoca" ], 15]
+    [ [ taxon: "Clostridium neonatale" ], 16],
+    [ [ taxon: "Shewanella" ], 17],
+    [ [ taxon: "Neisseria meningitidis" ], 18]
+])
 
 workflow BUILD_REFERENCES {
     main:
@@ -76,12 +95,7 @@ workflow BUILD_REFERENCES {
     Install Chewbbaca schemas based on schema ID
     */
     CHEWBBACA_DOWNLOADSCHEMA(
-        chewie_ids.map { i ->
-            [
-                [ sample_id: i],
-                i
-            ]
-        }
+        chewie_ids
     )
 }
 

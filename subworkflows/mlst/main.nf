@@ -121,11 +121,12 @@ workflow MLST_TYPING {
             chewie_report_with_filter.pass
         )
     
+        ch_single_calls = chewie_report_with_filter.fail.mix(CHEWBBACA_REMOVEGENES.out.profile)
+
         /* Join assemblies and databases to generate
         [ meta, [ assemblies ], db ] and filter out all
         cases where # assemblies is < 3 (no point to compute relationships)
         */
-
         assembly_with_chewie_db.pass.map { m, a, d ->
             def meta = [:]
             meta.sample_id = m.db_name
