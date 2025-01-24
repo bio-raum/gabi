@@ -334,36 +334,36 @@ def main(yaml, template, output, reference, version, call, wd):
 
             if "total" in jdata["mosdepth"]:
                 coverage = float(jdata["mosdepth"]["total"]["mean"])
-                if coverage >= 40:
+                if coverage >= 40.0:
                     coverage_status = status["pass"]
-                elif coverage >= 20:
+                elif coverage >= 20.0:
                     coverage_status = status["warn"]
                 else:
-                    coverage_status = status["pass"]
+                    coverage_status = status["fail"]
 
             if "illumina" in jdata["mosdepth"]:
                 coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
-                if coverage_illumina >= 40:
+                if coverage_illumina >= 40.0:
                     coverage_illumina_status = status["pass"]
-                elif coverage_illumina >= 20:
+                elif coverage_illumina >= 20.0:
                     coverage_illumina_status = status["warn"]
                 else:
                     coverage_illumina_status = status["fail"]
 
             if "nanopore" in jdata["mosdepth"]:
                 coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
-                if coverage_nanopore >= 40:
+                if coverage_nanopore >= 40.0:
                     coverage_nanopore_status = status["pass"]
-                elif coverage_nanopore >= 20:
+                elif coverage_nanopore >= 20.0:
                     coverage_nanopore_status = status["warn"]
                 else:
                     coverage_nanopore_status = status["fail"]
 
             if "pacbio" in jdata["mosdepth"]:
                 coverage_pacbio = float(jdata["mosdepth"]["pacbio"]["mean"])
-                if coverage_pacbio >= 40:
+                if coverage_pacbio >= 40.0:
                     coverage_pacbio_status = status["pass"]
-                elif coverage_pacbio >= 20:
+                elif coverage_pacbio >= 20.0:
                     coverage_pacbio_status = status["warn"]
                 else:
                     coverage_pacbio_status = status["fail"]

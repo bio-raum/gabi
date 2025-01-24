@@ -377,7 +377,7 @@ workflow GABI {
     */
     if (!params.skip_serotyping) {
         SEROTYPING(
-            ch_assemblies_without_plasmids_with_taxa
+            ch_assemblies_clean_with_taxa
         )
         ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
         ch_report       = ch_report.mix(SEROTYPING.out.reports)
@@ -390,7 +390,7 @@ workflow GABI {
     */
     if (!params.skip_mlst) {
         MLST_TYPING(
-            ch_assemblies_without_plasmids_with_taxa
+            ch_assemblies_clean_with_taxa
         )
         ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
@@ -405,7 +405,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ANNOTATE(
-        ch_assemblies_without_plasmids_with_taxa,
+        ch_assemblies_clean_with_taxa,
         ch_prokka_proteins,
         ch_prokka_prodigal
     )

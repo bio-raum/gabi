@@ -8,6 +8,7 @@ include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/h
 include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
+include { CHEWBBACA_FILTER_SCHEMA }                         from './../modules/helper/chewbbaca_filter_schema'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
@@ -30,9 +31,9 @@ chewie_ids = Channel.fromList([
     [ [ taxon: "Brucella melitensis" ], 10],
     [ [ taxon: "Brucella" ], 11],
     [ [ taxon: "Clostridium perfringens" ], 12], 
-    [ [ taxon: "Clostridium chauvoei" ], 13]
+    [ [ taxon: "Clostridium chauvoei" ], 13],
     [ [ taxon: "Bacillus anthracis" ], 14], 
-    [ [ taxon: "Klebsiella oxytoca" ], 15]
+    [ [ taxon: "Klebsiella oxytoca" ], 15],
     [ [ taxon: "Clostridium neonatale" ], 16],
     [ [ taxon: "Shewanella" ], 17],
     [ [ taxon: "Neisseria meningitidis" ], 18]
@@ -96,6 +97,24 @@ workflow BUILD_REFERENCES {
     */
     CHEWBBACA_DOWNLOADSCHEMA(
         chewie_ids
+    )
+
+    // See if any schema has a filter list configured
+    CHEWBBACA_DOWNLOADSCHEMA.out.schema.map { m, s ->
+        def taxon = m.taxon.toLowerCase().replaceAll(/ /, "_")
+        def ffile = null
+        if (params.chewbbaca_filters[taxon]) {
+            ffile = params.chewbbaca_filters[taxon]
+        }
+        tuple(m, s, ffile)
+    }.branch { m, s, ffile ->
+        fail: ffile == null
+        pass: ffile
+    }.set { chewie_schema_with_filter }
+
+    // Filter that schema using the filter list
+    CHEWBBACA_FILTER_SCHEMA(
+        chewie_schema_with_filter.pass
     )
 }
 
