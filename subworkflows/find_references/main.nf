@@ -25,12 +25,15 @@ workflow FIND_REFERENCES {
     ch_versions = ch_versions.mix(SOURMASH_SEARCH.out.versions)
 
     SOURMASH_SEARCH.out.csv.map { m,c ->
+        def newMeta = [:]
         (gbk,taxon) = sourmash_get_acc(c)
-        m.gbk = gbk
-        m.taxon = taxon
-        tuple(m,c)
+        newMeta.sample_id = m.sample_id
+        newMeta.gbk = gbk
+        newMeta.taxon = taxon
+        newMeta.db_name = m.db_name
+        tuple(newMeta,c)
     }.set { mash_with_gbk}
-        
+            
     mash_with_gbk.map { m, r ->
         m.gbk
     }.unique()

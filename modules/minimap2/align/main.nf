@@ -24,11 +24,13 @@ process MINIMAP2_ALIGN {
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     def bam_index = "${prefix}.bam"
     def algorithm = meta.platform == "NANOPORE" ? "-ax map-ont" : "-ax map-hifi"
+    def rg = "-R \"@RG\\tID:${prefix}_${meta.platform}\\tPL:${meta.platform}\\tSM:${meta.sample_id}\""
 
     """
     minimap2 \\
         $args \\
         -t $task.cpus \\
+        $rg \\
         $algorithm \\
         $reference \\
         $reads \\

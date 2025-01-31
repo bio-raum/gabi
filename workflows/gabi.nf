@@ -127,7 +127,6 @@ workflow GABI {
     blood medium used during growth of campylobacter
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
     if (params.remove_host) {
         BIOBLOOM_CATEGORIZER(
             ch_illumina_trimmed,
@@ -368,10 +367,10 @@ workflow GABI {
         }
     ).map { i,s, m, r, g, k ->
         tuple(m, s, r, g, k)
-    }.set { ch_assemblies_with_reference_and_gbk }
+    }.set { ch_assemblies_without_plasmids_with_reference_and_gbk }
 
     // and we create a channel with taxon-enriched metadata and assembly for other analyses
-    ch_assemblies_with_reference_and_gbk.map { m,s, r, g, k ->
+    ch_assemblies_without_plasmids_with_reference_and_gbk.map { m,s, r, g, k ->
         tuple(m,s)
     }.set { ch_assemblies_without_plasmids_with_taxa }
 
@@ -451,7 +450,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ASSEMBLY_QC(
-        ch_assemblies_with_reference_and_gbk,
+        ch_assemblies_without_plasmids_with_reference_and_gbk,
         busco_lineage,
         busco_db_path
     )

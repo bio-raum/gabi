@@ -21,6 +21,7 @@ process BWAMEM2_MEM {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     def extension = "bam"
+    def rg = "-R \"@RG\\tID:${prefix}_${meta.platform}\\tPL:${meta.platform}\\tSM:${meta.sample_id}\""
 
     """
     INDEX=`find -L ./ -name "*.amb" | sed 's/\\.amb\$//'`
@@ -29,6 +30,7 @@ process BWAMEM2_MEM {
         mem \\
         $args \\
         -t $task.cpus \\
+        $rg \\
         \$INDEX \\
         $reads \\
         | samtools sort -@ $task.cpus -o ${prefix}.${extension} -
