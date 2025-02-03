@@ -114,10 +114,6 @@ S100,/path/to/S100.fasta
 
 This option is only used when installing the pipelines references as described [here](installation.md).
 
-### `--fast_ref` [ default = false ]
-
-By default, Gabi uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
-
 ### `--run_name` [ default = null]
 
 A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
@@ -144,7 +140,11 @@ These options are only meant for users who have a specific reason to touch them.
 
 ### `--confindr_db` [ default = null ]
 
-A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria and Salmonella. 
+A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria, Salmonella and Campylobacter. 
+
+### `--fast_ref` [ default = false ]
+
+By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
 
 ### `--genome_size` [ default = null ]
 
@@ -185,13 +185,9 @@ Skip generation of circos plots.
 
 Skip Serotyping
 
-### `--skip_cgmlst` [ default = false ]
-
-Skip cgMLST analysis
-
 ### `--skip_mlst` [ default = false ]
 
-Skip all MLST analyses (incl. cgMLST)
+Skip MLST analyses
 
 ### `--skip_amr` [ default = false ]
 
@@ -200,6 +196,10 @@ Skip prediction of AMR genes
 ### `--shovill_assembler` [ default = spades ]
 
 Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
+
+### `--shovill_contig_minlen` [ default = 600 ]
+
+Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
 
 ## Resources
 

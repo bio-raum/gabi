@@ -1,4 +1,4 @@
-name: medaka_variant
+name: medaka_consensus
 channels:
   - conda-forge
   - bioconda

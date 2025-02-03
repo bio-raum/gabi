@@ -35,6 +35,7 @@ include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
 include { VARIANTS }                    from './../subworkflows/variants'
+include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 
 /*
 --------------------
@@ -196,19 +197,14 @@ workflow GABI {
     ch_assemblies = ch_assemblies.mix(RENAME_SHOVILL_CTG.out)
 
     /*
-    Option: Nanopore reads with optional short reads
-    Dragonflye
+    ONT assembly including multiple rounds of optional
+    polishing
     */
-    DRAGONFLYE(
+    ONT_ASSEMBLY(
         ch_dragonflye
     )
-    ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
-    
-    RENAME_DRAGONFLYE_CTG(
-        DRAGONFLYE.out.contigs,
-        'fasta'
-    )
-    ch_assemblies   = ch_assemblies.mix(RENAME_DRAGONFLYE_CTG.out)
+    ch_assemblies   = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
+    ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
 
     /*
     Option: Pacbio HiFi reads

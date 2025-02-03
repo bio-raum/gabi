@@ -10,9 +10,11 @@ process MINIMAP2_ALIGN {
 
     input:
     tuple val(meta), path(reads), path(reference)
+    val(format)
 
     output:
     tuple val(meta), path("*.bam")                       , optional: true, emit: bam
+    tuple val(meta), path("*.paf")                       , optional: true, emit: paf
     tuple val(meta), path("*.bam.${bam_index_extension}"), optional: true, emit: index
     path "versions.yml"                                  , emit: versions
 
@@ -26,21 +28,41 @@ process MINIMAP2_ALIGN {
     def algorithm = meta.platform == "NANOPORE" ? "-ax map-ont" : "-ax map-hifi"
     def rg = "-R \"@RG\\tID:${prefix}_${meta.platform}\\tPL:${meta.platform}\\tSM:${meta.sample_id}\""
 
-    """
-    minimap2 \\
-        $args \\
-        -t $task.cpus \\
-        $rg \\
-        $algorithm \\
-        $reference \\
-        $reads \\
-        | samtools sort -@ ${task.cpus} -o ${bam_index} -
+    if (format == "paf") {
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        minimap2: \$(minimap2 --version 2>&1)
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
-    """
+        """
+        minimap2 \\
+            $args \\
+            -t $task.cpus \\
+            $rg \\
+            $algorithm \\
+            $reference \\
+            $reads
+            > ${prefix}.paf
+
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            minimap2: \$(minimap2 --version 2>&1)
+            samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+        END_VERSIONS
+        """
+
+    } else {
+        """
+        minimap2 \\
+            $args \\
+            -t $task.cpus \\
+            $rg \\
+            $algorithm \\
+            $reference \\
+            $reads \\
+            | samtools sort -@ ${task.cpus} -o ${bam_index} -
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            minimap2: \$(minimap2 --version 2>&1)
+            samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+        END_VERSIONS
+        """
+    }
 
 }
