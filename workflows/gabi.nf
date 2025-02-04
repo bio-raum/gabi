@@ -35,6 +35,7 @@ include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
 include { VARIANTS }                    from './../subworkflows/variants'
+include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 
 /*
 --------------------
@@ -127,7 +128,6 @@ workflow GABI {
     blood medium used during growth of campylobacter
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-
     if (params.remove_host) {
         BIOBLOOM_CATEGORIZER(
             ch_illumina_trimmed,
@@ -197,19 +197,15 @@ workflow GABI {
     ch_assemblies = ch_assemblies.mix(RENAME_SHOVILL_CTG.out)
 
     /*
-    Option: Nanopore reads with optional short reads
-    Dragonflye
+    ONT assembly including multiple rounds of optional
+    polishing
     */
-    DRAGONFLYE(
-        ch_dragonflye
+    ONT_ASSEMBLY(
+        ch_ont_trimmed,
+        ch_illumina_clean
     )
-    ch_versions     = ch_versions.mix(DRAGONFLYE.out.versions)
-    
-    RENAME_DRAGONFLYE_CTG(
-        DRAGONFLYE.out.contigs,
-        'fasta'
-    )
-    ch_assemblies   = ch_assemblies.mix(RENAME_DRAGONFLYE_CTG.out)
+    ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
+    ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
 
     /*
     Option: Pacbio HiFi reads
@@ -221,12 +217,24 @@ workflow GABI {
     ch_versions     = ch_versions.mix(FLYE.out.versions)
     ch_assemblies   = ch_assemblies.mix(FLYE.out.fasta)
 
+    
+    // Find empty assemblies and stop them
+
+    ch_assemblies.branch { m,f ->
+        fail: f.countFasta() < 1
+        pass: f.countFasta() > 0
+    }.set { ch_assemblies_size }
+
+    ch_assemblies_size.fail.subscribe { m, f ->
+        log.warn "${m.sample_id} - assembly is empty, stopping sample"
+    }
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Tag and optionally remove highly fragmented assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_assemblies.branch { m, f ->
+    ch_assemblies_size.pass.branch { m, f ->
         fail: f.countFasta() > params.max_contigs
         pass: f.countFasta() <= params.max_contigs
     }.set { ch_assemblies_status }
@@ -310,25 +318,27 @@ workflow GABI {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUB: Map Illumina reads to chromosome assembly to check 
+    SUB: Map reads to chromosome assembly to check 
     for polymorphic positions as indication of read or assembly
     errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    VARIANTS(
-        ch_illumina_trimmed.map { m,r ->
-            tuple(m.sample_id,m,r)
-        }.join(
-            ch_assembly_without_plasmids.map { m,a ->
-                tuple(m.sample_id,a)
+    if (!params.skip_variants) {
+        VARIANTS(
+            ch_illumina_trimmed.mix(ch_ont_trimmed).map { m,r ->
+                tuple(m.sample_id,m,r)
+            }.join(
+                ch_assembly_without_plasmids.map { m,a ->
+                    tuple(m.sample_id,a)
+                }
+            ).map { s,m,r,a ->
+                tuple(m,r,a)
             }
-        ).map { s,m,r,a ->
-            tuple(m,r,a)
-        }
-    )
-    ch_versions     = ch_versions.mix(VARIANTS.out.versions)
-    multiqc_files   = multiqc_files.mix(VARIANTS.out.qc)
-    ch_report       = ch_report.mix(VARIANTS.out.stats)
+        )
+        ch_versions     = ch_versions.mix(VARIANTS.out.versions)
+        multiqc_files   = multiqc_files.mix(VARIANTS.out.qc)
+        ch_report       = ch_report.mix(VARIANTS.out.stats)
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -354,10 +364,10 @@ workflow GABI {
         }
     ).map { i,s, m, r, g, k ->
         tuple(m, s, r, g, k)
-    }.set { ch_assemblies_with_reference_and_gbk }
+    }.set { ch_assemblies_without_plasmids_with_reference_and_gbk }
 
     // and we create a channel with taxon-enriched metadata and assembly for other analyses
-    ch_assemblies_with_reference_and_gbk.map { m,s, r, g, k ->
+    ch_assemblies_without_plasmids_with_reference_and_gbk.map { m,s, r, g, k ->
         tuple(m,s)
     }.set { ch_assemblies_without_plasmids_with_taxa }
 
@@ -377,7 +387,7 @@ workflow GABI {
     */
     if (!params.skip_serotyping) {
         SEROTYPING(
-            ch_assemblies_without_plasmids_with_taxa
+            ch_assemblies_clean_with_taxa
         )
         ch_versions     = ch_versions.mix(SEROTYPING.out.versions)
         ch_report       = ch_report.mix(SEROTYPING.out.reports)
@@ -390,7 +400,7 @@ workflow GABI {
     */
     if (!params.skip_mlst) {
         MLST_TYPING(
-            ch_assemblies_without_plasmids_with_taxa
+            ch_assemblies_clean_with_taxa
         )
         ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
@@ -405,7 +415,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ANNOTATE(
-        ch_assemblies_without_plasmids_with_taxa,
+        ch_assemblies_clean_with_taxa,
         ch_prokka_proteins,
         ch_prokka_prodigal
     )
@@ -437,7 +447,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     ASSEMBLY_QC(
-        ch_assemblies_with_reference_and_gbk,
+        ch_assemblies_without_plasmids_with_reference_and_gbk,
         busco_lineage,
         busco_db_path
     )

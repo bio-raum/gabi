@@ -25,11 +25,10 @@ process FLYE {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}.flye"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
     flye \\
-        $args \\
-        $reads \\
+        $args $reads \\
         --out-dir . \\
         --threads $task.cpus \\
 

@@ -30,7 +30,7 @@ process CHEWBBACA_ALLELECALL {
     -i assemblies \\
     -g $db \\
     -o $results \\
-    --hash-profiles true \\
+    --hash-profiles sha256 \\
     --cpu ${task.cpus} $args
 
     cat <<-END_VERSIONS > versions.yml

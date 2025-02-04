@@ -1,0 +1,6 @@
+name: medaka_variant
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::medaka=2.0.1

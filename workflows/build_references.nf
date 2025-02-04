@@ -3,7 +3,6 @@ include { KRAKEN2_DOWNLOAD }                                from './../modules/k
 include { CONFINDR_INSTALL  }                               from './../modules/helper/confindr_install'
 include { BUSCO_DOWNLOAD as BUSCO_INSTALL }                 from './../modules/busco/download'
 include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/amrfinderplus/update'
-include { CHEWBBACA_DOWNLOADSCHEMA }                        from './../modules/chewbbaca/downloadschema'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
@@ -16,8 +15,6 @@ sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
-// The IDs currently mapped to Chewbbaca schemas
-chewie_ids = Channel.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
 
 workflow BUILD_REFERENCES {
     main:
@@ -72,17 +69,6 @@ workflow BUILD_REFERENCES {
         confindr_db_url
     )
 
-    /*
-    Install Chewbbaca schemas based on schema ID
-    */
-    CHEWBBACA_DOWNLOADSCHEMA(
-        chewie_ids.map { i ->
-            [
-                [ sample_id: i],
-                i
-            ]
-        }
-    )
 }
 
 if (params.build_references) {

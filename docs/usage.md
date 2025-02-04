@@ -114,18 +114,6 @@ S100,/path/to/S100.fasta
 
 This option is only used when installing the pipelines references as described [here](installation.md).
 
-### `--fast_ref` [ default = false ]
-
-By default, Gabi uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
-
-### `--run_name` [ default = null]
-
-A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
-
-### `--reference_base` [ default = null ]
-
-This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
-
 ### `--onthq` [ default = false ]
 
 Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default.
@@ -138,13 +126,25 @@ Discard nanopore reads below this mean quality. ONT sequencing will produce a sp
 
 Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths. If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
 
+### `--run_name` [ default = null]
+
+A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
+
+### `--reference_base` [ default = null ]
+
+This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
+
 ## Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 
 
 ### `--confindr_db` [ default = null ]
 
-A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria and Salmonella. 
+A local version of the ConfindR rMLST database, available [here](https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases). Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria, Salmonella and Campylobacter. 
+
+### `--fast_ref` [ default = false ]
+
+By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
 
 ### `--genome_size` [ default = null ]
 
@@ -177,29 +177,28 @@ By default, all samples are processed all the way to the end of the pipeline. Th
 - Remove highly fragmented assemblies (see [--max_contigs](#--max_contigs))
 - Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)
 
+### `--skip_amr` [ default = false ]
+
+Skip prediction of AMR genes
 ### `--skip_circos` [ default = false ]
 
 Skip generation of circos plots.
+
+### `--skip_mlst` [ default = false ]
+
+Skip MLST analyses
 
 ### `--skip_serotyping` [ default = false ]
 
 Skip Serotyping
 
-### `--skip_cgmlst` [ default = false ]
-
-Skip cgMLST analysis
-
-### `--skip_mlst` [ default = false ]
-
-Skip all MLST analyses (incl. cgMLST)
-
-### `--skip_amr` [ default = false ]
-
-Skip prediction of AMR genes
-
 ### `--shovill_assembler` [ default = spades ]
 
 Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
+
+### `--shovill_contig_minlen` [ default = 600 ]
+
+Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
 
 ## Resources
 

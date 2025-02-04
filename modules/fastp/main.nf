@@ -19,7 +19,7 @@ process FASTP {
     script:
 
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: reads[0].getBaseName()
+    def prefix = task.ext.prefix ?: meta.sample_id + "." + meta.library_id
 
     r1 = reads[0]
 

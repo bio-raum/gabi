@@ -11,7 +11,8 @@ workflow ALIGN_LONG_READS {
     main:
 
     MINIMAP2_ALIGN(
-        ch_reads_with_assembly
+        ch_reads_with_assembly,
+        "bam"
     )
     ch_versions = ch_versions.mix(MINIMAP2_ALIGN.out.versions)
     ch_bam      = ch_bam.mix(MINIMAP2_ALIGN.out.bam)

@@ -21,3 +21,7 @@ If you are really impatient, check out our [quickstart](docs/quickstart.md) guid
 FooDMe2 is developed and supported by the following people and organizations:
 
 [Marc Höppner](https://github.com/marchoeppner), Landeslabor Schleswig-Holstein, [LSH](https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LLABOR)
+
+## Acknowledgements
+
+We thank the developers of the [AQUAMIS](https://gitlab.com/bfr_bioinformatics/AQUAMIS) pipeline for making some of the building blocks on which GABI is based publically available - specifically the ConfindR database and validation data for <i>Campylobacter spp.</i> as well as the reference intervals for a broad range of bacteria to determine assembly status. 

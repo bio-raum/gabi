@@ -1,7 +1,7 @@
 process CHEWBBACA_DOWNLOADSCHEMA {
     maxForks 1
 
-    tag "${meta.sample_id}"
+    tag "${meta.taxon}"
 
     label 'short_parallel'
 
