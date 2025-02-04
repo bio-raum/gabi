@@ -19,7 +19,6 @@ process MEDAKA_VARIANT {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
     medaka_variant \\
         -t $task.cpus \\

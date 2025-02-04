@@ -1,7 +1,0 @@
-name: chewbbaca_allelecallevaluator
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - bioconda::chewbbaca=3.3.4
