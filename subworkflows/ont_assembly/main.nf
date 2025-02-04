@@ -9,13 +9,28 @@ include { DNAAPLER }                from '../../modules/dnaapler'
 
 ch_versions = Channel.from([])
 
+/* 
+This workflow is inspired by https://github.com/rpetit3/dragonflye
+Since Dragonflye isn't regularly maintained, GABI re-implements the
+basic (slightly simplified) logic into a subworkflow instead
+*/
 workflow ONT_ASSEMBLY {
 
     take:
-    lreads
-    sreads
+    reads // [ meta, [short_reads], ont_reads ]
 
     main:
+
+    // Get long reads
+    reads.map { m,s,o ->
+        tuple(m,o)
+    }.set { lreads }
+
+    // Get short reads if they exist 
+    reads.map { m,s,o ->
+        tuple(m,s)
+    }.filter { it.last() }
+    .set { sreads }
 
     // FLYE long read assembler
     FLYE_ONT(
@@ -64,7 +79,7 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(BWAMEM2_INDEX_POLYPOLISH.out.versions)
 
-    // Align short reads and create one SAM file per direction
+    // Align short reads and create one SAM file per mate
     BWAMEM2_MEM_POLYPOLISH(
         polished_with_short_reads.with.map { m,a,r ->
             tuple(m,r)
@@ -84,11 +99,16 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(POLYPOLISH_POLISH.out.versions)
 
+    // Combine poly-polished assemblies with assemblies for which we have no short reads
     polished_with_short_reads.without.map { m,a,r -> 
         tuple(m,a) 
     }.mix(POLYPOLISH_POLISH.out.fasta)
     .set { ch_polished_assembly }
 
+    /*
+    Orient all assemblies based on a common logic
+    This is mostly "cosmetic"
+    */
     DNAAPLER(
         ch_polished_assembly
     )

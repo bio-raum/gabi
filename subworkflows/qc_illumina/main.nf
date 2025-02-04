@@ -47,14 +47,14 @@ workflow QC_ILLUMINA {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions)
     multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
-
+    
     CONTAMINATION(
         FASTP.out.reads,
         confindr_db
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
-
+    
     if (params.genome_size) {
         RASUSA(
             ch_reads_decont

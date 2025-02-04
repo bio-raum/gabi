@@ -93,6 +93,7 @@ ch_multiqc_illumina = Channel.from([])
 ch_multiqc_nanopore = Channel.from([])
 ch_multiqc_pacbio   = Channel.from([])
 
+
 workflow GABI {
     main:
 
@@ -151,10 +152,10 @@ workflow GABI {
         ch_pacbio_trimmed
     )
     ch_hybrid_reads     = GROUP_READS.out.hybrid_reads
-    ch_dragonflye       = GROUP_READS.out.dragonflye
     ch_short_reads_only = GROUP_READS.out.illumina_only
     ch_ont_reads_only   = GROUP_READS.out.ont_only
     ch_pb_reads_only    = GROUP_READS.out.pacbio_only
+    ch_dragonflye       = GROUP_READS.out.dragonflye
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -164,12 +165,11 @@ workflow GABI {
     */
     ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
     ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
-
+    
     TAXONOMY_PROFILING(
         ch_reads_for_taxonomy,
         kraken2_db
     )
-    ch_taxon        = TAXONOMY_PROFILING.out.report
     ch_versions     = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
     ch_report       = ch_report.mix(TAXONOMY_PROFILING.out.report)
     multiqc_files   = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
@@ -184,6 +184,7 @@ workflow GABI {
     Option: Short reads only
     Shovill
     */
+
     SHOVILL(
         ch_short_reads_only
     )
@@ -199,10 +200,9 @@ workflow GABI {
     /*
     ONT assembly including multiple rounds of optional
     polishing
-    */
+    */    
     ONT_ASSEMBLY(
-        ch_ont_trimmed,
-        ch_illumina_clean
+        ch_dragonflye
     )
     ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
     ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
