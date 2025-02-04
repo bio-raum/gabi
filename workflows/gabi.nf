@@ -219,7 +219,6 @@ workflow GABI {
 
     
     // Find empty assemblies and stop them
-
     ch_assemblies.branch { m,f ->
         fail: f.countFasta() < 1
         pass: f.countFasta() > 0
