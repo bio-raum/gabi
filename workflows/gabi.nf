@@ -201,10 +201,11 @@ workflow GABI {
     polishing
     */
     ONT_ASSEMBLY(
-        ch_dragonflye
+        ch_ont_trimmed,
+        ch_illumina_clean
     )
-    ch_assemblies   = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
     ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
+    ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
 
     /*
     Option: Pacbio HiFi reads

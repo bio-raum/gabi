@@ -114,14 +114,6 @@ S100,/path/to/S100.fasta
 
 This option is only used when installing the pipelines references as described [here](installation.md).
 
-### `--run_name` [ default = null]
-
-A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
-
-### `--reference_base` [ default = null ]
-
-This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
-
 ### `--onthq` [ default = false ]
 
 Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default.
@@ -133,6 +125,14 @@ Discard nanopore reads below this mean quality. ONT sequencing will produce a sp
 ### `--ont_min_length`  [ default = 1000 ]
 
 Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths. If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
+
+### `--run_name` [ default = null]
+
+A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
+
+### `--reference_base` [ default = null ]
+
+This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
 
 ## Expert options
 
@@ -177,21 +177,20 @@ By default, all samples are processed all the way to the end of the pipeline. Th
 - Remove highly fragmented assemblies (see [--max_contigs](#--max_contigs))
 - Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)
 
+### `--skip_amr` [ default = false ]
+
+Skip prediction of AMR genes
 ### `--skip_circos` [ default = false ]
 
 Skip generation of circos plots.
-
-### `--skip_serotyping` [ default = false ]
-
-Skip Serotyping
 
 ### `--skip_mlst` [ default = false ]
 
 Skip MLST analyses
 
-### `--skip_amr` [ default = false ]
+### `--skip_serotyping` [ default = false ]
 
-Skip prediction of AMR genes
+Skip Serotyping
 
 ### `--shovill_assembler` [ default = spades ]
 

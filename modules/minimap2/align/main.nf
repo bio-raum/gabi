@@ -25,7 +25,7 @@ process MINIMAP2_ALIGN {
     def args  = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     def bam_index = "${prefix}.bam"
-    def algorithm = meta.platform == "NANOPORE" ? "-ax map-ont" : "-ax map-hifi"
+    def algorithm = meta.platform == "NANOPORE" ? "-x map-ont" : "-x map-hifi"
     def rg = "-R \"@RG\\tID:${prefix}_${meta.platform}\\tPL:${meta.platform}\\tSM:${meta.sample_id}\""
 
     if (format == "paf") {
@@ -34,11 +34,10 @@ process MINIMAP2_ALIGN {
         minimap2 \\
             $args \\
             -t $task.cpus \\
-            $rg \\
             $algorithm \\
             $reference \\
-            $reads
-            > ${prefix}.paf
+            $reads \\
+             2>&1 1> ${prefix}.paf
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
@@ -51,6 +50,7 @@ process MINIMAP2_ALIGN {
         """
         minimap2 \\
             $args \\
+            -a \\
             -t $task.cpus \\
             $rg \\
             $algorithm \\

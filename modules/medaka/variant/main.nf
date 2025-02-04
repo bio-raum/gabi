@@ -1,4 +1,4 @@
-process MEDAKA_CONSENSUS {
+process MEDAKA_VARIANT {
     tag "$meta.sample_id"
     label 'short_parallel'
 
@@ -11,8 +11,8 @@ process MEDAKA_CONSENSUS {
     tuple val(meta), path(reads), path(assembly)
 
     output:
-    tuple val(meta), path("*medaka.fasta")   , emit: consensus
-    path "versions.yml"                         , emit: versions
+    tuple val(meta), path("*.vcf")  , emit: vcf
+    path "versions.yml"             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,15 +21,12 @@ process MEDAKA_CONSENSUS {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
-    mkdir -p polish
-    medaka_consensus \\
+    medaka_variant \\
         -t $task.cpus \\
         $args \\
         -i $reads \\
-        -d $assembly \\
-        -o polish
-
-    cp polish/consensus.fasta ${prefix}.medaka.fasta
+        -r $assembly \\
+        -o ./
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
