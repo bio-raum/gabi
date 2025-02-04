@@ -199,7 +199,7 @@ workflow GABI {
 
     /*
     ONT assembly including multiple rounds of optional
-    polishing
+    polishing, with and without short reads
     */    
     ONT_ASSEMBLY(
         ch_dragonflye

@@ -21,7 +21,7 @@ A basic execution of the pipeline looks as follows:
 a) Without a site-specific config file
 
 ```bash
-nextflow run bio-raum/gabi -profile singularity --input samples.csv \\
+nextflow run bio-raum/gabi -r main -profile singularity --input samples.csv \\
 --reference_base /path/to/references \\
 --run_name pipeline-test
 ```
@@ -45,7 +45,7 @@ Additional software provisioning tools as described [here](https://www.nextflow.
 b) with a site-specific config file
 
 ```bash
-nextflow run bio-raum/gabi -profile lsh --input samples.csv \\
+nextflow run bio-raum/gabi -r main -profile lsh --input samples.csv \\
 --run_name pipeline-test 
 ```
 
@@ -56,7 +56,7 @@ In this example, both `--reference_base` and the choice of software provisioning
 If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the `-r` argument:
 
 ```bash
-nextflow run bio-raum/gabi -profile lsh -r 1.0 <other options here>
+nextflow run bio-raum/gabi -profile lsh -r 1.0.0 <other options here>
 ```
 
 The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
@@ -66,7 +66,7 @@ The `-r` option specifies a github [release tag](https://github.com/bio-raum/gab
 GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
 
 - Samples with only short reads (Assembler: Shovill)
-- Samples with Nanopore reads and **optional** short reads (Assembler: Dragonflye)
+- Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Racon + Medaka (+ Polypolish))
 - Samples with only Pacbio HiFi reads (Assembler: Flye)
 
 This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
@@ -144,7 +144,7 @@ A local version of the ConfindR rMLST database, available [here](https://olc-bio
 
 ### `--fast_ref` [ default = false ]
 
-By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match.
+By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
 ### `--genome_size` [ default = null ]
 

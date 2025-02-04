@@ -30,10 +30,10 @@ Also note that Nextflow supports additional software provisioning [frameworks](h
 
 ## Installing the references
 
-This pipeline requires locally stored references. To build these, do:
+This pipeline requires locally stored references, matched to the pipeline version you plan on using (-r). To build these, do:
 
 ```bash
-nextflow run bio-raum/gabi -profile singularity \\
+nextflow run bio-raum/gabi -r main -profile singularity \\
 --build_references \\
 --run_name build_refs \\
 --reference_base /path/to/references
