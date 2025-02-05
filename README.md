@@ -15,10 +15,11 @@ If you are really impatient, check out our [quickstart](docs/quickstart.md) guid
 5. [Software](docs/software.md)
 5. [Troubleshooting](docs/troubleshooting.md)
 6. [Developer guide](docs/developer.md)
+7. [FAQs](docs/faq.md)
 
 ## Developer team
 
-FooDMe2 is developed and supported by the following people and organizations:
+GABI is developed and supported by the following people and organizations:
 
 [Marc Höppner](https://github.com/marchoeppner), Landeslabor Schleswig-Holstein, [LSH](https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LLABOR)
 

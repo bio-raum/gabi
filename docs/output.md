@@ -8,7 +8,7 @@ The key report for most users will be `reports/<run_name>.html`. This file inclu
 
 The sample status is computed based on a set of [known reference values or intervals](https://gitlab.com/bfr_bioinformatics/AQUAMIS/-/blob/master/resources/AQUAMIS_thresholds.json?ref_type=heads) for metrics such as genome size, gc content etc as well as the results from contamination checks. 
 
-In addition to this report, GABI produces are similar output using [MultiQC](https://seqera.io/multiqc/). This report is a legacy feature since we know that a lot of people are fairly used to it. Please note however that the MultiQC report is missing many of the metrics from the primary report, including the sample status. 
+In addition to this report, GABI produces a similar output using [MultiQC](https://seqera.io/multiqc/). This report is a legacy feature since we know that a lot of people are fairly used to it. Please note however that the MultiQC report is missing many of the metrics from the primary report, including the sample status. 
 
 You may find it useful to also check the platform-specific MultiQC reports in each respective subfolder to understand where some (if any) of the warnings and fails may be coming from. 
 
@@ -35,7 +35,7 @@ The summary section of the GABI report aims to provide as many details as possib
 
 ![summary](../images/gabi_report_summary.png)
 
-Here, each sample is represented by one row, with the sample ID (as provided in the sample sheet), the overall status, best-guess taxon, followed by metrics about the assembly, the read coverage of the assembly as well as basic read metrics and finally results from contamination-related checks. 
+Here, each sample is represented by one row, with the sample ID (as provided in the sample sheet), the overall status, best-guess taxon, followed by metrics about the assembly, the read coverage of the assembly as well as basic read metrics and finally results from contamination-related checks. Please note that contamination checks are going to work best on Illumina data, since the basic principle depends in one way or the other on read variants. Nanopore data may occasionally yield incorrect inferences and is deliberately paramterized to suppress noisy results (which may well be true contaminations at low levels). 
 
 In this example, the sample is shown as "pass", which means that all relevant metrics are above or within pre-defined thresholds for this species. Notable, the Q30 quality of the Illumina reads used for assembly is highlighted in yellow, which means that it is of potential concern but not a reason for an outright failure of the sample. Basically, we consider Illumina reads with a Q30 fraction of less than 85% to be a sign of potential issues, based on years of experience using the technology. 
 
@@ -123,3 +123,11 @@ This folder contains the pipeline run metrics
 
 </details>
 
+## Software versions
+<details markdown=1>
+<summary>Report</summary>
+
+GABI emits the version of all the tools it used in a given pipeline run at the end of the primary reports. 
+
+![versions](../images/gabi_report_versions.png)
+</details>

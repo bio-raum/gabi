@@ -2,11 +2,15 @@
 Include Modules
 */
 
-include { PORECHOP_ABI }                    from './../../modules/porechop/abi'
-include { RASUSA }                          from './../../modules/rasusa'
-include { CAT_FASTQ  }                      from './../../modules/cat_fastq'
-include { NANOPLOT }                        from './../../modules/nanoplot'
-include { CHOPPER }                         from './../../modules/chopper'
+include { PORECHOP_ABI }                from './../../modules/porechop/abi'
+include { RASUSA }                      from './../../modules/rasusa'
+include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
+include { NANOPLOT }                    from './../../modules/nanoplot'
+include { CHOPPER }                     from './../../modules/chopper'
+
+// Subworkflows
+include { CONTAMINATION }               from './../contamination'
+
 
 ch_versions = Channel.from([])
 multiqc_files = Channel.from([])
@@ -66,6 +70,13 @@ workflow QC_NANOPORE {
         log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting ont_min_length, ont_min_reads and ont_min_q."
     }
 
+    // Run contamination check
+    CONTAMINATION(
+        ch_chopped_reads.pass,
+        confindr_db
+    )
+    ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
+
     // Generate a plot of the trimmed reads
     NANOPLOT(
         ch_chopped_reads.pass
@@ -86,8 +97,8 @@ workflow QC_NANOPORE {
     }
 
     emit:
-    //confindr_report = CONTAMINATION.out.report
-    //confindr_json   = CONTAMINATION.out.json
+    confindr_report = CONTAMINATION.out.report
+    confindr_json   = CONTAMINATION.out.confindr_json
     reads           = ch_processed_reads
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt

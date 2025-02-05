@@ -57,7 +57,8 @@ workflow QC {
     )
     ch_ont_trimmed      = QC_NANOPORE.out.reads
     ch_versions         = ch_versions.mix(QC_NANOPORE.out.versions)
-
+    ch_confindr_reports = ch_confindr_reports.mix(QC_NANOPORE.out.confindr_report)
+    ch_confindr_json    = ch_confindr_json.mix(QC_NANOPORE.out.confindr_json)
     /*
     Trim and QC Pacbio HiFi reads
     */

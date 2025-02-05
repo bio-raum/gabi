@@ -1,5 +1,7 @@
 # Software used in this pipeline
 
+We gratefully acknowledge the trememdous efforts put in by many developers without whose work GABI would not exist. For the very latest versions and tools used, please consult the pipeline report. 
+
 **Abricate**
 Version 1.0.1, [github](https://github.com/tseemann/abricate)
 

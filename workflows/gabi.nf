@@ -14,6 +14,7 @@ include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
+include { DNAAPLER }                    from './../modules/dnaapler'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
@@ -228,12 +229,19 @@ workflow GABI {
         log.warn "${m.sample_id} - assembly is empty, stopping sample"
     }
 
+    // orient assemblies consistently
+    DNAAPLER(
+        ch_assemblies_size.pass
+    )
+    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
+
+    ch_assemblies_oriented = DNAAPLER.out.fasta
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Tag and optionally remove highly fragmented assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_assemblies_size.pass.branch { m, f ->
+    ch_assemblies_oriented.branch { m, f ->
         fail: f.countFasta() > params.max_contigs
         pass: f.countFasta() <= params.max_contigs
     }.set { ch_assemblies_status }
@@ -245,7 +253,7 @@ workflow GABI {
     if (params.skip_failed) {
         ch_assemblies_filtered = ch_assemblies_status.pass
     } else {
-        ch_assemblies_filtered = ch_assemblies
+        ch_assemblies_filtered = ch_assemblies_oriented
     }
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

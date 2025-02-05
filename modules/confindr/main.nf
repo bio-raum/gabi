@@ -25,13 +25,14 @@ process CONFINDR {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}_${meta.platform}"
     def db_options = db ? "-d ${db}" : ''
+    def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 15 -b 10" : ""
     """
     confindr.py \\
         -Xmx ${task.memory.toGiga()}G \\
         --threads $task.cpus \\
         -i input_dir \\
         -o confindr_results \\
-        $args $db_options
+        $args $options $db_options
 
     mv confindr_results/confindr_log.txt confindr_results/${prefix}_confindr_log.txt
     mv confindr_results/confindr_report.csv confindr_results/${prefix}_confindr_report.csv

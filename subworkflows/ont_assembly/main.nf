@@ -5,7 +5,6 @@ include { RACON }                   from '../../modules/racon'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
-include { DNAAPLER }                from '../../modules/dnaapler'
 
 ch_versions = Channel.from([])
 
@@ -105,17 +104,8 @@ workflow ONT_ASSEMBLY {
     }.mix(POLYPOLISH_POLISH.out.fasta)
     .set { ch_polished_assembly }
 
-    /*
-    Orient all assemblies based on a common logic
-    This is mostly "cosmetic"
-    */
-    DNAAPLER(
-        ch_polished_assembly
-    )
-    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
-
     emit:
-    assembly = DNAAPLER.out.fasta
+    assembly = ch_polished_assembly
     versions = ch_versions
 
 }

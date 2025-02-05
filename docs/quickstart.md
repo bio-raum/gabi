@@ -1,6 +1,6 @@
 # Quickstart guide
 
-This guide is for the impatient to get you up and running as quickly as possible. Make sure to read the [full](usage.md) guide to learn about all the options that the pipeline exposes. 
+This guide is for the impatient to get you up and running as quickly as possible. Make sure to read the [full](usage.md) guide to learn about all the options that the pipeline exposes. We assume that you have a recent version of [nextflow](https://nextflow.io/) installed on your system. 
 
 ## Choosing a software provisioning framework
 
