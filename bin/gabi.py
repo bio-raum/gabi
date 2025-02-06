@@ -47,7 +47,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
     samples = []
 
-    kraken_data_all = []
+    kraken_data_all = {"ILLUMINA": [], "NANOPORE": []}
     serotypes_all = {}
     mlst_all = {}
     insert_sizes_all = {}
@@ -82,8 +82,9 @@ def main(yaml, template, output, reference, version, call, wd):
             else:
                 this_refs = [{}]
 
+            #############################################
             # Check for contaminated reads using confindr
-
+            #############################################
             if "confindr" in jdata:
                 contaminated = "-"
                 confindr = jdata["confindr"]
@@ -116,21 +117,31 @@ def main(yaml, template, output, reference, version, call, wd):
                                         confindr_status = status["fail"]
                                     elif (perc > 0.0 and confindr_status == status["pass"]):
                                         confindr_status = status["warn"]
+                                    else:
+                                        if confindr_status == status["pass"]:
+                                            confindr_status = status["warn"]
+                                        contaminated = "ND"
 
                             else:
-                                contaminated = "ND"
-                                confindr_status = status["warn"]
+                                # If no percentages are given, we may still have a inter-species
+                                # contamination scenario, which we need to report
+                                if ":" in read["Genus"]:
+                                    contaminated = read["Genus"]
+                                    confindr_status = status["fail"]
+                                else:
+                                    contaminated = "ND"
+                                    confindr_status = status["warn"]
 
             # All the relevant values and optional status classes
             sample = jdata["sample"]
             samples.append(sample)
 
-            fastp_q30 = "-"
-            fastp_q30_status = status["missing"]
-
             ########################
             # Read quality via FastP
             ########################
+
+            fastp_q30 = "-"
+            fastp_q30_status = status["missing"]
 
             if "fastp" in jdata:
                 fastp_q30_status = status["pass"]
@@ -162,33 +173,34 @@ def main(yaml, template, output, reference, version, call, wd):
 
             if "kraken" in jdata:
 
-                taxon_perc = float(jdata["kraken"][0]["percentage"])
-                if taxon_perc >= 90.0:
-                    taxon_status = status["pass"]
-                elif taxon_perc >= 70.0:
-                    taxon_status = status["warn"]
-                else:
-                    taxon_status = status["fail"]
+                for platform, kraken in jdata["kraken"].items():
+                    taxon_perc = float(kraken[0]["percentage"])
+                    if taxon_perc >= 90.0:
+                        taxon_status = status["pass"]
+                    elif taxon_perc >= 70.0:
+                        taxon_status = status["warn"]
+                    else:
+                        taxon_status = status["fail"]
 
-                taxon_count = 0
-                taxon_count_status = status["pass"]
+                    taxon_count = 0
+                    taxon_count_status = status["pass"]
 
-                kraken_results = {}
-                for tax in jdata["kraken"]:
-                    this_taxon = tax["taxon"]
-                    tperc = float(tax["percentage"])
+                    kraken_results = {}
+                    for tax in kraken:
+                        this_taxon = tax["taxon"]
+                        tperc = float(tax["percentage"])
 
-                    kraken_results[this_taxon] = tperc
+                        kraken_results[this_taxon] = tperc
 
-                    if (tperc > 5.0):
-                        taxon_count += 1
+                        if (tperc > 5.0):
+                            taxon_count += 1
 
-                kraken_data_all.append(kraken_results)
+                    kraken_data_all[platform].append(kraken_results)
 
-                if (taxon_count > 3):
-                    taxon_count_status = status["fail"]
-                elif (taxon_count > 1):
-                    taxon_count_status = status["warn"]
+                    if (taxon_count > 3):
+                        taxon_count_status = status["fail"]
+                    elif (taxon_count > 1):
+                        taxon_count_status = status["warn"]
 
             ####################
             # Get samtools stats
@@ -481,11 +493,18 @@ def main(yaml, template, output, reference, version, call, wd):
 
     # Kraken abundances
     if "kraken" in jdata:
-        kdata = pd.DataFrame(data=kraken_data_all, index=samples)
-        plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples) * 25 if len(samples) > 10 else 400
-        fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
-        data["Kraken"] = fig.to_html(full_html=False)
+        if "ILLUMINA" in jdata["kraken"]:
+            kdata = pd.DataFrame(data=kraken_data_all["ILLUMINA"], index=samples)
+            plot_labels = {"index": "Samples", "value": "Percentage"}
+            h = len(samples) * 25 if len(samples) > 10 else 400
+            fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
+            data["Kraken_ILLUMINA"] = fig.to_html(full_html=False)
+        if "NANOPORE" in jdata["kraken"]:
+            kdata = pd.DataFrame(data=kraken_data_all["NANOPORE"], index=samples)
+            plot_labels = {"index": "Samples", "value": "Percentage"}
+            h = len(samples) * 25 if len(samples) > 10 else 400
+            fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
+            data["Kraken_NANOPORE"] = fig.to_html(full_html=False)
 
     # Insert size distribution
     if "samtools" in jdata:

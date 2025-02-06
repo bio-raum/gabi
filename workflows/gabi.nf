@@ -161,12 +161,13 @@ workflow GABI {
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Predict taxonomy from read data
-    One set of reads per sample, preferrably Illumina
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
-    ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
+    //ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
+    //ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
     
+    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean)
+
     TAXONOMY_PROFILING(
         ch_reads_for_taxonomy,
         kraken2_db

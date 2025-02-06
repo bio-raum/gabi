@@ -99,6 +99,7 @@ workflow QC_NANOPORE {
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
+    confindr_qc     = CONTAMINATION.out.qc
     reads           = ch_processed_reads
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt

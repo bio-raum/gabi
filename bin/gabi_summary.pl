@@ -54,7 +54,8 @@ my %matrix = (
     "serotype" => [],
     "mosdepth" => {},
     "reference" => {},
-    "mosdepth_global" => {}
+    "mosdepth_global" => {},
+    "kraken" => {}
 );
 
 my @files = glob '*/*' ;
@@ -69,9 +70,12 @@ foreach my $file ( @files ) {
     # Crude way to avoid empty files - we expect at least 2 lines: header and result
     next if (scalar @lines < 1);
 
-    if ($filename =~ /.*kraken.*/) {
+    if ($filename =~ /*ILLUMINA*.*kraken.*/) {
         my @data = parse_kraken(\@lines);
-        $matrix{"kraken"} = \@data;
+        $matrix{"kraken"}{"ILLUMINA"} = \@data;
+    } elsif ($filename =~ /*NANOPORE*.*kraken.*/) {
+        my @data = parse_kraken(\@lines);
+        $matrix{"kraken"}{"NANOPORE"} = \@data;
     } elsif ( $filename =~ /.NanoStats.txt/) {
         my %data = parse_nanostat(\@lines);
         $matrix{"nanostat"} = \%data;

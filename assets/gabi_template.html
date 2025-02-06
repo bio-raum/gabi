@@ -60,8 +60,11 @@
             <td><a href="#insert-sizes">Insert sizes</a></td>
         {% endif %}
         <td><a href="#busco">Busco</a></td>
-        {% if Kraken %}
-            <td><a href="#kraken">Kraken2</a></td>
+        {% if Kraken_ILLUMINA %}
+            <td><a href="#kraken">Kraken2 (Illumina)</a></td>
+        {% endif %}
+        {% if Kraken_NANOPORE %}
+            <td><a href="#kraken_ont">Kraken2 (Nanopore)</a></td>
         {% endif %}
         <td><a href="#mlst">MLST</a></td>
         {% if serotypes %}
@@ -251,12 +254,12 @@ Busco scores
 <a href="#navigation">top</a>
 
 <!--
-Check if Kraken data is present, then render the relevant section
+Check if Kraken Illumina data is present, then render the relevant section
 -->
-{% if Kraken %}
+{% if Kraken_ILLUMINA %}
     <div id="kraken"></div>
     
-    <h2>Kraken2 - taxonomic composition</h2>
+    <h2>Kraken2 - taxonomic composition (ILLUMINA)</h2>
 
     <div class="infotext">
         <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a> matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
@@ -264,7 +267,26 @@ Check if Kraken data is present, then render the relevant section
         abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
     </div>
 
-    {{Kraken}}
+    {{Kraken_ILLUMINA}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
+Check if Kraken Nanopore data is present, then render the relevant section 
+-->
+{% if Kraken_NANOPORE %}
+    <div id="kraken_ont"></div>
+    <h2>Kraken2 - taxonomic composition (NANOPORE)</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a> matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. Please note that Nanopore data is generally of lesser 
+        quality than Illumina short reads, so results are to be treated with some caution.
+    </div>
+
+    {{ Kraken_NANOPORE}}
 
     <a href="#navigation">top</a>
 {% endif %}
