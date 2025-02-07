@@ -47,7 +47,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
     samples = []
 
-    kraken_data_all = {"ILLUMINA": [], "NANOPORE": []}
+    bracken_data_all = {"ILLUMINA": [], "NANOPORE": []}
     serotypes_all = {}
     mlst_all = {}
     insert_sizes_all = {}
@@ -164,38 +164,31 @@ def main(yaml, template, output, reference, version, call, wd):
                 nanostat_read_n50 = nanostat_data["read_length_n50"]
 
             ####################
-            # Get Kraken results
+            # Get Bracken results
             ####################
 
-            taxon_status = status["missing"]
             taxon_count = "-"
             taxon_count_status = status["missing"]
 
-            if "kraken" in jdata:
+            if "bracken" in jdata:
 
-                for platform, kraken in jdata["kraken"].items():
-                    taxon_perc = float(kraken[0]["percentage"])
-                    if taxon_perc >= 90.0:
-                        taxon_status = status["pass"]
-                    elif taxon_perc >= 70.0:
-                        taxon_status = status["warn"]
-                    else:
-                        taxon_status = status["fail"]
+                for platform, bracken in jdata["bracken"].items():
 
                     taxon_count = 0
                     taxon_count_status = status["pass"]
 
-                    kraken_results = {}
-                    for tax in kraken:
-                        this_taxon = tax["taxon"]
-                        tperc = float(tax["percentage"])
+                    bracken_results = {}
+                    for tax in bracken:
+                        this_taxon = tax["name"]
+                        # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
+                        tperc = round((float(tax["fraction_total_reads"].replace('"', '')) * 100), 2)
 
-                        kraken_results[this_taxon] = tperc
+                        bracken_results[this_taxon] = tperc
 
                         if (tperc > 5.0):
                             taxon_count += 1
 
-                    kraken_data_all[platform].append(kraken_results)
+                    bracken_data_all[platform].append(bracken_results)
 
                     if (taxon_count > 3):
                         taxon_count_status = status["fail"]
@@ -453,7 +446,6 @@ def main(yaml, template, output, reference, version, call, wd):
                 "quality_nanopore": nanostat_q15,
                 "nanopore_n50": nanostat_read_n50,
                 "busco_status": busco_status,
-                "taxon_status": taxon_status,
                 "taxon_count": taxon_count,
                 "taxon_count_status": taxon_count_status,
                 "coverage": coverage,
@@ -491,20 +483,20 @@ def main(yaml, template, output, reference, version, call, wd):
     # Plots
     #############
 
-    # Kraken abundances
-    if "kraken" in jdata:
-        if "ILLUMINA" in jdata["kraken"]:
-            kdata = pd.DataFrame(data=kraken_data_all["ILLUMINA"], index=samples)
+    # Bracken abundances
+    if "bracken" in jdata:
+        if "ILLUMINA" in jdata["bracken"]:
+            kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = len(samples) * 25 if len(samples) > 10 else 400
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
-            data["Kraken_ILLUMINA"] = fig.to_html(full_html=False)
+            data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
         if "NANOPORE" in jdata["kraken"]:
-            kdata = pd.DataFrame(data=kraken_data_all["NANOPORE"], index=samples)
+            kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = len(samples) * 25 if len(samples) > 10 else 400
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
-            data["Kraken_NANOPORE"] = fig.to_html(full_html=False)
+            data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
 
     # Insert size distribution
     if "samtools" in jdata:

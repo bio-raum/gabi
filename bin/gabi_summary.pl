@@ -55,7 +55,8 @@ my %matrix = (
     "mosdepth" => {},
     "reference" => {},
     "mosdepth_global" => {},
-    "kraken" => {}
+    "kraken" => {},
+    "bracken" => {}
 );
 
 my @files = glob '*/*' ;
@@ -70,10 +71,16 @@ foreach my $file ( @files ) {
     # Crude way to avoid empty files - we expect at least 2 lines: header and result
     next if (scalar @lines < 1);
 
-    if ($filename =~ /*ILLUMINA*.*kraken.*/) {
+    if ($filename =~ /.ILLUMINA.bracken.tsv/) {
+        my @data = parse_bracken(\@lines);
+        $matrix{"bracken"}{"ILLUMINA"} = \@data;
+    } elsif ($filename =~ /.NANOPORE.bracken.tsv/) {
+        my @data = parse_bracken(\@lines);
+        $matrix{"bracken"}{"NANOPORE"} = \@data;
+    } elsif ($filename =~ /.*ILLUMINA*.*report_bracken.*/) {
         my @data = parse_kraken(\@lines);
         $matrix{"kraken"}{"ILLUMINA"} = \@data;
-    } elsif ($filename =~ /*NANOPORE*.*kraken.*/) {
+    } elsif ($filename =~ /.*NANOPORE*.*report_bracken.*/) {
         my @data = parse_kraken(\@lines);
         $matrix{"kraken"}{"NANOPORE"} = \@data;
     } elsif ( $filename =~ /.NanoStats.txt/) {
@@ -302,6 +309,34 @@ sub parse_sistr {
 
    return \%data ;
 }
+
+sub parse_bracken {
+    my @lines = @{$_[0] };
+
+    my $h = shift @lines ;
+    my @header = split "\t" , $h ;
+
+    my @data;
+
+    foreach my $this_line (@lines) {
+        my %this_data;
+        my @elements = split "\t", $this_line;
+
+        for my $i (0..$#header) {
+            my $column = @header[$i];
+            my $entry = @elements[$i];
+            $this_data{$column} = $entry 
+        }
+
+        # Only consider hits with at least 1% abundance - the rest is just noise. 
+        if ($this_data{"fraction_total_reads"} > 0.01) {
+            push(@data, \%this_data);
+        }
+    }
+
+   return @data ;
+}
+
 
 sub parse_mosdepth_global {
 
