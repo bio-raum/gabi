@@ -491,7 +491,7 @@ def main(yaml, template, output, reference, version, call, wd):
             h = len(samples) * 25 if len(samples) > 10 else 400
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
-        if "NANOPORE" in jdata["kraken"]:
+        if "NANOPORE" in jdata["bracken"]:
             kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = len(samples) * 25 if len(samples) > 10 else 400
