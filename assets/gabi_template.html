@@ -17,6 +17,9 @@
     .table-caption { font-weight: bold; display: block;}
     table { border-collapse: collapse;}
     tr.row td { border-bottom: 1px solid grey; padding-top: 5px; padding-bottom: 5px;}
+    tr.row-sample { cursor:pointer; }
+    tr.row-sample td { border-bottom: 1px solid grey; padding-top: 5px; padding-bottom: 5px; }
+    tr.row-hidden { display: none; }
     td { padding-left: 5px; padding-right: 5px;}
     th { border-left: 1px solid white; padding-right: 5px;}
     tr td[scope="sample-id"] {background-color: rgb(233, 233, 233); font-weight: bold;}
@@ -35,6 +38,7 @@
     .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted black; }
     .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: rgb(189, 186, 186); color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
     .tooltip:hover .tooltiptext { visibility: visible; }
+
 </style>
 </head>
 
@@ -99,6 +103,8 @@ Some basic information about the analysis run
 <!--
 The summary table with all key metrics per sample
 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <h2>Summary</h2>
 <table class="general">
     <tr>
@@ -141,8 +147,17 @@ The summary table with all key metrics per sample
 Our data structure is a list of dictionaries; where each dictionary holds
 all the information for one sample    
 -->
+<script>
+        $(document).ready(function(){
+        $('tr.row-sample').click(function(){
+            $(this).nextUntil('tr.row-sample').slideToggle(100, function(){
+            });
+        });
+    });
+</script>
+
 {% for row in summary %}
-    <tr class="row">
+    <tr class="row-sample">
         <td scope="sample-id">{{row.sample}}</td>
         <td scope={{row.status}}>{{row.status}}</td>
         <td scope="missing">{{row.taxon}}</td>
@@ -166,6 +181,9 @@ all the information for one sample
         <td scope="missing">{{row.nanopore_n50}}</td>
         <td scope={{row.confindr_status}}>{{row.contamination}}</td>
         <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
+    </tr>
+    <tr class="row-hidden">
+        <th colspan="23">{{row.messages}}</th>
     </tr>
 {% endfor %}
 </table>

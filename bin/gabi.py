@@ -61,6 +61,7 @@ def main(yaml, template, output, reference, version, call, wd):
     for idx, json_file in enumerate(json_files):
 
         rtable = {}
+        messages = []
 
         with open(json_file) as f:
             jdata = json.load(f)
@@ -98,6 +99,7 @@ def main(yaml, template, output, reference, version, call, wd):
                     for read in set:
                         if read["ContamStatus"] == "True":
                             contaminated = True
+                            messages.append(f"Contamination detected in {read["Sample"]}")
 
                             if "PercentContam" in read:
                                 if (read["PercentContam"] == "ND"):
@@ -148,6 +150,7 @@ def main(yaml, template, output, reference, version, call, wd):
                 fastp_summary = jdata["fastp"]["summary"]
                 fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
                 if fastp_q30 < 85:
+                    messages.append("Illumina Q30 fraction below 85%")
                     fastp_q30_status = status["warn"]
 
             ##########################
@@ -192,8 +195,10 @@ def main(yaml, template, output, reference, version, call, wd):
 
                     if (taxon_count > 3):
                         taxon_count_status = status["fail"]
+                        messages.append(f"More than three taxa detected in {platform} read data!")
                     elif (taxon_count > 1):
                         taxon_count_status = status["warn"]
+                        messages.append(f"More than one taxa detected in the {platform} read data!")
 
             ####################
             # Get samtools stats
@@ -215,6 +220,10 @@ def main(yaml, template, output, reference, version, call, wd):
 
             assembly = round((int(jdata["quast"]["Total length"]) / 1000000), 2)
             assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
+            if assembly_status == status["warn"]:
+                messages.append("Assembly size slightly outside of reference range")
+            elif assembly_status == status["fail"]:
+                messages.append("Assembly size well outside of reference range")
 
             genome_fraction = "-"
             genome_fraction_status = status["missing"]
@@ -237,8 +246,18 @@ def main(yaml, template, output, reference, version, call, wd):
             contigs = int(jdata["quast"]["# contigs"])
             contigs_status = check_contigs(this_refs, int(jdata["quast"]["# contigs"]))
 
+            if contigs_status == status["warn"]:
+                messages.append("Number of contigs slightly outside of reference range")
+            elif contigs_status == status["fail"]:
+                messages.append("Number of contigs well outside of reference range")
+
             n50 = round((int(jdata["quast"]["N50"]) / 1000), 2)
             n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
+
+            if n50_status == status["warn"]:
+                messages.append("N50 of this assembly slightly outside of reference range")
+            elif n50_status == status["fail"]:
+                messages.append("N50 of this assembly well outside of reference range")
 
             quast["size"] = jdata["quast"]["Total length (>= 0 bp)"]
             quast["N"] = jdata["quast"]["# N's per 100 kbp"]
@@ -296,12 +315,15 @@ def main(yaml, template, output, reference, version, call, wd):
                 busco_status = status["pass"]
             elif (busco_completeness > 80.0):
                 busco_status = status["warn"]
+                messages.append("Less than 90% of bacterial BUSCOs recovered - assembly might be incomplete")
             else:
                 busco_status = status["fail"]
+                messages.append("Less than 80% of bacterial BUSCOs recovered - assembly likely incomplete")
 
             # Warn if there are duplications in the gene set and busco wasnt already failed
             if (busco_duplicated > 5.0) & (busco_status != status["fail"]):
                 busco_status = status["warn"]
+                messages.append("Number of duplicated BUSCOs over 5%")
 
             ##############
             # MLST types
@@ -343,8 +365,10 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_status = status["pass"]
                 elif coverage >= 20.0:
                     coverage_status = status["warn"]
+                    messages.append("Overall mean coverage below 40X - this may be too low!")
                 else:
                     coverage_status = status["fail"]
+                    messages.append("Overall mean coverage below 20X - this is most likely too low!")
 
             if "illumina" in jdata["mosdepth"]:
                 coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
@@ -352,17 +376,22 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_illumina_status = status["pass"]
                 elif coverage_illumina >= 20.0:
                     coverage_illumina_status = status["warn"]
+                    messages.append("Illumina mean coverage below 40X - this may be too low!")
                 else:
                     coverage_illumina_status = status["fail"]
+                    messages.append("Illumina mean coverage below 20X - this is most likely too low unless combined with ONT!")
+
 
             if "nanopore" in jdata["mosdepth"]:
                 coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
                 if coverage_nanopore >= 40.0:
-                    coverage_nanopore_status = status["pass"]
+                    coverage_nanopore_status = status["pass"]  
                 elif coverage_nanopore >= 20.0:
                     coverage_nanopore_status = status["warn"]
+                    messages.append("ONT mean coverage below 40X - this may be too low!")
                 else:
                     coverage_nanopore_status = status["fail"]
+                    messages.append("ONT mean coverage below 20X - this is most likely too low unless combined with Illumina!")
 
             if "pacbio" in jdata["mosdepth"]:
                 coverage_pacbio = float(jdata["mosdepth"]["pacbio"]["mean"])
@@ -370,8 +399,10 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_pacbio_status = status["pass"]
                 elif coverage_pacbio >= 20.0:
                     coverage_pacbio_status = status["warn"]
+                    messages.append("HiFi mean coverage below 40X - this may be too low!")
                 else:
                     coverage_pacbio_status = status["fail"]
+                    messages.append("HiFi mean coverage below 20X - this is most likely too low!")
 
             # fraction covered at 40X
 
@@ -389,26 +420,31 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_40_illumina = jdata["mosdepth_global"]["illumina"]["40"]
                     if coverage_40_illumina < 90:
                         coverage_40_illumina_status = status["warn"]
+                        messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low.")
                     else:
                         coverage_40_illumina_status = status["pass"]
                 if "nanopore" in jdata["mosdepth_global"]:
                     coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
                     if coverage_40_nanopore < 90:
                         coverage_40_nanopore_status = status["warn"]
+                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low.")
                     else:
                         coverage_40_nanopore_status = status["pass"]
                 if "pacbio" in jdata["mosdepth_global"]:
                     coverage_40_pacbio = jdata["mosdepth_global"]["pacbio"]["40"]
                     if coverage_40_pacbio < 90:
                         coverage_40_pacbio_status = status["warn"]
+                        messages.append("Less than 90% of assembly coveraged at 40X by HiFi reads - this may be too low.")
                     else:
                         coverage_40_pacbio_status = status["pass"]
                 if "total" in jdata["mosdepth_global"]:
                     coverage_40 = jdata["mosdepth_global"]["total"]["40"]
                     if coverage_40 < 90:
                         coverage_40_status = status["warn"]
+                        messages.append("Less than 90% of assembly coveraged at 40X - this may be too low.")
                     elif coverage_40 < 75:
                         coverage_40_status = status["fail"]
+                        messages.append("Less than 75% of assembly coveraged at 40X - this is likely not acceptable.")
                     else:
                         coverage_40_status = status["pass"]
 
@@ -434,8 +470,12 @@ def main(yaml, template, output, reference, version, call, wd):
             # sample-level dictionary
             #########################
 
+            if not messages:
+                messages.append("No values outside of expected range(s).")
+
             rtable = {
                 "sample": sample,
+                "messages": ", ".join(messages),
                 "reference": reference,
                 "status": this_status,
                 "samtools": samtools,

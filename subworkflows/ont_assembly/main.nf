@@ -37,16 +37,19 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
 
+    ch_flye_with_reads = lreads.join(FLYE_ONT.out.fasta)
+
     // Align long reads to initial FLYE assembly
     MINIMAP2_ALIGN_PAF(
-        lreads.join(FLYE_ONT.out.fasta),
+        ch_flye_with_reads,
         "paf"
     )
     ch_versions = ch_versions.mix(MINIMAP2_ALIGN_PAF.out.versions)
 
+    ch_flye_with_alignment = ch_flye_with_reads.join(MINIMAP2_ALIGN_PAF.out.paf)
     // Use read alignments to polish FLYE assembly
     RACON(
-        lreads.join(FLYE_ONT.out.fasta).join(MINIMAP2_ALIGN_PAF.out.paf)
+        ch_flye_with_alignment
     )
     ch_versions = ch_versions.mix(RACON.out.versions)
 
