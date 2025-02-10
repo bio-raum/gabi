@@ -70,6 +70,9 @@
         {% if Bracken_NANOPORE %}
             <td><a href="#bracken_ont">Bracken (Nanopore)</a></td>
         {% endif %}
+        {% if Bracken_PACBIO %}
+            <td><a href="#bracken_pacbio">Bracken (Pacbio)</a></td>
+        {% endif %}
         <td><a href="#mlst">MLST</a></td>
         {% if serotypes %}
             <td><a href="#serotypes">Serotypes</a></td>
@@ -305,6 +308,24 @@ Check if Bracken Nanopore data is present, then render the relevant section
     </div>
 
     {{ Bracken_NANOPORE}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
+Check if Bracken Pacbio data is present, then render the relevant section 
+-->
+{% if Bracken_Pacbio %}
+    <div id="bracken_pacbio"></div>
+    <h2>Bracken - taxonomic composition (Pacbio)</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/jenniferlu717/Bracken" target="_new">Bracken</a> processes raw outputs from <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a>, which matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
+    </div>
+
+    {{ Bracken_Pacbio}}
 
     <a href="#navigation">top</a>
 {% endif %}

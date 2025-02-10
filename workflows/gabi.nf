@@ -166,15 +166,18 @@ workflow GABI {
     //ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
     //ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
     
-    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean)
+    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean,ch_pacbio_trimmed)
 
     TAXONOMY_PROFILING(
         ch_reads_for_taxonomy,
         kraken2_db
     )
-    ch_versions     = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
-    ch_report       = ch_report.mix(TAXONOMY_PROFILING.out.report)
-    multiqc_files   = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
+    ch_versions         = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
+    ch_report           = ch_report.mix(TAXONOMY_PROFILING.out.report)
+
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "ILLUMINA"}.map {m,r -> r })
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "NANOPORE"}.map {m,r -> r })
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "PACBIO"}.map {m,r -> r })
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

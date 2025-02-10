@@ -28,6 +28,7 @@ workflow TAXONOMY_PROFILING {
 
     emit:
     report = BRACKEN_BRACKEN.out.reports
+    report_txt = BRACKEN_BRACKEN.out.txt
     versions = ch_versions
 }
 

@@ -47,7 +47,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
     samples = []
 
-    bracken_data_all = {"ILLUMINA": [], "NANOPORE": []}
+    bracken_data_all = {}
     serotypes_all = {}
     mlst_all = {}
     insert_sizes_all = {}
@@ -176,6 +176,8 @@ def main(yaml, template, output, reference, version, call, wd):
             if "bracken" in jdata:
 
                 for platform, bracken in jdata["bracken"].items():
+
+                    bracken_data_all[platform] = []
 
                     taxon_count = 0
                     taxon_count_status = status["pass"]
@@ -388,7 +390,7 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_nanopore_status = status["pass"]  
                 elif coverage_nanopore >= 20.0:
                     coverage_nanopore_status = status["warn"]
-                    messages.append("ONT mean coverage below 40X - this may be too low!")
+                    messages.append("ONT mean coverage below 40X - this may be too low unless combined with Illumina!")
                 else:
                     coverage_nanopore_status = status["fail"]
                     messages.append("ONT mean coverage below 20X - this is most likely too low unless combined with Illumina!")
@@ -427,7 +429,7 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
                     if coverage_40_nanopore < 90:
                         coverage_40_nanopore_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low.")
+                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low .")
                     else:
                         coverage_40_nanopore_status = status["pass"]
                 if "pacbio" in jdata["mosdepth_global"]:
@@ -525,18 +527,26 @@ def main(yaml, template, output, reference, version, call, wd):
 
     # Bracken abundances
     if "bracken" in jdata:
-        if "ILLUMINA" in jdata["bracken"]:
+        if "ILLUMINA" in bracken_data_all:
             kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = len(samples) * 25 if len(samples) > 10 else 400
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
-        if "NANOPORE" in jdata["bracken"]:
+        if "NANOPORE" in bracken_data_all:
+            print("Creating Bracken ONT graph")
             kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = len(samples) * 25 if len(samples) > 10 else 400
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
+        if "PACBIO" in bracken_data_all:
+            print("Creating Bracken Pacbio graph")
+            kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples)
+            plot_labels = {"index": "Samples", "value": "Percentage"}
+            h = len(samples) * 25 if len(samples) > 10 else 400
+            fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
+            data["Bracken_PACBIO"] = fig.to_html(full_html=False)
 
     # Insert size distribution
     if "samtools" in jdata:
