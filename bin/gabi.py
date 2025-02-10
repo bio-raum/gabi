@@ -383,11 +383,10 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_illumina_status = status["fail"]
                     messages.append("Illumina mean coverage below 20X - this is most likely too low unless combined with ONT!")
 
-
             if "nanopore" in jdata["mosdepth"]:
                 coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
                 if coverage_nanopore >= 40.0:
-                    coverage_nanopore_status = status["pass"]  
+                    coverage_nanopore_status = status["pass"]
                 elif coverage_nanopore >= 20.0:
                     coverage_nanopore_status = status["warn"]
                     messages.append("ONT mean coverage below 40X - this may be too low unless combined with Illumina!")

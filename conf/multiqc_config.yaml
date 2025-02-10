@@ -21,6 +21,9 @@ extra_fn_clean_exts:
     - .NANOPORE
     - .chromosomes
 
+fastp:
+    s_name_filenames: true
+
 kraken:
     top_n: 15
 

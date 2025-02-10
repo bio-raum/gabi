@@ -23,7 +23,7 @@ workflow QC_NANOPORE {
     main:
 
     if (!params.skip_porechop) {
-        // Nanopore read trimming
+        // Nanopore adapter trimming
         PORECHOP_ABI(
             reads
         )
@@ -55,6 +55,7 @@ workflow QC_NANOPORE {
     // The trimmed ONT reads, concatenated by sample
     ch_ont_trimmed = ch_reads_ont.single.mix(CAT_FASTQ.out.reads)
 
+    // Filter the reads by size and quality
     CHOPPER(
         ch_ont_trimmed
     )

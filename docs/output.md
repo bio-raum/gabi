@@ -8,9 +8,9 @@ The key report for most users will be `reports/<run_name>.html`. This file inclu
 
 The sample status is computed based on a set of [known reference values or intervals](https://gitlab.com/bfr_bioinformatics/AQUAMIS/-/blob/master/resources/AQUAMIS_thresholds.json?ref_type=heads) for metrics such as genome size, gc content etc as well as the results from contamination checks. 
 
-In addition to this report, GABI produces a similar output using [MultiQC](https://seqera.io/multiqc/). This report is a legacy feature since we know that a lot of people are fairly used to it. Please note however that the MultiQC report is missing many of the metrics from the primary report, including the sample status. 
+In addition to this report, GABI produces a similar output using [MultiQC](https://seqera.io/multiqc/). This report is a legacy feature since we know that a lot of people enjoy using it. Please note however that the MultiQC report is missing many of the metrics from the primary report, including the sample status.
 
-You may find it useful to also check the platform-specific MultiQC reports in each respective subfolder to understand where some (if any) of the warnings and fails may be coming from. MultiQC is very graphical and makes it easy to spot individual issues across the various metrics. 
+You may find it useful to also check the platform-specific MultiQC reports in each respective subfolder to understand where some (if any) of the warnings and fails may be coming from. MultiQC is very "graphical" and makes it easy to spot individual issues across the various metrics without doing a lof of reading and "clicking around". 
 
 ## Interpreting results
 
