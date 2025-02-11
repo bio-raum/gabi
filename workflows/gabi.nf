@@ -14,6 +14,7 @@ include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
 include { DRAGONFLYE }                  from './../modules/dragonflye'
 include { FLYE }                        from './../modules/flye'
+include { DNAAPLER }                    from './../modules/dnaapler'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
@@ -93,6 +94,7 @@ ch_multiqc_illumina = Channel.from([])
 ch_multiqc_nanopore = Channel.from([])
 ch_multiqc_pacbio   = Channel.from([])
 
+
 workflow GABI {
     main:
 
@@ -151,28 +153,31 @@ workflow GABI {
         ch_pacbio_trimmed
     )
     ch_hybrid_reads     = GROUP_READS.out.hybrid_reads
-    ch_dragonflye       = GROUP_READS.out.dragonflye
     ch_short_reads_only = GROUP_READS.out.illumina_only
     ch_ont_reads_only   = GROUP_READS.out.ont_only
     ch_pb_reads_only    = GROUP_READS.out.pacbio_only
+    ch_dragonflye       = GROUP_READS.out.dragonflye
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Predict taxonomy from read data
-    One set of reads per sample, preferrably Illumina
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
-    ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
+    //ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
+    //ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
+    
+    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean,ch_pacbio_trimmed)
 
     TAXONOMY_PROFILING(
         ch_reads_for_taxonomy,
         kraken2_db
     )
-    ch_taxon        = TAXONOMY_PROFILING.out.report
-    ch_versions     = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
-    ch_report       = ch_report.mix(TAXONOMY_PROFILING.out.report)
-    multiqc_files   = multiqc_files.mix(TAXONOMY_PROFILING.out.report.map { m, r -> r })
+    ch_versions         = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
+    ch_report           = ch_report.mix(TAXONOMY_PROFILING.out.report)
+
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "ILLUMINA"}.map {m,r -> r })
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "NANOPORE"}.map {m,r -> r })
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "PACBIO"}.map {m,r -> r })
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -184,6 +189,7 @@ workflow GABI {
     Option: Short reads only
     Shovill
     */
+
     SHOVILL(
         ch_short_reads_only
     )
@@ -198,11 +204,10 @@ workflow GABI {
 
     /*
     ONT assembly including multiple rounds of optional
-    polishing
-    */
+    polishing, with and without short reads
+    */    
     ONT_ASSEMBLY(
-        ch_ont_trimmed,
-        ch_illumina_clean
+        ch_dragonflye
     )
     ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
     ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
@@ -219,7 +224,6 @@ workflow GABI {
 
     
     // Find empty assemblies and stop them
-
     ch_assemblies.branch { m,f ->
         fail: f.countFasta() < 1
         pass: f.countFasta() > 0
@@ -229,12 +233,19 @@ workflow GABI {
         log.warn "${m.sample_id} - assembly is empty, stopping sample"
     }
 
+    // orient assemblies consistently
+    DNAAPLER(
+        ch_assemblies_size.pass
+    )
+    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
+
+    ch_assemblies_oriented = DNAAPLER.out.fasta
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Tag and optionally remove highly fragmented assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_assemblies_size.pass.branch { m, f ->
+    ch_assemblies_oriented.branch { m, f ->
         fail: f.countFasta() > params.max_contigs
         pass: f.countFasta() <= params.max_contigs
     }.set { ch_assemblies_status }
@@ -246,7 +257,7 @@ workflow GABI {
     if (params.skip_failed) {
         ch_assemblies_filtered = ch_assemblies_status.pass
     } else {
-        ch_assemblies_filtered = ch_assemblies
+        ch_assemblies_filtered = ch_assemblies_oriented
     }
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

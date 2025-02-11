@@ -18,7 +18,7 @@ This template specifically is set up to work with the following VS extensions:
 
 This pipeline base is organized in the following way:
 
-* `main.nf` - entry point into the pipeline, imports the core workflow from `workflow/<pipeline>.nf`
+* `main.nf` - entry point into the pipeline, imports the core workflow(s) from `workflow/<pipeline>.nf`
 * `workflow/<pipeline.nf>` - the actual core logic of the pipeline; imports sub-workflows from `subworkflow/<sub>.nf`
 * `subworkflow/<sub>.nf` - a self-contained processing chain that is part of the larger workflow (e.g. read alignment and dedup in a WGS calling workflow)
 * `modules/<module>.nf` - A command line tool/call that can be imported into a (sub)workflow. 
@@ -56,8 +56,6 @@ What does this do? Basically, if conda is enabled as software provider, the spec
 We normally use Bioconda as the source for software packages; either directly via conda or through containers that are built directly from Bioconda. You'll note that each Bioconda package lists the matching Biocontainer link. For convenience, it is recommended to provide links to the native Biocontainer Docker container as well as the singularity version hosted by the Galaxy team under [https://depot.galaxyproject.org/singularity/](https://depot.galaxyproject.org/singularity/).
 
 There are two situations where this approach will not work (directly). One is the use of multiple software packages in one pipeline process. While this can be done for conda-based provisioning by simply providing the name of multiple packages, it does not work for pre-built containers. Instead, you need a so-called "mulled" container; which are built from two or more Bioconda packages - described [here](https://github.com/BioContainers/multi-package-containers). Sometimes you can be lucky and find existing mulled containers that do what you need.
-
-If mulling containers is not an option, you can also refer to github actions and have the pipeline built its own mulled container. For that, see the section about Docker below. 
 
 ## Github workflows
 

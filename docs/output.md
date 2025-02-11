@@ -1,5 +1,17 @@
 # Outputs 
 
+## Result files
+
+GABI produces two primary reports, as well as reports specific to each sequencing technologies used. 
+
+The key report for most users will be `reports/<run_name>.html`. This file includes all the relevant metrics describing (most of) your data and assembly, with automatic classification and highlighting of each sample status (pass, warn, fail). 
+
+The sample status is computed based on a set of [known reference values or intervals](https://gitlab.com/bfr_bioinformatics/AQUAMIS/-/blob/master/resources/AQUAMIS_thresholds.json?ref_type=heads) for metrics such as genome size, gc content etc as well as the results from contamination checks. 
+
+In addition to this report, GABI produces a similar output using [MultiQC](https://seqera.io/multiqc/). This report is a legacy feature since we know that a lot of people enjoy using it. Please note however that the MultiQC report is missing many of the metrics from the primary report, including the sample status.
+
+You may find it useful to also check the platform-specific MultiQC reports in each respective subfolder to understand where some (if any) of the warnings and fails may be coming from. MultiQC is very "graphical" and makes it easy to spot individual issues across the various metrics without doing a lof of reading and "clicking around". 
+
 ## Interpreting results
 
 <details markdown=1>
@@ -15,55 +27,44 @@
 - How much read coverage do we have (for each sequencing technololgy)
 - How complete is the gene space coverage and are there many duplicate BUSCO hits?
 
-You should come up with reasonable threshold for these parameters, based on your experience with your data. 
+You should come up with reasonable threshold for these parameters, based on your experience with your data. GABI will provide an interpretation for you, but it is advisable to think about the specific details. 
 
-A possible set of cutoffs could be:
+#### GABI summary
 
-- No more than 150 contigs
-- Contig N50 > 100kb
-- Read coverage > 40X (will also depend on sequencing technologies used)
-- Genome size within 5% of expected value
-- Busco score > 95%
-- Quast genome fraction >= 95%
-- Kraken abundance: only one species > 2%
+The summary section of the GABI report aims to provide as many details as possible in one place, with build-in sample status highlighting (green, yellow, red).
 
-But your mileage may vary. 
+![summary](../images/gabi_report_summary.png)
 
-#### General statistics
+Here, each sample is represented by one row, with the sample ID (as provided in the sample sheet), the overall status, best-guess taxon, followed by metrics about the assembly, the read coverage of the assembly as well as basic read metrics and finally results from contamination-related checks. Please note that contamination checks are going to work best on Illumina data, since the basic principle depends in one way or the other on read variants. Nanopore data may occasionally yield incorrect inferences and is deliberately paramterized to suppress noisy results (which may well be true contaminations at low levels). 
 
-Basically, our goal should be to have highly contiguous assembly, without any contaminations or obvious errors. The `general statistics` section provides some immediate hints:
+In this example, the sample is shown as "pass", which means that all relevant metrics are above or within pre-defined thresholds for this species. Notable, the Q30 quality of the Illumina reads used for assembly is highlighted in yellow, which means that it is of potential concern but not a reason for an outright failure of the sample. Basically, we consider Illumina reads with a Q30 fraction of less than 85% to be a sign of potential issues, based on years of experience using the technology. But in this case, it is merely a suggestion for you to have a look at the raw data and the sequencing run to check if everything looks ok otherwise. 
 
-![general](../images/multiqc_general_stats.png)
-
-#### Confindr
-
-Secondly, `ConfindR` results inform about potential contamination issues:
-
-![confindr](../images/multiqc_confindr.png)
-
-Samples with contamination in any of the contributing read files are listed as "true" (green). Check the sequencing-technology specific MultiQC reports to see which files raised this flag. 
-
-#### Quast
-
-QUAST provides some insights into the assembly quality - with some caveats concerning missamblies etc, based on the availability of a suitable reference genome against which to compare. 
-
-![quast](../images/multiqc_quast.png)
-
-Also see our [troubleshooting](troubleshooting.md) document for more explanations on the limitation of Quast as used by GABI. 
+You can click on any of the rows in the summary to get additional information, if available. 
+![summary_details](../images/gabi_report_summary_details.png)
 
 #### Busco
 
 BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain (many) duplicated BUSCOs. 
 
-![busco](../images/multiqc_busco.png)
+![busco](../images/gabi_report_busco.png)
 
-#### Kraken
+#### Bracken
 
-Complementary to ConfindR, Kraken can be used to check if the sample consists of more than one species. A low level of abundance is typically no reason for concern and more likely the result of low complexity sequence motifs. 
+Complementary to ConfindR, Kraken (combined with Bracken) can be used to check if the sample consists of more than one species. A low level of abundance is typically no reason for concern and more likely the result of low complexity sequence motifs. 
 
-![kraken](../images/multiqc_kraken.png)
+![kraken](../images/gabi_report_bracken.png)
 
-Please note that we only use the most-suitable data set per sample to run Kraken - meaning, if Illumina reads are available, those will be used over Nanopore (which has a much higher error rate). In that sense, a negative Kraken result is not a guarantee that no contamination is present. 
+#### MLST typing
+
+MLST typing groups isolates based on sequence "types" defined for a small number of core genes. If more than one such schema is defined for a given species, results will be split by schema (and species). You may choose whichever schema is the default in your community (if any). 
+
+![mlst](../images/gabi_report_mlst.png)
+
+#### Serotyping
+
+GABI performs serotyping with commonly used tools. Results will be split by taxon and tools (if multiple exist). 
+
+![serotyping](../images/gabi_report_serotyping.png)
 
 #### Technology-specific QC
 
@@ -103,9 +104,6 @@ For each sample, a folder is created with results from various tools, as follows
 
 Some results are computed for all samples of a run, or for all samples belonging to the same species. These results are as follows:
 
-- cgMLST - core genome MLST calls
-  - chewbbaca - Results from Chewbbaca across all samples from the same species, including minimal spanning tree and distance matrix
-  - pymlst - Results from pyMLST across all samples from the same species (distance matrix only)
 - AMR
   - Aggregated results from supported antimicrobial resistance gene predictors
 
@@ -138,3 +136,11 @@ This folder contains the pipeline run metrics
 
 </details>
 
+## Software versions
+<details markdown=1>
+<summary>Report</summary>
+
+GABI emits the version of all the tools it used in a given pipeline run at the end of the primary reports. 
+
+![versions](../images/gabi_report_versions.png)
+</details>

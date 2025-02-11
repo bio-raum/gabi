@@ -57,7 +57,8 @@ workflow QC {
     )
     ch_ont_trimmed      = QC_NANOPORE.out.reads
     ch_versions         = ch_versions.mix(QC_NANOPORE.out.versions)
-
+    ch_confindr_reports = ch_confindr_reports.mix(QC_NANOPORE.out.confindr_report)
+    ch_confindr_json    = ch_confindr_json.mix(QC_NANOPORE.out.confindr_json)
     /*
     Trim and QC Pacbio HiFi reads
     */
@@ -82,15 +83,15 @@ workflow QC {
     ch_qc = ch_qc.mix(CONFINDR2MQC_SUMMARY.out.json)
 
     emit:
-    fastp_json = QC_ILLUMINA.out.fastp_json
-    nanoplot_stats = QC_NANOPORE.out.nanoplot_stats
+    fastp_json      = QC_ILLUMINA.out.fastp_json
+    nanoplot_stats  = QC_NANOPORE.out.nanoplot_stats
     confindr_reports = ch_confindr_reports
-    qc_illumina = QC_ILLUMINA.out.qc.mix(QC_ILLUMINA.out.confindr_qc)
-    qc_nanopore = QC_NANOPORE.out.qc
-    qc_pacbio = QC_PACBIO.out.qc.mix(QC_PACBIO.out.confindr_qc)
-    illumina = ch_illumina_trimmed
-    ont = ch_ont_trimmed
-    pacbio = ch_pacbio_trimmed
-    versions = ch_versions
-    qc = ch_qc
+    qc_illumina     = QC_ILLUMINA.out.qc.mix(QC_ILLUMINA.out.confindr_qc)
+    qc_nanopore     = QC_NANOPORE.out.qc.mix(QC_NANOPORE.out.confindr_qc)
+    qc_pacbio       = QC_PACBIO.out.qc.mix(QC_PACBIO.out.confindr_qc)
+    illumina        = ch_illumina_trimmed
+    ont             = ch_ont_trimmed
+    pacbio          = ch_pacbio_trimmed
+    versions        = ch_versions
+    qc              = ch_qc
     }

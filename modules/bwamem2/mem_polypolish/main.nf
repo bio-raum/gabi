@@ -20,7 +20,6 @@ process BWAMEM2_MEM_POLYPOLISH {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
-    def extension = "bam"
     def rg = "-R \"@RG\\tID:${prefix}_${meta.platform}\\tPL:${meta.platform}\\tSM:${meta.sample_id}\""
     def R1 = reads[0]
     if (meta.single_end) {

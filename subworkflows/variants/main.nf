@@ -45,13 +45,15 @@ workflow VARIANTS {
     ch_versions = ch_versions.mix(SNIPPY_RUN.out.versions)
     ch_variants = ch_variants.mix(SNIPPY_RUN.out.vcf_gz)
 
+    // Index vcf.gz files
     TABIX_TABIX(
-        SNIPPY_RUN.out.vcf_gz
+        SNIPPY_RUN.out.vcf_gz.mix(TABIX_BGZIP.out.output)
     )
     ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
 
+    // Generate stats for VCF files
     BCFTOOLS_STATS(
-        SNIPPY_RUN.out.vcf_gz.join(
+        ch_variants.join(
             TABIX_TABIX.out.tbi
         )
     )
@@ -59,7 +61,7 @@ workflow VARIANTS {
     multiqc_files = multiqc_files.mix(BCFTOOLS_STATS.out.stats.map { m,s -> s })
 
     emit:
-    vcf = SNIPPY_RUN.out.vcf
+    vcf = ch_variants
     qc  = multiqc_files
     stats = BCFTOOLS_STATS.out.stats
     versions = ch_versions

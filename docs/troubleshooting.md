@@ -48,7 +48,7 @@ We use sourmash to identify the best matching reference genome for each assembly
 
 ### My ONT assembly crashes with an obscure error
 
-Please check if the option `--onthq` is set to `true` (this is the default!). It's possible that this setting is not appropriate for your data, which can lead Dragonflye to exit on an empty Fasta file halfway through the assembly process; you can disable this option by setting `--onthq false` and resume the pipeline (`-resume`).
+Please check if the option `--onthq` is set to `true`. It's possible that this setting is not appropriate for your data, which can lead the assembler to exit on an empty Fasta file halfway through the assembly process; you can disable this option by setting `--onthq false` and resume the pipeline (`-resume`).
 
 ### The pipeline immediately fails with a "no such file" error
 

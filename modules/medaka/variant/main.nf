@@ -11,15 +11,14 @@ process MEDAKA_VARIANT {
     tuple val(meta), path(reads), path(assembly)
 
     output:
-    tuple val(meta), path("*.vcf")  , emit: vcf
-    path "versions.yml"             , emit: versions
+    tuple val(meta), path("*.sorted.vcf")    , emit: vcf
+    path "versions.yml"                         , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
     medaka_variant \\
         -t $task.cpus \\

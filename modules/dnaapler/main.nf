@@ -8,10 +8,10 @@ process DNAAPLER {
         'quay.io/biocontainers/dnaapler:1.1.0--pyhdfd78af_0' }"
 
     input:
-    tuple val(meta), path(assembly)
+    tuple val(meta), path(assembly, stageAs: '?/*')
 
     output:
-    tuple val(meta), path('reorient/*reoriented.fasta') , emit: fasta
+    tuple val(meta), path('*.fasta') , emit: fasta
     path "versions.yml"                                 , emit: versions
 
     when:
@@ -27,6 +27,8 @@ process DNAAPLER {
     --output reorient \\
     --threads $task.cpus \\
     --prefix $prefix
+
+    cp reorient/*reoriented.fasta ${prefix}.fasta 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

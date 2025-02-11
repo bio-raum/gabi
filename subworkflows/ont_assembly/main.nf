@@ -5,17 +5,31 @@ include { RACON }                   from '../../modules/racon'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
-include { DNAAPLER }                from '../../modules/dnaapler'
 
 ch_versions = Channel.from([])
 
+/* 
+This workflow is inspired by https://github.com/rpetit3/dragonflye
+Since Dragonflye isn't regularly maintained, GABI re-implements the
+basic (slightly simplified) logic into a subworkflow instead
+*/
 workflow ONT_ASSEMBLY {
 
     take:
-    lreads
-    sreads
+    reads // [ meta, [short_reads], ont_reads ]
 
     main:
+
+    // Get long reads
+    reads.map { m,s,o ->
+        tuple(m,o)
+    }.set { lreads }
+
+    // Get short reads if they exist 
+    reads.map { m,s,o ->
+        tuple(m,s)
+    }.filter { it.last() }
+    .set { sreads }
 
     // FLYE long read assembler
     FLYE_ONT(
@@ -23,16 +37,19 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
 
+    ch_flye_with_reads = lreads.join(FLYE_ONT.out.fasta)
+
     // Align long reads to initial FLYE assembly
     MINIMAP2_ALIGN_PAF(
-        lreads.join(FLYE_ONT.out.fasta),
+        ch_flye_with_reads,
         "paf"
     )
     ch_versions = ch_versions.mix(MINIMAP2_ALIGN_PAF.out.versions)
 
+    ch_flye_with_alignment = ch_flye_with_reads.join(MINIMAP2_ALIGN_PAF.out.paf)
     // Use read alignments to polish FLYE assembly
     RACON(
-        lreads.join(FLYE_ONT.out.fasta).join(MINIMAP2_ALIGN_PAF.out.paf)
+        ch_flye_with_alignment
     )
     ch_versions = ch_versions.mix(RACON.out.versions)
 
@@ -64,7 +81,7 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(BWAMEM2_INDEX_POLYPOLISH.out.versions)
 
-    // Align short reads and create one SAM file per direction
+    // Align short reads and create one SAM file per mate
     BWAMEM2_MEM_POLYPOLISH(
         polished_with_short_reads.with.map { m,a,r ->
             tuple(m,r)
@@ -84,18 +101,14 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(POLYPOLISH_POLISH.out.versions)
 
+    // Combine poly-polished assemblies with assemblies for which we have no short reads
     polished_with_short_reads.without.map { m,a,r -> 
         tuple(m,a) 
     }.mix(POLYPOLISH_POLISH.out.fasta)
     .set { ch_polished_assembly }
 
-    DNAAPLER(
-        ch_polished_assembly
-    )
-    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
-
     emit:
-    assembly = DNAAPLER.out.fasta
+    assembly = ch_polished_assembly
     versions = ch_versions
 
 }

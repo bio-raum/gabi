@@ -17,6 +17,9 @@
     .table-caption { font-weight: bold; display: block;}
     table { border-collapse: collapse;}
     tr.row td { border-bottom: 1px solid grey; padding-top: 5px; padding-bottom: 5px;}
+    tr.row-sample { cursor:pointer; }
+    tr.row-sample td { border-bottom: 1px solid grey; padding-top: 5px; padding-bottom: 5px; }
+    tr.row-hidden { display: none; }
     td { padding-left: 5px; padding-right: 5px;}
     th { border-left: 1px solid white; padding-right: 5px;}
     tr td[scope="sample-id"] {background-color: rgb(233, 233, 233); font-weight: bold;}
@@ -35,6 +38,7 @@
     .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted black; }
     .tooltip .tooltiptext { visibility: hidden; width: 250px; background-color: rgb(189, 186, 186); color: black; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute;  z-index: 1; }
     .tooltip:hover .tooltiptext { visibility: visible; }
+
 </style>
 </head>
 
@@ -60,8 +64,14 @@
             <td><a href="#insert-sizes">Insert sizes</a></td>
         {% endif %}
         <td><a href="#busco">Busco</a></td>
-        {% if Kraken %}
-            <td><a href="#kraken">Kraken2</a></td>
+        {% if Bracken_ILLUMINA %}
+            <td><a href="#bracken">Bracken (Illumina)</a></td>
+        {% endif %}
+        {% if Bracken_NANOPORE %}
+            <td><a href="#bracken_ont">Bracken (Nanopore)</a></td>
+        {% endif %}
+        {% if Bracken_PACBIO %}
+            <td><a href="#bracken_pacbio">Bracken (Pacbio)</a></td>
         {% endif %}
         <td><a href="#mlst">MLST</a></td>
         {% if serotypes %}
@@ -96,6 +106,8 @@ Some basic information about the analysis run
 <!--
 The summary table with all key metrics per sample
 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <h2>Summary</h2>
 <table class="general">
     <tr>
@@ -104,7 +116,7 @@ The summary table with all key metrics per sample
         <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon using kmer matching (S/MASH)</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Reference genome<span class="tooltiptext">The highest matching hit in RefSeq to this assembly</span></div></th>
         <th colspan=5 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
-        <th colspan=4 scope="col"><div class="tooltip">Mean coverage<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
+        <th colspan=4 scope="col"><div class="tooltip">Mean coverage (X)<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Contamination<span class="tooltiptext">Indicators of contamination</span></div></th>
@@ -131,15 +143,24 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ILM Q30 (%)<span class="tooltiptext">Fraction of Illumina reads above Q30.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT Q15 (#)<span class="tooltiptext">Number of ONT reads above Q15.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
-        <th scope="subcol">Confindr (%)</th>
+        <th scope="subcol"><div class="tooltip">Confindr (%)<span class="tooltiptext">Based on sequence variation; not 100% reliable for ONT data.</span></div></th>
         <th scope="subcol">Taxa >10%</th>
     </tr>
 <!--
 Our data structure is a list of dictionaries; where each dictionary holds
 all the information for one sample    
 -->
+<script>
+        $(document).ready(function(){
+        $('tr.row-sample').click(function(){
+            $(this).nextUntil('tr.row-sample').slideToggle(100, function(){
+            });
+        });
+    });
+</script>
+
 {% for row in summary %}
-    <tr class="row">
+    <tr class="row-sample">
         <td scope="sample-id">{{row.sample}}</td>
         <td scope={{row.status}}>{{row.status}}</td>
         <td scope="missing">{{row.taxon}}</td>
@@ -163,6 +184,9 @@ all the information for one sample
         <td scope="missing">{{row.nanopore_n50}}</td>
         <td scope={{row.confindr_status}}>{{row.contamination}}</td>
         <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
+    </tr>
+    <tr class="row-hidden">
+        <th colspan="23">{{row.messages}}</th>
     </tr>
 {% endfor %}
 </table>
@@ -251,20 +275,57 @@ Busco scores
 <a href="#navigation">top</a>
 
 <!--
-Check if Kraken data is present, then render the relevant section
+Check if Bracken Illumina data is present, then render the relevant section
 -->
-{% if Kraken %}
-    <div id="kraken"></div>
+{% if Bracken_ILLUMINA %}
+    <div id="bracken"></div>
     
-    <h2>Kraken2 - taxonomic composition</h2>
+    <h2>Bracken - taxonomic composition (ILLUMINA)</h2>
 
     <div class="infotext">
-        <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a> matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        <a href="https://github.com/jenniferlu717/Bracken" target="_new">Bracken</a> processes raw outputs from <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a>, which matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue.  
+    </div>
+
+    {{Bracken_ILLUMINA}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
+Check if Bracken Nanopore data is present, then render the relevant section 
+-->
+{% if Bracken_NANOPORE %}
+    <div id="bracken_ont"></div>
+    <h2>Bracken - taxonomic composition (NANOPORE)</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/jenniferlu717/Bracken" target="_new">Bracken</a> processes raw outputs from <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a>, which matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
+        pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
+        abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. Please note that Nanopore data is generally of lesser 
+        quality than Illumina short reads, so results are to be treated with some caution.
+    </div>
+
+    {{ Bracken_NANOPORE}}
+
+    <a href="#navigation">top</a>
+{% endif %}
+
+<!--
+Check if Bracken Pacbio data is present, then render the relevant section 
+-->
+{% if Bracken_Pacbio %}
+    <div id="bracken_pacbio"></div>
+    <h2>Bracken - taxonomic composition (Pacbio)</h2>
+
+    <div class="infotext">
+        <a href="https://github.com/jenniferlu717/Bracken" target="_new">Bracken</a> processes raw outputs from <a href="https://github.com/DerrickWood/kraken2", target="_new">Kraken2</a>, which matches kmers from raw sequencing reads against a reference database to determine the taxonomic composition of a read set. For DNA from
         pure cultures (which is the focus of GABI), only one species should be identified at dominant proportions. For some taxa, like <i>Campylobacter</i>, several species from the same genus may be found at comparative 
         abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
     </div>
 
-    {{Kraken}}
+    {{ Bracken_Pacbio}}
 
     <a href="#navigation">top</a>
 {% endif %}

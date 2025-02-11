@@ -19,7 +19,7 @@ process FASTP {
     script:
 
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: meta.sample_id + "." + meta.library_id
+    def prefix = task.ext.prefix ?: meta.sample_id
 
     r1 = reads[0]
 
@@ -28,8 +28,9 @@ process FASTP {
     json = prefix + '.fastp.json'
     html = prefix + '.fastp.html'
 
+    r1_trim = prefix + "_R1" + suffix
+
     if (meta.single_end) {
-        r1_trim = r1.getBaseName() + suffix
         """
         fastp --in1 ${r1} \
         --out1 $r1_trim \
@@ -44,8 +45,8 @@ process FASTP {
         """
     } else {
         r2 = reads[1]
-        r1_trim = r1.getBaseName() + suffix
-        r2_trim = r2.getBaseName() + suffix
+        r2_trim = prefix + "_R2" + suffix
+
         """
         fastp --in1 ${r1} --in2 ${r2} \
         --out1 $r1_trim \

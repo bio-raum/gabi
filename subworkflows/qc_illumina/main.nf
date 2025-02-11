@@ -36,6 +36,8 @@ workflow QC_ILLUMINA {
     ch_reads_merged = ch_reads_illumina.single.mix(CAT_FASTQ.out.reads)
  
     // Short read trimming and QC
+    // this will also standardize the read names to sample_id_R1/2_trimmed.fastq.gz
+    // This is only acceptable because we concatenate the reads beforehand!
     FASTP(
         ch_reads_merged
     )
@@ -47,14 +49,16 @@ workflow QC_ILLUMINA {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions)
     multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
-
+    
+    // Run the contamination subworkflow
     CONTAMINATION(
         FASTP.out.reads,
         confindr_db
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
-
+    
+    // Downsample reads if a genome size is given
     if (params.genome_size) {
         RASUSA(
             ch_reads_decont

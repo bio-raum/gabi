@@ -1,7 +1,7 @@
 process POLYPOLISH_POLISH {
     tag "$meta.sample_id"
 
-    label 'medium_parallel'
+    label 'medium_serial'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -22,7 +22,7 @@ process POLYPOLISH_POLISH {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
-    polypolish polish $assembly $sam > ${prefix}.polished.fasta
+    polypolish polish $args $assembly $sam > ${prefix}.polished.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
