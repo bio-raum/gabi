@@ -101,6 +101,7 @@ def main(yaml, template, output, reference, version, call, wd):
                             contaminated = True
                             messages.append(f"Contamination detected in {read["Sample"]}")
 
+                            # Legacy support for ConfindR 0.7.4 - may be removed in later releases of GABI
                             if "PercentContam" in read:
                                 if (read["PercentContam"] == "ND"):
                                     perc = "ND"
@@ -125,13 +126,13 @@ def main(yaml, template, output, reference, version, call, wd):
                                         contaminated = "ND"
 
                             else:
-                                # If no percentages are given, we may still have a inter-species
+                                # If no percentages are given, we may still have an inter-species
                                 # contamination scenario, which we need to report
                                 if ":" in read["Genus"]:
                                     contaminated = read["Genus"]
                                     confindr_status = status["fail"]
                                 else:
-                                    contaminated = "ND"
+                                    contaminated = read["NumContamSNVs"]
                                     confindr_status = status["warn"]
 
             # All the relevant values and optional status classes
@@ -281,20 +282,25 @@ def main(yaml, template, output, reference, version, call, wd):
                     for stool, sresults in sentry.items():
                         if (stool == "ectyper"):
                             serotype = sresults["Serotype"]
+                            pathogenes = sresults["PathotypeGenes"]
                         elif (stool == "Stecfinder"):
                             serotype = sresults["Serotype"]
+                            pathogenes = sresults["stx type"]
                         elif (stool == "SeqSero2"):
                             serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
+                            pathogenes = ""
                         elif (stool == "Sistr"):
                             serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
+                            pathogenes = ""
                         elif (stool == "Lissero"):
                             serotype = sresults["SEROTYPE"]
+                            pathogenes = ""
 
                     stool_name = f"{stool} ({taxon})"
                     if (stool_name in serotypes_all):
-                        serotypes_all[stool_name].append({"sample": sample, "serotype": serotype})
+                        serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
-                        serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype}]
+                        serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype, "genes": pathogenes}]
 
             # Reference genome
             reference = jdata["reference"]
@@ -325,7 +331,7 @@ def main(yaml, template, output, reference, version, call, wd):
             # Warn if there are duplications in the gene set and busco wasnt already failed
             if (busco_duplicated > 5.0) & (busco_status != status["fail"]):
                 busco_status = status["warn"]
-                messages.append("Number of duplicated BUSCOs over 5%")
+                messages.append("Number of duplicated BUSCOs over 5% - this may indicate a contamination issue.")
 
             ##############
             # MLST types
@@ -421,31 +427,31 @@ def main(yaml, template, output, reference, version, call, wd):
                     coverage_40_illumina = jdata["mosdepth_global"]["illumina"]["40"]
                     if coverage_40_illumina < 90:
                         coverage_40_illumina_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low.")
+                        messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low")
                     else:
                         coverage_40_illumina_status = status["pass"]
                 if "nanopore" in jdata["mosdepth_global"]:
                     coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
                     if coverage_40_nanopore < 90:
                         coverage_40_nanopore_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low .")
+                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low")
                     else:
                         coverage_40_nanopore_status = status["pass"]
                 if "pacbio" in jdata["mosdepth_global"]:
                     coverage_40_pacbio = jdata["mosdepth_global"]["pacbio"]["40"]
                     if coverage_40_pacbio < 90:
                         coverage_40_pacbio_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by HiFi reads - this may be too low.")
+                        messages.append("Less than 90% of assembly coveraged at 40X by HiFi reads - this may be too low")
                     else:
                         coverage_40_pacbio_status = status["pass"]
                 if "total" in jdata["mosdepth_global"]:
                     coverage_40 = jdata["mosdepth_global"]["total"]["40"]
                     if coverage_40 < 90:
                         coverage_40_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X - this may be too low.")
+                        messages.append("Less than 90% of assembly coveraged at 40X - this may be too low")
                     elif coverage_40 < 75:
                         coverage_40_status = status["fail"]
-                        messages.append("Less than 75% of assembly coveraged at 40X - this is likely not acceptable.")
+                        messages.append("Less than 75% of assembly coveraged at 40X - this is likely not acceptable")
                     else:
                         coverage_40_status = status["pass"]
 
@@ -529,21 +535,21 @@ def main(yaml, template, output, reference, version, call, wd):
         if "ILLUMINA" in bracken_data_all:
             kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = len(samples) * 25 if len(samples) > 10 else 400
+            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
         if "NANOPORE" in bracken_data_all:
             print("Creating Bracken ONT graph")
             kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = len(samples) * 25 if len(samples) > 10 else 400
+            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
         if "PACBIO" in bracken_data_all:
             print("Creating Bracken Pacbio graph")
             kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = len(samples) * 25 if len(samples) > 10 else 400
+            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_PACBIO"] = fig.to_html(full_html=False)
 
@@ -565,7 +571,8 @@ def main(yaml, template, output, reference, version, call, wd):
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = len(samples) * 25 if len(samples) > 10 else 400
+        h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
+        print(h)
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)
 

@@ -143,7 +143,7 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ILM Q30 (%)<span class="tooltiptext">Fraction of Illumina reads above Q30.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT Q15 (#)<span class="tooltiptext">Number of ONT reads above Q15.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
-        <th scope="subcol"><div class="tooltip">Confindr (%)<span class="tooltiptext">Based on sequence variation; not 100% reliable for ONT data.</span></div></th>
+        <th scope="subcol"><div class="tooltip">Confindr (SNPs)<span class="tooltiptext">Contaminating SNPs; not 100% reliable for ONT data.</span></div></th>
         <th scope="subcol">Taxa >10%</th>
     </tr>
 <!--
@@ -381,11 +381,13 @@ Results from one or multiple serotyping tools
             <tr>
                 <th scope="col">Sample</th>
                 <th scope="col">Serotype</th>
+                <th scope="col">Pathogenicty factors</th>
             </tr>
             {% for stype in stypes %}
                 <tr>
                     <td scope="sample-id">{{stype.sample}}</td>
                     <td scope="col">{{stype.serotype}}</td>
+                    <td scope="col">{{stype.genes}}</td>
                 </tr>
             {% endfor %}
         </table>
