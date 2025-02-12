@@ -4,8 +4,8 @@ process CONFINDR {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/confindr:0.8.2--pyhdfd78af_0' :
-        'quay.io/biocontainers/confindr:0.8.2--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/confindr:0.7.4--py_0' :
+        'quay.io/biocontainers/confindr:0.7.4--py_0' }"
 
     input:
     tuple val(meta), path(reads, stageAs: 'input_dir/*')
@@ -26,6 +26,7 @@ process CONFINDR {
     def prefix = task.ext.prefix ?: "${meta.sample_id}_${meta.platform}"
     def db_options = db ? "-d ${db}" : ''
     def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 20 -b 5" : ""
+    
     """
     confindr.py \\
         -Xmx ${task.memory.toGiga()}G \\

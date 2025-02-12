@@ -97,43 +97,16 @@ def main(yaml, template, output, reference, version, call, wd):
                         confindr_status = status["pass"]
 
                     for read in set:
+                        if ":" in read["Genus"]:
+                            contaminated = read["Genus"]
+                        else:
+                            contaminated = read["NumContamSNVs"]
+
                         if read["ContamStatus"] == "True":
-                            contaminated = True
+                            confindr_status = status["fail"]
                             messages.append(f"Contamination detected in {read["Sample"]}")
-
-                            # Legacy support for ConfindR 0.7.4 - may be removed in later releases of GABI
-                            if "PercentContam" in read:
-                                if (read["PercentContam"] == "ND"):
-                                    perc = "ND"
-                                    if ":" in read["Genus"]:
-                                        perc = read["Genus"]
-                                    this_status = status["fail"]
-                                    confindr_status = status["fail"]
-                                    contaminated = perc
-                                else:
-                                    perc = float(read["PercentContam"])
-
-                                    if (perc > contaminated):
-                                        contaminated = perc
-
-                                    if (perc >= 10.0):
-                                        confindr_status = status["fail"]
-                                    elif (perc > 0.0 and confindr_status == status["pass"]):
-                                        confindr_status = status["warn"]
-                                    else:
-                                        if confindr_status == status["pass"]:
-                                            confindr_status = status["warn"]
-                                        contaminated = "ND"
-
-                            else:
-                                # If no percentages are given, we may still have an inter-species
-                                # contamination scenario, which we need to report
-                                if ":" in read["Genus"]:
-                                    contaminated = read["Genus"]
-                                    confindr_status = status["fail"]
-                                else:
-                                    contaminated = read["NumContamSNVs"]
-                                    confindr_status = status["warn"]
+                        else:
+                            confindr_status = status["pass"]
 
             # All the relevant values and optional status classes
             sample = jdata["sample"]
