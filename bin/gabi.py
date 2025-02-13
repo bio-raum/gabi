@@ -247,6 +247,8 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"]) / 1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
+            quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]),2)
+            quast["duplication_status"] = check_duplication(this_refs, quast["duplication_ratio"])
 
             #################
             # Get serotype(s)
@@ -446,7 +448,7 @@ def main(yaml, template, output, reference, version, call, wd):
                     this_status = estatus
 
             # The other metrics should at most warn, but never fail the sample
-            for estatus in [busco_status, contigs_status]:
+            for estatus in [ contigs_status]:
                 if (estatus != status["missing"]) & (this_status != status["fail"]) & (estatus != status["pass"]):
                     this_status = status["warn"]
 
@@ -584,6 +586,24 @@ def main(yaml, template, output, reference, version, call, wd):
         with open(template) as template_file:
             j2_template = Template(template_file.read())
             output_file.write(j2_template.render(data))
+
+
+def check_duplication(refs,query):
+
+    for ref in refs:
+        if "Duplication ratio" in ref:
+
+            max = float(ref["Duplication ratio"][0]["interval"][0])
+
+            # excessive deviations of more than 5% trigger a fail
+            if query > (max*1.05):
+                return status["fail"]
+            if query > max:
+                return status["warn"]
+            else:
+                return status["pass"]
+    
+    return status["missing"]
 
 
 def check_assembly(refs, query):
