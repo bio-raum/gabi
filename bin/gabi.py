@@ -70,14 +70,14 @@ def main(yaml, template, output, reference, version, call, wd):
             # Track the sample status
             this_status = status["pass"]
             taxon = jdata["taxon"]
-            genus, species = taxon.split(" ")
+            genus = taxon.split(" ")[0]
 
             # The reference data has thresholds for genus and species level; but not always
             # We take the species first, genus second (if any) and iterate over this list in
             # the check functions. Whatever hits first, gets returned (species, when in doubt)
             this_refs = []
-            if species in ref_data:
-                this_refs.append(ref_data[species])
+            if taxon in ref_data:
+                this_refs.append(ref_data[taxon])
             elif genus in ref_data:
                 this_refs.append(ref_data[genus])
             else:
@@ -151,14 +151,17 @@ def main(yaml, template, output, reference, version, call, wd):
 
                 for platform, bracken in jdata["bracken"].items():
 
-                    bracken_data_all[platform] = []
+                    # Rather than defining it at the beginning, we check if we need this platform in the results
+                    # This avoids having to filter all platforms that werent in this analysis
+                    if platform not in bracken_data_all:
+                        bracken_data_all[platform] = []
 
                     taxon_count = 0
                     taxon_count_status = status["pass"]
 
                     bracken_results = {}
                     for tax in bracken:
-                        this_taxon = tax["name"]
+                        this_taxon = tax["name"].replace('"', '')
                         # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
                         tperc = round((float(tax["fraction_total_reads"].replace('"', '')) * 100), 2)
 
@@ -326,6 +329,7 @@ def main(yaml, template, output, reference, version, call, wd):
             # Get coverage(s)
             ##############
 
+            # Set defaults in case this platform wasnt used
             coverage = "-"
             coverage_status = status["missing"]
 
@@ -455,7 +459,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
             rtable = {
                 "sample": sample,
-                "messages": ", ".join(messages),
+                "messages": "<br> ".join(messages),
                 "reference": reference,
                 "status": this_status,
                 "samtools": samtools,
@@ -588,15 +592,19 @@ def check_assembly(refs, query):
 
         if "Total length" in ref:
 
-            ref_intervals = [int(x) for x in ref["Total length"][0]["interval"]]
-
-            # assembly falls between the allowed sizes
-            if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
+            # intervals are ranging from lower bound to upper bound, with the accepted range in between
+            low,low_ok,high_ok,high = sorted([int(x) for x in ref["Total length"][0]["interval"]])
+         
+            if ((query >= low_ok) and (query <= high_ok)):
                 return status["pass"]
-            elif (any(x >= (query * 0.8) for x in ref_intervals) and any(x <= (query * 1.2) for x in ref_intervals)):
-                return status["warn"]
-            else:
+            elif (query < low):
                 return status["fail"]
+            elif (query < low_ok):
+                return status["warn"]
+            elif (query > high):
+                return status["fail"]
+            elif (query > high_ok):
+                return status["warn"]
 
     return status["missing"]
 
