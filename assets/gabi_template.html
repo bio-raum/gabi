@@ -119,7 +119,8 @@ The summary table with all key metrics per sample
         <th colspan=4 scope="col"><div class="tooltip">Mean coverage (X)<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
-        <th colspan=2 scope="col"><div class="tooltip">Contamination<span class="tooltiptext">Indicators of contamination</span></div></th>
+        <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
+        <th colspan=1 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 10% in the reads</span></div></th>
     </tr>
     <tr class="row">
         <th scope="subcol-inactive"></th>
@@ -144,8 +145,9 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ILM Q30 (%)<span class="tooltiptext">Fraction of Illumina reads above Q30.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT Q15 (#)<span class="tooltiptext">Number of ONT reads above Q15.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
-        <th scope="subcol"><div class="tooltip">Confindr (SNPs)<span class="tooltiptext">Contaminating SNPs; not 100% reliable for ONT data.</span></div></th>
-        <th scope="subcol">Taxa >10%</th>
+        <th scope="subcol"><div class="tooltip">ILM<span class="tooltiptext">Contaminating SNPs in Illumina reads.</span></div></th>
+        <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
+        <th scope="subcol">Taxa</th>
     </tr>
 <!--
 Our data structure is a list of dictionaries; where each dictionary holds
@@ -184,7 +186,8 @@ all the information for one sample
         <td scope={{row.quality_illumina_status}}>{{row.quality_illumina}}</td>
         <td scope="missing">{{row.quality_nanopore}}</td>
         <td scope="missing">{{row.nanopore_n50}}</td>
-        <td scope={{row.confindr_status}}>{{row.contamination}}</td>
+        <td scope={{row.confindr_illumina_status}}>{{row.contamination_illumina}}</td>
+        <td scope={{row.confindr_nanopore_status}}>{{row.contamination_nanopore}}</td>
         <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
     </tr>
     <tr class="row-hidden">

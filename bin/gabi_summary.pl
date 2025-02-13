@@ -50,7 +50,8 @@ my %matrix = (
     "taxon" => $taxon, 
     "quast" => {},
     "mlst" => [],
-    "confindr" => [],
+    "confindr_illumina" => [],
+    "confindr_nanopore" => [],
     "serotype" => [],
     "mosdepth" => {},
     "reference" => {},
@@ -92,10 +93,14 @@ foreach my $file ( @files ) {
     } elsif ( $filename =~ /.*mlst.json/) {
         my %data = parse_mlst(\@lines);
         push( @{ $matrix{"mlst"} }, \%data );
-    } elsif ( $filename =~ /.*confindr.*/ ) {
+    } elsif ( $filename =~ /.*ILLUMINA.*confindr.*/ ) {
         my @data = parse_confindr(\@lines);
         # We may see more than one ConfindR report!
-        push ( @{$matrix{"confindr"}}, \@data );
+        push ( @{$matrix{"confindr_illumina"}}, \@data );
+    } elsif ( $filename =~ /.*NANOPORE.*confindr.*/ ) {
+        my @data = parse_confindr(\@lines);
+        # We may see more than one ConfindR report!
+        push ( @{$matrix{"confindr_nanopore"}}, \@data );
     } elsif ( $filename eq "report.tsv") {
         my %data = parse_quast(\@lines);
         $matrix{"quast"} = \%data;

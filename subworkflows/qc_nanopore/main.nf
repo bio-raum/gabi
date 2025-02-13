@@ -3,14 +3,14 @@ Include Modules
 */
 
 include { PORECHOP_ABI }                from './../../modules/porechop/abi'
-include { RASUSA }                      from './../../modules/rasusa'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
 include { CHOPPER }                     from './../../modules/chopper'
 
+
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
-
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 ch_versions = Channel.from([])
 multiqc_files = Channel.from([])
@@ -85,14 +85,16 @@ workflow QC_NANOPORE {
     ch_versions = ch_versions.mix(NANOPLOT.out.versions)
     multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { m, r -> r })
 
-    if (params.genome_size) {
-        ch_chopped_reads.pass.countFastq()
-
-        RASUSA(
+    if (params.max_coverage) {
+        
+        // Perform downsampling of reads
+        DOWNSAMPLE_READS(
             ch_chopped_reads.pass
         )
-        ch_versions = ch_versions.mix(RASUSA.out.versions)
-        ch_processed_reads = RASUSA.out.reads
+
+        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
+        ch_processed_reads = DOWNSAMPLE_READS.out.reads
+
     } else {
         ch_processed_reads = ch_chopped_reads.pass
     }
@@ -105,4 +107,5 @@ workflow QC_NANOPORE {
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt
     versions        = ch_versions
-    }
+}
+

@@ -8,7 +8,7 @@ process RASUSA {
         'quay.io/biocontainers/rasusa:0.3.0--h779adbc_1' }"
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(reads), val(gsize)
 
     output:
     tuple val(meta), path('*.fastq.gz'), emit: reads
@@ -24,6 +24,7 @@ process RASUSA {
     """
     rasusa \\
         $args \\
+        --genome-size $gsize \\
         --input $reads \\
         $output
     cat <<-END_VERSIONS > versions.yml

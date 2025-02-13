@@ -86,27 +86,54 @@ def main(yaml, template, output, reference, version, call, wd):
             #############################################
             # Check for contaminated reads using confindr
             #############################################
-            if "confindr" in jdata:
-                contaminated = "-"
-                confindr = jdata["confindr"]
-                confindr_status = status["missing"]
+            if "confindr_illumina" in jdata:
+                contaminated_illumina = "-"
+                confindr = jdata["confindr_illumina"]
+                confindr_illumina_status = status["missing"]
 
                 for set in confindr:
 
-                    if confindr_status == status["missing"]:
-                        confindr_status = status["pass"]
+                    if confindr_illumina_status == status["missing"]:
+                        confindr_illumina_status = status["pass"]
 
                     for read in set:
+                        contam_type = "intra-species"
                         if ":" in read["Genus"]:
-                            contaminated = read["Genus"]
+                            contaminated_illumina = read["Genus"]
+                            contam_type = "inter-species"
                         else:
-                            contaminated = read["NumContamSNVs"]
+                            contaminated_illumina = read["NumContamSNVs"]
 
                         if read["ContamStatus"] == "True":
-                            confindr_status = status["fail"]
-                            messages.append(f"Contamination detected in {read["Sample"]}")
+                            confindr_illumina_status = status["fail"]
+                            messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
                         else:
-                            confindr_status = status["pass"]
+                            confindr_illumina_status = status["pass"]
+
+            if "confindr_nanopore" in jdata:
+                contaminated_nanopore = "-"
+                confindr = jdata["confindr_nanopore"]
+                confindr_nanopore_status = status["missing"]
+
+                for set in confindr:
+
+                    if confindr_nanopore_status == status["missing"]:
+                        confindr_nanopore_status = status["pass"]
+
+                    for read in set:
+                        contam_type = "intra-species"
+                        if ":" in read["Genus"]:
+                            contaminated_nanopore = read["Genus"]
+                            contam_type = "inter-species"
+                        else:
+                            contaminated_nanopore = read["NumContamSNVs"]
+
+                        if read["ContamStatus"] == "True":
+                            confindr_nanopore_status = status["fail"]
+                            
+                            messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
+                        else:
+                            confindr_nanopore_status = status["pass"]
 
             # All the relevant values and optional status classes
             sample = jdata["sample"]
@@ -249,6 +276,16 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
             quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]),2)
             quast["duplication_status"] = check_duplication(this_refs, quast["duplication_ratio"])
+
+            if (quast["gc_status"] == status["warn"]):
+                messages.append("GC ratio slightly outside of reference range.")
+            elif (quast["gc_status"]) == status["fail"]:
+                messages.append("GC ratio well outside of reference range.")
+
+            if (quast["duplication_status"] == status["warn"]):
+                messages.append("Duplication ratio slightly above reference value.")
+            elif (quast["duplication_ratio"] == status["fail"]):
+                messages.append("Duplication ratio well above reference value.")
 
             #################
             # Get serotype(s)
@@ -439,12 +476,12 @@ def main(yaml, template, output, reference, version, call, wd):
             ######################################
 
             # The metrics that by themselves determine overall status:
-            for estatus in [confindr_status, taxon_count_status, assembly_status]:
+            for estatus in [confindr_illumina_status, confindr_nanopore_status, taxon_count_status, assembly_status]:
                 # if any one metric failed, the whole sample failed
                 if estatus == status["fail"]:
                     this_status = estatus
                 # if a metric is dubious, the entire sample is dubious, unless it already failed or warned
-                elif (estatus == status["warn"]) & (this_status == status["pass"]):
+                elif (estatus == status["warn"]) and (this_status == status["pass"]):
                     this_status = estatus
 
             # The other metrics should at most warn, but never fail the sample
@@ -498,8 +535,10 @@ def main(yaml, template, output, reference, version, call, wd):
                 "contigs_status": contigs_status,
                 "assembly": assembly,
                 "assembly_status": assembly_status,
-                "contamination": contaminated,
-                "confindr_status": confindr_status,
+                "contamination_illumina": contaminated_illumina,
+                "confindr_illumina_status": confindr_illumina_status,
+                "contamination_nanopore": contaminated_nanopore,
+                "confindr_nanopore_status": confindr_nanopore_status,
                 "quast": quast,
             }
 

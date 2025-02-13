@@ -144,13 +144,9 @@ A local version of the ConfindR rMLST database, available [here](https://olc-bio
 
 By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-### `--genome_size` [ default = null ]
-
-If enabled, this is the assumed genome size against which the coverage is measured for downsampling the reads (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size.
-
 ### `--max_coverage` [ default = '100x']
 
-If a genome size is specified (`--genome_size`), this is the target coverage for downsampling the read data. 
+Performs subsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
 
 ### `--max_contigs` [ default = 150 ]
 
