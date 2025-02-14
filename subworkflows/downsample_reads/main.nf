@@ -19,7 +19,7 @@ workflow DOWNSAMPLE_READS {
     reads.join(
         KMC.out.log
     ).map { m,r,l ->
-        gsize = parse_genome_size(l)
+        def gsize = parse_genome_size(l)
         tuple(m,r,gsize)
     }.set { ch_reads_with_genome_size }
 

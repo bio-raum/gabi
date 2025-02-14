@@ -75,14 +75,13 @@ def main(yaml, template, output, reference, version, call, wd):
             # The reference data has thresholds for genus and species level; but not always
             # We take the species first, genus second (if any) and iterate over this list in
             # the check functions. Whatever hits first, gets returned (species, when in doubt)
-            this_refs = []
+            this_refs = [{}]
             if taxon in ref_data:
                 this_refs.append(ref_data[taxon])
-            elif genus in ref_data:
+            
+            if genus in ref_data:
                 this_refs.append(ref_data[genus])
-            else:
-                this_refs = [{}]
-
+                        
             #############################################
             # Check for contaminated reads using confindr
             #############################################
@@ -204,7 +203,7 @@ def main(yaml, template, output, reference, version, call, wd):
                         messages.append(f"More than three taxa detected in {platform} read data!")
                     elif (taxon_count > 1):
                         taxon_count_status = status["warn"]
-                        messages.append(f"More than one taxa detected in the {platform} read data!")
+                        messages.append(f"More than one taxon detected in the {platform} read data!")
 
             ####################
             # Get samtools stats
@@ -332,6 +331,7 @@ def main(yaml, template, output, reference, version, call, wd):
             busco_missing = round((int(busco["M"]) / busco_total), 2) * 100
             busco_duplicated = round((int(busco["D"]) / busco_total), 2) * 100
             busco["completeness"] = busco_completeness
+            busco["duplicated"] = busco_duplicated
             busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
             if (busco_completeness > 90.0):
@@ -630,6 +630,7 @@ def main(yaml, template, output, reference, version, call, wd):
 def check_duplication(refs,query):
 
     for ref in refs:
+        
         if "Duplication ratio" in ref:
 
             max = float(ref["Duplication ratio"][0]["interval"][0])
@@ -701,22 +702,24 @@ def check_n50(refs, query):
             else:
                 return status["fail"]
 
-        return status["missing"]
+    return status["missing"]
 
 
 def check_gc(refs, query):
 
     for ref in refs:
 
-        ref_intervals = [float(x) for x in ref["GC (%)"][0]["interval"]]
+        if "GC (%)" in ref:
 
-        # check if gc falls within expected range, or range +/- 5% - else fail
-        if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
-            return status["pass"]
-        elif (any(x >= (query * 0.95) for x in ref_intervals) and any(x <= (query * 1.05) for x in ref_intervals)):
-            return status["warn"]
-        else:
-            return status["fail"]
+            ref_intervals = [float(x) for x in ref["GC (%)"][0]["interval"]]
+
+            # check if gc falls within expected range, or range +/- 5% - else fail
+            if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
+                return status["pass"]
+            elif (any(x >= (query * 0.95) for x in ref_intervals) and any(x <= (query * 1.05) for x in ref_intervals)):
+                return status["warn"]
+            else:
+                return status["fail"]
 
     return status["missing"]
 

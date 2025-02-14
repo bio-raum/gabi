@@ -131,7 +131,7 @@ The summary table with all key metrics per sample
         <th scope="subcol">Size (Mb)</th>
         <th scope="subcol"><div class="tooltip">#Contigs<span class="tooltiptext">The number of chromosomal contigs, i.e. without plasmids.</span></div></th>
         <th scope="subcol"><div class="tooltip">N50 (Kb)<span class="tooltiptext">The size of contigs (>=)in which 50% of the assembly are represented.</span><div></th>
-        <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes fully covered in this assembly (BUSCO).</span></div></th>
+        <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes covered in this assembly (BUSCO), complete (C) | duplicated (D).</span></div></th>
         <th scope="subcol"><div class="tooltip">GC (%)<span class="tooltiptext">GC content of the assembly. Deviations from the species default are highlighted in orange (mild) and red (strong, something likely wrong)</span></div></th>
         <th scope="subcol"><div class="tooltip">Dup<span class="tooltiptext">Duplication ratio as measured against the reference. Deviations from the species default are highlighted in orange (mild) and red (strong, something likely wrong)</span></div></th>
         <th scope="subcol">Total</th>
@@ -172,7 +172,7 @@ all the information for one sample
         <td scope={{row.assembly_status}}>{{row.assembly}}</td>
         <td scope={{row.contigs_status}}>{{row.contigs}}</td>
         <td scope={{row.n50_status}}>{{row.n50}}</td>
-        <td scope={{row.busco_status}}>{{row.busco.completeness}}</td>
+        <td scope={{row.busco_status}}>C: {{row.busco.completeness}} | D: {{row.busco.duplicated}}</td>
         <td scope={{row.quast.gc_status}}>{{row.quast.gc}}</td>
         <td scope={{row.quast.duplication_status}}>{{row.quast.duplication_ratio}}</td>
         <td scope={{row.coverage_status}}>{{row.coverage}}</td>
