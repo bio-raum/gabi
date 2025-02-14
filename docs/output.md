@@ -2,7 +2,7 @@
 
 ## Result files
 
-GABI produces two primary reports, as well as reports specific to each sequencing technologies used. 
+GABI produces two primary reports, as well as reports specific to each sequencing technology used. 
 
 The key report for most users will be `reports/<run_name>.html`. This file includes all the relevant metrics describing (most of) your data and assembly, with automatic classification and highlighting of each sample status (pass, warn, fail). 
 
@@ -89,13 +89,13 @@ For each sample, a folder is created with results from various tools, as follows
   - quast - Quast assembly metrics
   - flye/dragonflye/shovill - the assembler output(s)
 - mlst - MLST typing results
-- Plamids - Identification of plasmids from the assembly
+- plasmids - Identification of plasmids from the assembly
 - qc - Basic read QC
   - fastqc - Quality metrics of reads
   - confindr_results - ConfindR contamination check
 - taxonomy - Taxonomic profiling using raw reads
-  - kraken2 - Results from Kraken2
-- sample.json - A coarse summary of various sample-level results
+  - kraken2 - Results from Kraken2/Bracken
+- sample.json - A coarse summary of various sample-level results - can be used to roll your own reporting formats or tie into downstream data processing. 
 
 </details>
 

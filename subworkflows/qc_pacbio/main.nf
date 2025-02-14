@@ -2,7 +2,12 @@
 include { RASUSA }                          from './../../modules/rasusa'
 include { CAT_FASTQ  }                      from './../../modules/cat_fastq'
 include { FASTQC }                          from './../../modules/fastqc'
-include { CONTAMINATION }                   from './../contamination'
+
+/*
+subworkflows
+*/
+include { CONTAMINATION }               from './../contamination'
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 ch_versions = Channel.from([])
 multiqc_files = Channel.from([])
@@ -42,12 +47,14 @@ workflow QC_PACBIO {
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
 
-    if (params.genome_size) {
-        RASUSA(
+    if (params.max_coverage) {
+
+        DOWNSAMPLE_READS(
             ch_reads_decont
         )
-        ch_versions = ch_versions.mix(RASUSA.out.versions)
-        ch_processed_reads = RASUSA.out.reads
+        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
+        ch_processed_reads = DOWNSAMPLE_READS.out.reads
+        
     } else {
         ch_processed_reads = ch_reads_decont
     }

@@ -1,8 +1,12 @@
 include { FASTP }                       from './../../modules/fastp'
 include { CAT_FASTQ }                   from './../../modules/cat_fastq'
 include { FASTQC }                      from './../../modules/fastqc'
-include { RASUSA }                      from './../../modules/rasusa'
+
+/*
+subworkflows
+*/
 include { CONTAMINATION }               from './../contamination'
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 ch_versions = Channel.from([])
 multiqc_files = Channel.from([])
@@ -59,12 +63,15 @@ workflow QC_ILLUMINA {
     ch_reads_decont = CONTAMINATION.out.reads
     
     // Downsample reads if a genome size is given
-    if (params.genome_size) {
-        RASUSA(
+    if (params.max_coverage) {
+
+        // perform downsampling of reads
+        DOWNSAMPLE_READS(
             ch_reads_decont
         )
-        ch_versions = ch_versions.mix(RASUSA.out.versions)
-        ch_processed_reads = RASUSA.out.reads
+        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
+        ch_processed_reads = DOWNSAMPLE_READS.out.reads
+        
     } else {
         ch_processed_reads = ch_reads_decont
     }

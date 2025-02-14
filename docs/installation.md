@@ -6,7 +6,7 @@ If you are new to our pipeline ecosystem, we recommend you first check out our g
 
 Nextflow is a highly portable pipeline engine. Please see the official [installation guide](https://www.nextflow.io/docs/latest/getstarted.html#installation) to learn how to set it up.
 
-This pipeline expects Nextflow version 24.04.4, available [here](https://github.com/nextflow-io/nextflow/releases/tag/v24.04.4).
+This pipeline expects Nextflow version 24.04.4, available [here](https://github.com/nextflow-io/nextflow/releases/tag/v24.04.4). Other, more recent versions, will probably work also. 
 
 ## Software provisioning
 

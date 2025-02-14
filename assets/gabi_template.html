@@ -115,23 +115,25 @@ The summary table with all key metrics per sample
         <th scope="col"><div class="tooltip">Status<span class="tooltiptext">The overall analysis status: pass: ok to use, warn: potential issues found, fail: most probably not usable</span></div></th>
         <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon using kmer matching (S/MASH)</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Reference genome<span class="tooltiptext">The highest matching hit in RefSeq to this assembly</span></div></th>
-        <th colspan=5 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
+        <th colspan=6 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Mean coverage (X)<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
         <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
-        <th colspan=2 scope="col"><div class="tooltip">Contamination<span class="tooltiptext">Indicators of contamination</span></div></th>
+        <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
+        <th colspan=1 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 10% in the reads</span></div></th>
     </tr>
     <tr class="row">
         <th scope="subcol-inactive"></th>
         <th scope="subcol-inactive"></th>
         <th scope="subcol-inactive"></th>
         <th scope="subcol">Assembly</th>
-        <th scope="subcol">% Cov</th>
+        <th scope="subcol"><div class="tooltip">% Cov<span class="tooltiptext">How much of the reference is covered by this assembly in percent.</span></div></th>
         <th scope="subcol">Size (Mb)</th>
         <th scope="subcol"><div class="tooltip">#Contigs<span class="tooltiptext">The number of chromosomal contigs, i.e. without plasmids.</span></div></th>
         <th scope="subcol"><div class="tooltip">N50 (Kb)<span class="tooltiptext">The size of contigs (>=)in which 50% of the assembly are represented.</span><div></th>
-        <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes fully covered in this assembly (BUSCO).</span></div></th>
+        <th scope="subcol"><div class="tooltip">Gene space (%)<span class="tooltiptext">The fraction of broadly conserved genes covered in this assembly (BUSCO), complete (C) | duplicated (D).</span></div></th>
         <th scope="subcol"><div class="tooltip">GC (%)<span class="tooltiptext">GC content of the assembly. Deviations from the species default are highlighted in orange (mild) and red (strong, something likely wrong)</span></div></th>
+        <th scope="subcol"><div class="tooltip">Dup<span class="tooltiptext">Duplication ratio as measured against the reference. Deviations from the species default are highlighted in orange (mild) and red (strong, something likely wrong)</span></div></th>
         <th scope="subcol">Total</th>
         <th scope="subcol">ILM</th>
         <th scope="subcol">ONT</th>
@@ -143,8 +145,9 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ILM Q30 (%)<span class="tooltiptext">Fraction of Illumina reads above Q30.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT Q15 (#)<span class="tooltiptext">Number of ONT reads above Q15.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
-        <th scope="subcol"><div class="tooltip">Confindr (%)<span class="tooltiptext">Based on sequence variation; not 100% reliable for ONT data.</span></div></th>
-        <th scope="subcol">Taxa >10%</th>
+        <th scope="subcol"><div class="tooltip">ILM<span class="tooltiptext">Contaminating SNPs in Illumina reads.</span></div></th>
+        <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
+        <th scope="subcol">Taxa</th>
     </tr>
 <!--
 Our data structure is a list of dictionaries; where each dictionary holds
@@ -169,8 +172,9 @@ all the information for one sample
         <td scope={{row.assembly_status}}>{{row.assembly}}</td>
         <td scope={{row.contigs_status}}>{{row.contigs}}</td>
         <td scope={{row.n50_status}}>{{row.n50}}</td>
-        <td scope={{row.busco_status}}>{{row.busco.completeness}}</td>
+        <td scope={{row.busco_status}}>C: {{row.busco.completeness}} | D: {{row.busco.duplicated}}</td>
         <td scope={{row.quast.gc_status}}>{{row.quast.gc}}</td>
+        <td scope={{row.quast.duplication_status}}>{{row.quast.duplication_ratio}}</td>
         <td scope={{row.coverage_status}}>{{row.coverage}}</td>
         <td scope={{row.coverage_illumina_status}}>{{row.coverage_illumina}}</td>
         <td scope={{row.coverage_nanopore_status}}>{{row.coverage_nanopore}}</td>
@@ -182,7 +186,8 @@ all the information for one sample
         <td scope={{row.quality_illumina_status}}>{{row.quality_illumina}}</td>
         <td scope="missing">{{row.quality_nanopore}}</td>
         <td scope="missing">{{row.nanopore_n50}}</td>
-        <td scope={{row.confindr_status}}>{{row.contamination}}</td>
+        <td scope={{row.confindr_illumina_status}}>{{row.contamination_illumina}}</td>
+        <td scope={{row.confindr_nanopore_status}}>{{row.contamination_nanopore}}</td>
         <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
     </tr>
     <tr class="row-hidden">
@@ -381,11 +386,13 @@ Results from one or multiple serotyping tools
             <tr>
                 <th scope="col">Sample</th>
                 <th scope="col">Serotype</th>
+                <th scope="col">Pathogenicty factors</th>
             </tr>
             {% for stype in stypes %}
                 <tr>
                     <td scope="sample-id">{{stype.sample}}</td>
                     <td scope="col">{{stype.serotype}}</td>
+                    <td scope="col">{{stype.genes}}</td>
                 </tr>
             {% endfor %}
         </table>

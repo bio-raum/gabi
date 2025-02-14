@@ -23,7 +23,6 @@ summary["MaxContigs"]           = params.skip_failed ? params.max_contigs : "Not
 summary["Busco"]                = params.busco_lineage
 summary["ConfindR DB"]          = params.confindr_db ? params.confindr_db : "built-in"
 summary["Max Coverage"]         = params.max_coverage ? params.max_coverage : "Not applied"
-summary["Genome size"]          = params.genome_size ? params.genome_size : "Not applied"
 summary["Shovill assembler"]    = params.shovill_assembler
 summary["AMRfinder"]            = [:]
 summary["Abricate"]             = [:]

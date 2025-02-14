@@ -89,8 +89,6 @@ S100,ILLUMINA,/home/marc/projects/gaba/data/S100_R1.fastq.gz,/home/marc/projects
 
 If the pipeline sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the R2 column should remain empty. 
 
-Please note that there is an optional column `library_id`, which is used to name some of the output folders for read-set specific QC measures. If `library_id` is not given, the pipeline will use the file name.
-
 Allowed platforms and data types are:
 
 * ILLUMINA (expecting PE Illumina reads in fastq format, fastq.gz)
@@ -128,7 +126,7 @@ Discard nanopore reads below this length. Depending on your DNA extraction and/o
 
 ### `--run_name` [ default = null]
 
-A name to use for various output files. This tend to be useful to relate analyses back to individual pipeline runs or projects later on. 
+A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. 
 
 ### `--reference_base` [ default = null ]
 
@@ -146,17 +144,17 @@ A local version of the ConfindR rMLST database, available [here](https://olc-bio
 
 By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-### `--genome_size` [ default = null ]
-
-If enabled, this is the assumed genome size against which the coverage is measured for downsampling the reads (e.g. '5Mb'). Since this pipeline supports processing of diverse species in parallel, you may wish to set this to a size that works across all expected taxa, like '6Mb'. The reads will then be downsampled to the desired max coverage, given the genome size.
-
 ### `--max_coverage` [ default = '100x']
 
-If a genome size is specified (`--genome_size`), this is the target coverage for downsampling the read data. 
+Performs subsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
 
 ### `--max_contigs` [ default = 150 ]
 
 If `--skip_failed` is enabled, this parameter controls the maximum number of contigs an assembly is allowed to have before it is stopped. High contig numbers are typically a sign of insufficient coverage and/or read length (in some cases it can also be a sign of excessive contamination).
+
+### `--medaka_model` [ default = null ]
+
+The basecalling model used for ONT reads. This option is set to null by default since more recent base callers encode this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. 
 
 ### `--prokka_proteins` [ default = null ]
 
@@ -204,11 +202,11 @@ Discard contigs shorter than this from the assembly. Very short contigs generall
 
 The following options can be set to control resource usage outside of a site-specific [config](https://github.com/bio-raum/nf-configs) file.
 
-### `--max_cpus` [ default = 16]
+### `--max_cpus` [ default = 8]
 
 The maximum number of cpus a single job can request. This is typically the maximum number of cores available on a compute node or your local (development) machine. 
 
-### `--max_memory` [ default = 128.GB ]
+### `--max_memory` [ default = 64.GB ]
 
 The maximum amount of memory a single job can request. This is typically the maximum amount of RAM available on a compute node or your local (development) machine, minus a few percent to prevent the machine from running out of memory while running basic background tasks.
 

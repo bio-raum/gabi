@@ -25,7 +25,8 @@ process CONFINDR {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}_${meta.platform}"
     def db_options = db ? "-d ${db}" : ''
-    def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 20 -bf 0.1" : ""
+    def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 20 -b 5" : ""
+    
     """
     confindr.py \\
         -Xmx ${task.memory.toGiga()}G \\

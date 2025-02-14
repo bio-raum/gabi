@@ -12,7 +12,6 @@ This template specifically is set up to work with the following VS extensions:
 - prettier
 - groovy-lint
 - TODO highlight
-- Docker
 
 ## Basic concept
 
@@ -27,13 +26,12 @@ This pipeline base is organized in the following way:
 
 Some aspects of this code base are controlled by config files. These are:
 
-/nextflow.config -  this sets some of the command line options and default values
+nextflow.config -  this sets some of the command line options and default values
 
-/conf/resources.config - here you can put some pipeline-internal options, like locations of reference files and the like (assuming you use a generic base directory with fixed folder structure or S3 buckets)
+conf/resources.config - here you can put some pipeline-internal options, like locations of reference files and the like (assuming you use a generic base directory with fixed folder structure or S3 buckets)
 
-/conf/base.config - this file sets the computing specifications for different types of processes. 
+conf/base.config - this file sets the computing specifications for different types of processes. 
 
-/conf/lsh.config - this is an example of a site-specific config file (set as "standard" profile in nextflow.config), in which you can provide information about your compute environment. Make sure to create a new profile for it too. 
 
 ## Groovy libraries
 
