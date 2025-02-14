@@ -24,6 +24,7 @@ process KMC {
 
     """
     mkdir -p kmc
+    $args \\
     kmc -sm \\
     -m${task.memory.toGiga()-1} \\
     -ci${ci} \\
