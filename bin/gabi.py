@@ -78,10 +78,10 @@ def main(yaml, template, output, reference, version, call, wd):
             this_refs = [{}]
             if taxon in ref_data:
                 this_refs.append(ref_data[taxon])
-            
+
             if genus in ref_data:
                 this_refs.append(ref_data[genus])
-                        
+
             #############################################
             # Check for contaminated reads using confindr
             #############################################
@@ -129,7 +129,7 @@ def main(yaml, template, output, reference, version, call, wd):
 
                         if read["ContamStatus"] == "True":
                             confindr_nanopore_status = status["fail"]
-                            
+
                             messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
                         else:
                             confindr_nanopore_status = status["pass"]
@@ -273,7 +273,7 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"]) / 1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
-            quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]),2)
+            quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 02)
             quast["duplication_status"] = check_duplication(this_refs, quast["duplication_ratio"])
 
             if (quast["gc_status"] == status["warn"]):
@@ -485,7 +485,7 @@ def main(yaml, template, output, reference, version, call, wd):
                     this_status = estatus
 
             # The other metrics should at most warn, but never fail the sample
-            for estatus in [ contigs_status]:
+            for estatus in [contigs_status]:
                 if (estatus != status["missing"]) & (this_status != status["fail"]) & (estatus != status["pass"]):
                     this_status = status["warn"]
 
@@ -627,10 +627,10 @@ def main(yaml, template, output, reference, version, call, wd):
             output_file.write(j2_template.render(data))
 
 
-def check_duplication(refs,query):
+def check_duplication(refs, query):
 
     for ref in refs:
-        
+
         if "Duplication ratio" in ref:
 
             max = float(ref["Duplication ratio"][0]["interval"][0])
@@ -642,7 +642,7 @@ def check_duplication(refs,query):
                 return status["warn"]
             else:
                 return status["pass"]
-    
+
     return status["missing"]
 
 
@@ -653,8 +653,8 @@ def check_assembly(refs, query):
         if "Total length" in ref:
 
             # intervals are ranging from lower bound to upper bound, with the accepted range in between
-            low,low_ok,high_ok,high = sorted([int(x) for x in ref["Total length"][0]["interval"]])
-         
+            low, low_ok, high_ok, high = sorted([int(x) for x in ref["Total length"][0]["interval"]])
+
             if ((query >= low_ok) and (query <= high_ok)):
                 return status["pass"]
             elif (query < low):
