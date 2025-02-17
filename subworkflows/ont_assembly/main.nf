@@ -1,7 +1,7 @@
 include { FLYE as FLYE_ONT }        from '../../modules/flye'
 include { MEDAKA_CONSENSUS }        from '../../modules/medaka/consensus'
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
-include { RACON }                   from '../../modules/racon'
+include { HOMOPOLISH }              from '../../modules/homopolish'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
@@ -17,6 +17,7 @@ workflow ONT_ASSEMBLY {
 
     take:
     reads // [ meta, [short_reads], ont_reads ]
+    homopolish_db
 
     main:
 
@@ -37,25 +38,9 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
 
-    ch_flye_with_reads = lreads.join(FLYE_ONT.out.fasta)
-
-    // Align long reads to initial FLYE assembly
-    MINIMAP2_ALIGN_PAF(
-        ch_flye_with_reads,
-        "paf"
-    )
-    ch_versions = ch_versions.mix(MINIMAP2_ALIGN_PAF.out.versions)
-
-    ch_flye_with_alignment = ch_flye_with_reads.join(MINIMAP2_ALIGN_PAF.out.paf)
-    // Use read alignments to polish FLYE assembly
-    RACON(
-        ch_flye_with_alignment
-    )
-    ch_versions = ch_versions.mix(RACON.out.versions)
-
     // Re-polish initial consensus contigs with Medaka
     MEDAKA_CONSENSUS(
-        lreads.join(RACON.out.improved_assembly)
+        lreads.join(FLYE_ONT.out.fasta)
     )
     ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
 
@@ -72,6 +57,21 @@ workflow ONT_ASSEMBLY {
         with: it.last()
         without: !it.last()
     }.set { polished_with_short_reads }
+
+    // Homopolish to remove homopolymer errors when no short reads
+    // are available ; skippable if users chooses to  
+    if (!params.skip_homopolish) {
+            HOMOPOLISH(
+            polished_with_short_reads.without.map { m,p,r ->
+                tuple(m,p)
+            },
+            homopolish_db
+        )
+        ch_versions = ch_versions.mix(HOMOPOLISH.out.versions)
+        ch_homopolished = HOMOPOLISH.out.polished
+    } else {
+        ch_homopolished = MEDAKA_CONSENSUS.out.consensus
+    }
 
     // Create BWA index
     BWAMEM2_INDEX_POLYPOLISH(
@@ -101,11 +101,8 @@ workflow ONT_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(POLYPOLISH_POLISH.out.versions)
 
-    // Combine poly-polished assemblies with assemblies for which we have no short reads
-    polished_with_short_reads.without.map { m,a,r -> 
-        tuple(m,a) 
-    }.mix(POLYPOLISH_POLISH.out.fasta)
-    .set { ch_polished_assembly }
+    // Combine shot-read polished assemblies with homopolish assemblies for which we had no short reads
+    ch_polished_assembly = ch_homopolished.mix(POLYPOLISH_POLISH.out.fasta)
 
     emit:
     assembly = ch_polished_assembly

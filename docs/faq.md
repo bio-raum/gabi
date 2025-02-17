@@ -16,6 +16,8 @@ Generally, GABI runs fine with all-default settings. Parameterization is most ty
 
 The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads. 
 
+`--skip_homopolish` Skip polishing of homopolymer errors. Since this uses sequence information from related assemblies, you may or may not wish to skip this. 
+
 ## Technologies
 
 ### Do any ONT reads work with GABI?

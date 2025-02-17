@@ -37,6 +37,8 @@ include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
 include { VARIANTS }                    from './../subworkflows/variants'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
+include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
+
 
 /*
 --------------------
@@ -69,6 +71,7 @@ if (params.input) {
     abricate_dbs    = Channel.from(params.abricate_dbs)
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
+    homopolish_db   = params.reference_base ? file(params.references['homopolish_db'].db, checkIfExists:true) : []
 
     // Sourmash DB choice - either the full thing or a smaller "nr" one to speed up searches at the cost of some precision
     if (params.fast_ref) {
@@ -207,7 +210,8 @@ workflow GABI {
     polishing, with and without short reads
     */    
     ONT_ASSEMBLY(
-        ch_dragonflye
+        ch_dragonflye,
+        homopolish_db
     )
     ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
     ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
@@ -216,12 +220,11 @@ workflow GABI {
     Option: Pacbio HiFi reads
     Flye
     */
-    FLYE(
+    PACBIO_ASSEMBLY(
         ch_pb_reads_only
     )
-    ch_versions     = ch_versions.mix(FLYE.out.versions)
-    ch_assemblies   = ch_assemblies.mix(FLYE.out.fasta)
-
+    ch_versions     = ch_versions.mix(PACBIO_ASSEMBLY.out.versions)
+    ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)
     
     // Find empty assemblies and stop them
     ch_assemblies.branch { m,f ->

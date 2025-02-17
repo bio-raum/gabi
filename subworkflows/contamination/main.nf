@@ -19,22 +19,18 @@ workflow CONTAMINATION {
         reads,
         confindr_db
     )
-
-    /*
-    Check the contamination status and add
-    to meta hash
-    */
-    CONFINDR.out.report.map { m, r ->
-        def pass = parse_confindr_report(r)
-        m.pass = pass
-        tuple(m, r)
-    }.set { confindr_report_with_status }
-
     ch_versions = ch_versions.mix(CONFINDR.out.versions)
 
-    confindr_report_with_status.branch { m, r ->
-        pass: m.pass  == true
-        fail: m.pass == false
+    /*
+    Check the contamination status and branch
+    */
+    CONFINDR.out.report.map { m, r ->
+        def status = parse_confindr_report(r)
+        tuple(m, r, status )
+    }.branch { m,r,s ->
+        pass: s == true
+        fail: s == false
+        tuple(m,r)
     }.set { confindr_by_status }
 
     /*
@@ -46,14 +42,10 @@ workflow CONTAMINATION {
 
     // Samples can be failed forver or be forwarded with a warning
     if (params.skip_failed) {
-        reads.map { m, r ->
-            tuple(m.sample_id, m, r)
-        }.join(
-            confindr_by_status.pass.map { m, t ->
-                tuple(m.sample_id, t)
-            }
+        reads.join(
+            confindr_by_status.pass
         )
-        .map { i, m, r, t -> tuple(m, r) }
+        .map { m, r, t -> tuple(m, r) }
         .set { ch_pass_reads }
     } else {
         ch_pass_reads = reads

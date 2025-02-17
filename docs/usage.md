@@ -10,6 +10,10 @@ Please fist check out our [installation guide](installation.md), if you haven't 
 
 [Options](#options)
 
+- [Illumina options](#illumina-options)
+
+- [Nanopore options](#nanopore-options)
+
 [Expert options](#expert-options)
 
 [Resources](#resources)
@@ -112,9 +116,41 @@ S100,/path/to/S100.fasta
 
 This option is only used when installing the pipelines references as described [here](installation.md).
 
+### `--run_name` [ default = null]
+
+A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. 
+
+### `--reference_base` [ default = null ]
+
+This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
+
+## Illumina options
+
+Some options specific to assembling Illumina short reads. 
+
+### `--shovill_assembler` [ default = spades ]
+
+Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
+
+### `--shovill_contig_minlen` [ default = 600 ]
+
+Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
+
+## Nanopore options
+
+Some options specific to assembling ONT reads. 
+
+### `--medaka_model` [ default = null ]
+
+The basecalling model used for ONT reads. This option is set to null by default since more recent base callers encode this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. 
+
+### `--homopolish_model` [ default = R10]
+
+Specifies the training file to use in [Homopolish](https://github.com/ythuang0522/homopolish). Valid options are `R10` and `R9`. Most people will want to use R10. 
+
 ### `--onthq` [ default = false ]
 
-Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20). This is typically the case for data generated with chemistry version 10.4.1 or later, preferably using a ligation protocol. This option is set to false by default.
+Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20, generated with Dorado SUP basecalling). This option is set to false by default.
 
 ### `--ont_min_q` [ default = 10 ]
 
@@ -124,13 +160,9 @@ Discard nanopore reads below this mean quality. ONT sequencing will produce a sp
 
 Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths. If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
 
-### `--run_name` [ default = null]
+### `--skip_homopolish` [ default = false ]
 
-A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. 
-
-### `--reference_base` [ default = null ]
-
-This option should point to the base directory in which you have installed the pipeline references. See our [installation](installation.md) instructions for details. For users who have contributed a site-specific config file, this option does not need to be set. 
+Skip polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.
 
 ## Expert options
 
@@ -146,15 +178,12 @@ By default, GABI uses a comprehensive reference database to identify the best re
 
 ### `--max_coverage` [ default = '100x']
 
-Performs subsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
+Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. This option is set to 100x by default since we are not aware of any benefit from going deeper. Set to false if you do not wish to perform downsampling. 
 
 ### `--max_contigs` [ default = 150 ]
 
 If `--skip_failed` is enabled, this parameter controls the maximum number of contigs an assembly is allowed to have before it is stopped. High contig numbers are typically a sign of insufficient coverage and/or read length (in some cases it can also be a sign of excessive contamination).
 
-### `--medaka_model` [ default = null ]
-
-The basecalling model used for ONT reads. This option is set to null by default since more recent base callers encode this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. 
 
 ### `--prokka_proteins` [ default = null ]
 
@@ -178,6 +207,7 @@ By default, all samples are processed all the way to the end of the pipeline. Th
 ### `--skip_amr` [ default = false ]
 
 Skip prediction of AMR genes
+
 ### `--skip_circos` [ default = false ]
 
 Skip generation of circos plots.
@@ -189,14 +219,6 @@ Skip MLST analyses
 ### `--skip_serotyping` [ default = false ]
 
 Skip Serotyping
-
-### `--shovill_assembler` [ default = spades ]
-
-Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
-
-### `--shovill_contig_minlen` [ default = 600 ]
-
-Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
 
 ## Resources
 

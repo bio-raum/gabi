@@ -23,6 +23,8 @@ process KMC {
     def ci = (meta.platform == "NANOPORE") ? 10 : 2
 
     """
+    for i in $reads ; do echo \$i >> files.txt ; done;
+
     mkdir -p kmc
     $args \\
     kmc -sm \\
@@ -30,7 +32,8 @@ process KMC {
     -ci${ci} \\
     -k21 \\
     -t${task.cpus} \\
-    $reads \\
+    @files.txt \\
+    ${prefix}_kmc.out \\
     kmc > ${prefix}_${meta.platform}_kmc.txt
 
     cat <<-END_VERSIONS > versions.yml

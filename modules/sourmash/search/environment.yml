@@ -1,5 +1,7 @@
+name: sourmash_search
 channels:
   - conda-forge
   - bioconda
+  - defaults
 dependencies:
   - bioconda::sourmash=4.8.4
