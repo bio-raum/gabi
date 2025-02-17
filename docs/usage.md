@@ -146,7 +146,7 @@ By default, GABI uses a comprehensive reference database to identify the best re
 
 ### `--max_coverage` [ default = '100x']
 
-Performs subsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
+Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. This option is set to 100x by default since we are not aware of any benefit from going deeper. Set to false if you do not wish to perform downsampling. 
 
 ### `--max_contigs` [ default = 150 ]
 
