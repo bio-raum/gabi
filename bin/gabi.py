@@ -273,7 +273,7 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"]) / 1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
             quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
-            quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 2)
+            quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 4)
             quast["duplication_status"] = check_duplication(this_refs, quast["duplication_ratio"])
 
             if (quast["gc_status"] == status["warn"]):

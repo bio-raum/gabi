@@ -20,7 +20,6 @@ process HOMOPOLISH {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
     homopolish polish \\
         $args \\
