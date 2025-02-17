@@ -346,9 +346,10 @@ workflow GABI {
                 tuple(m,r,a)
             }
         )
-        ch_versions     = ch_versions.mix(VARIANTS.out.versions)
-        multiqc_files   = multiqc_files.mix(VARIANTS.out.qc)
-        ch_report       = ch_report.mix(VARIANTS.out.stats)
+        ch_versions         = ch_versions.mix(VARIANTS.out.versions)
+        ch_multiqc_illumina = ch_multiqc_illumina.mix(VARIANTS.out.stats.filter { m,s -> m.platform == "ILLUMINA"}.map { m,s -> s})
+        ch_multiqc_nanopore = ch_multiqc_nanopore.mix(VARIANTS.out.stats.filter { m,s -> m.platform == "NANOPORE"}.map { m,s -> s})
+        ch_report           = ch_report.mix(VARIANTS.out.stats)
     }
 
     /*

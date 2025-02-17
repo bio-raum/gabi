@@ -26,6 +26,7 @@ process KMC {
     for i in $reads ; do echo \$i >> files.txt ; done;
 
     mkdir -p kmc
+    $args \\
     kmc -sm \\
     -m${task.memory.toGiga()-1} \\
     -ci${ci} \\

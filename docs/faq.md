@@ -2,11 +2,25 @@
 
 This section will be expanded as we find new questions and potential pitfalls. 
 
+## Which parameters should I pay attention to?
+
+Generally, GABI runs fine with all-default settings. Parameterization is most typically needed for ONT data. Specifically:
+
+### ONT data
+
+`--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers
+
+`--ont_min_q` Minimum quality ONT reads to keep
+
+`--ont_min_length` Minimum ONT read length to keep
+
+The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads. 
+
 ## Technologies
 
 ### Do any ONT reads work with GABI?
 
-Well...yes. But to be perfectly transparent, we are not testing with R9 reads or earlier and will not dedicate much time to issues related to their support. With the latest R10 chemistry, results with GABI look great. We do recommend you use the super-accurate base calling (SUP) model 5.0.0 or later however, since our tests show this to be a prerequisite for consistently good assemblies. 
+Well...yes. But to be perfectly transparent, we are not testing with R9 reads or earlier and will not dedicate time to issues related to their support. With the latest R10 chemistry, results with GABI generally look great. We do recommend you use the super-accurate base calling (SUP) model 5.0.0 or later however, since our tests show this to be a prerequisite for consistently good assemblies. 
 
 ## Detecting contaminations
 
