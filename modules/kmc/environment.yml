@@ -1,4 +1,4 @@
-name: mlst
+name: kmc
 channels:
   - conda-forge
   - bioconda

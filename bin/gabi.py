@@ -440,36 +440,40 @@ def main(yaml, template, output, reference, version, call, wd):
 
             if "mosdepth_global" in jdata:
                 if "illumina" in jdata["mosdepth_global"]:
-                    coverage_40_illumina = jdata["mosdepth_global"]["illumina"]["40"]
-                    if coverage_40_illumina < 90:
-                        coverage_40_illumina_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low")
-                    else:
-                        coverage_40_illumina_status = status["pass"]
+                    if "40" in jdata["mosdepth_global"]["illumina"]:
+                        coverage_40_illumina = jdata["mosdepth_global"]["illumina"]["40"]
+                        if coverage_40_illumina < 90:
+                            coverage_40_illumina_status = status["warn"]
+                            messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low")
+                        else:
+                            coverage_40_illumina_status = status["pass"]
                 if "nanopore" in jdata["mosdepth_global"]:
-                    coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
-                    if coverage_40_nanopore < 90:
-                        coverage_40_nanopore_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low")
-                    else:
-                        coverage_40_nanopore_status = status["pass"]
+                    if "40" in jdata["mosdepth_global"]["nanopore"]:
+                        coverage_40_nanopore = jdata["mosdepth_global"]["nanopore"]["40"]
+                        if coverage_40_nanopore < 90:
+                            coverage_40_nanopore_status = status["warn"]
+                            messages.append("Less than 90% of assembly coveraged at 40X by ONT reads - this may be too low")
+                        else:
+                            coverage_40_nanopore_status = status["pass"]
                 if "pacbio" in jdata["mosdepth_global"]:
-                    coverage_40_pacbio = jdata["mosdepth_global"]["pacbio"]["40"]
-                    if coverage_40_pacbio < 90:
-                        coverage_40_pacbio_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X by HiFi reads - this may be too low")
-                    else:
-                        coverage_40_pacbio_status = status["pass"]
+                    if "40" in jdata["mosdepth_global"]["pacbio"]:
+                        coverage_40_pacbio = jdata["mosdepth_global"]["pacbio"]["40"]
+                        if coverage_40_pacbio < 90:
+                            coverage_40_pacbio_status = status["warn"]
+                            messages.append("Less than 90% of assembly coveraged at 40X by HiFi reads - this may be too low")
+                        else:
+                            coverage_40_pacbio_status = status["pass"]
                 if "total" in jdata["mosdepth_global"]:
-                    coverage_40 = jdata["mosdepth_global"]["total"]["40"]
-                    if coverage_40 < 90:
-                        coverage_40_status = status["warn"]
-                        messages.append("Less than 90% of assembly coveraged at 40X - this may be too low")
-                    elif coverage_40 < 75:
-                        coverage_40_status = status["fail"]
-                        messages.append("Less than 75% of assembly coveraged at 40X - this is likely not acceptable")
-                    else:
-                        coverage_40_status = status["pass"]
+                    if "40" in jdata["mosdepth_global"]["total"]:
+                        coverage_40 = jdata["mosdepth_global"]["total"]["40"]
+                        if coverage_40 < 90:
+                            coverage_40_status = status["warn"]
+                            messages.append("Less than 90% of assembly coveraged at 40X - this may be too low")
+                        elif coverage_40 < 75:
+                            coverage_40_status = status["fail"]
+                            messages.append("Less than 75% of assembly coveraged at 40X - this is likely not acceptable")
+                        else:
+                            coverage_40_status = status["pass"]
 
             ######################################
             # Set the overall status of the sample

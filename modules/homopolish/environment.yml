@@ -1,7 +1,7 @@
-name: chopper
+name: homopolish
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
-  - bioconda::chopper=0.9.1
+  - bioconda::homopolish=0.4.1

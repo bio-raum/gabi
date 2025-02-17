@@ -6,18 +6,27 @@ include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/a
 include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/helper/stage_file'
 include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
+include { GUNZIP as GUNZIP_HOMOPOLISH_DB }                  from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
 
 kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
 sourmash_db_url     = params.references['sourmashdb'].url
 sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
+homopolish_db       = params.references['homopolish_db'].url
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
 
 workflow BUILD_REFERENCES {
     main:
+    
+    /*
+    Decompress homopolish database
+    */
+    GUNZIP_HOMOPOLISH_DB(
+        hompolish_db
+    )
 
     /*
     Download Horse genome from EnsEMBL and build index
