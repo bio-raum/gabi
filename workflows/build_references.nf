@@ -13,7 +13,7 @@ kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
 confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
 sourmash_db_url     = params.references['sourmashdb'].url
 sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
-homopolish_db       = params.references['homopolish_db'].url
+homopolish_db       = Channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
 ch_busco_lineage    = Channel.from(['bacteria_odb10'])
 host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
@@ -25,7 +25,7 @@ workflow BUILD_REFERENCES {
     Decompress homopolish database
     */
     GUNZIP_HOMOPOLISH_DB(
-        hompolish_db
+        homopolish_db
     )
 
     /*

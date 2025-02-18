@@ -164,6 +164,10 @@ Discard nanopore reads below this length. Depending on your DNA extraction and/o
 
 Skip polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.
 
+### `--skip_porechop` [ default = true ]
+
+Skip the removal of adapters from reads using [Porechop_abi](https://github.com/bonsai-team/Porechop_ABI). Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. 
+
 ## Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 
