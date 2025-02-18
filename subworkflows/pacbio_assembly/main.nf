@@ -1,6 +1,7 @@
 include { FLYE as FLYE_PACBIO }     from '../../modules/flye'
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
 include { KMC }                     from '../../modules/kmc'
+include { DNAAPLER }                from '../../modules/dnaapler'
 include { RACON }                   from '../../modules/racon'
 
 ch_versions = Channel.from([])
@@ -34,8 +35,14 @@ workflow PACBIO_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(RACON.out.versions)
 
+    // Consistently orient chromosomes
+    DNAAPLER(
+        RACON.out.improved_assembly
+    )
+    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
+
     emit:
-    assembly = RACON.out.improved_assembly
+    assembly = DNAAPLER.out.fasta
     versions = ch_versions
 
 }

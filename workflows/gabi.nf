@@ -10,11 +10,8 @@ include { MULTIQC as MULTIQC_NANOPORE } from './../modules/multiqc'
 include { MULTIQC as MULTIQC_PACBIO }   from './../modules/multiqc'
 include { SHOVILL }                     from './../modules/shovill'
 include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
-include { RENAME_CTG as RENAME_DRAGONFLYE_CTG } from './../modules/rename_ctg'
+include { RENAME_CTG as RENAME_EXTERNAL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
-include { DRAGONFLYE }                  from './../modules/dragonflye'
-include { FLYE }                        from './../modules/flye'
-include { DNAAPLER }                    from './../modules/dnaapler'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
@@ -104,7 +101,12 @@ workflow GABI {
     INPUT_CHECK(samplesheet)
 
     // If we pass existing assemblies instead of raw reads:
-    ch_assemblies = ch_assemblies.mix(INPUT_CHECK.out.assemblies)
+    // standardize the names and process
+    RENAME_EXTERNAL_CTG(
+        INPUT_CHECK.out.assemblies,
+        'fasta'
+    )
+    ch_assemblies = ch_assemblies.mix(RENAME_EXTERNAL_CTG.out)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -236,19 +238,12 @@ workflow GABI {
         log.warn "${m.sample_id} - assembly is empty, stopping sample"
     }
 
-    // orient assemblies consistently
-    DNAAPLER(
-        ch_assemblies_size.pass
-    )
-    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
-
-    ch_assemblies_oriented = DNAAPLER.out.fasta
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Tag and optionally remove highly fragmented assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_assemblies_oriented.branch { m, f ->
+    ch_assemblies_size.pass.branch { m, f ->
         fail: f.countFasta() > params.max_contigs
         pass: f.countFasta() <= params.max_contigs
     }.set { ch_assemblies_status }
@@ -260,7 +255,7 @@ workflow GABI {
     if (params.skip_failed) {
         ch_assemblies_filtered = ch_assemblies_status.pass
     } else {
-        ch_assemblies_filtered = ch_assemblies_oriented
+        ch_assemblies_filtered = ch_assemblies_size.pass
     }
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -386,11 +381,11 @@ workflow GABI {
         tuple(m,s)
     }.set { ch_assemblies_without_plasmids_with_taxa }
 
-    // as well as a channel with the clean assembly and taxon information
+    // as well as a channel with the clean assembly incl Plasmids and taxon information
     ch_assemblies_clean.map {m,s ->
         tuple(m.sample_id, s)
     }.join(
-        FIND_REFERENCES.out.reference.map { m, r, g, k ->
+        FIND_REFERENCES.out.taxon.map { m ->
             tuple(m.sample_id, m)
         }
     ).map { m,s,n -> tuple(n,s) }
