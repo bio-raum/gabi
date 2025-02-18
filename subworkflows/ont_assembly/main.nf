@@ -2,6 +2,7 @@ include { FLYE as FLYE_ONT }        from '../../modules/flye'
 include { MEDAKA_CONSENSUS }        from '../../modules/medaka/consensus'
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
 include { HOMOPOLISH }              from '../../modules/homopolish'
+include { DNAAPLER }                from '../../modules/dnaapler'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
@@ -104,8 +105,14 @@ workflow ONT_ASSEMBLY {
     // Combine shot-read polished assemblies with homopolish assemblies for which we had no short reads
     ch_polished_assembly = ch_homopolished.mix(POLYPOLISH_POLISH.out.fasta)
 
+    // Consistently orient chromosomes
+    DNAAPLER(
+        ch_polished_assembly
+    )
+    ch_versions = ch_versions.mix(DNAAPLER.out.versions)
+
     emit:
-    assembly = ch_polished_assembly
+    assembly = DNAAPLER.out.fasta
     versions = ch_versions
 
 }
