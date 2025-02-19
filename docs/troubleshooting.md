@@ -30,13 +30,15 @@ No. The HiFi format has been the defacto standard for Pacbio sequencing for a fe
 
 ## Crashes and performance
 
+### The pipeline fails because a Conda/Mamba environment could not be solved
+
+Conda, in our eyes, is not well suited for production purposes - for excactly this reason. Basically, each time you update your conda installation, there is a risk of certain packages no longer working. And in some cases - and for reasons not entirely transparent - certain systems simply will have problems solving certain environments. Long story short, please consider using a container engine like [Singularity](https://docs.sylabs.io/guides/3.11/admin-guide/) or [Apptainer](https://apptainer.org/). 
+
 ### The pipeline crashes with an out-of-memory error in one of the processes. 
 
 This could simply be an issue with your executing machine not having enough RAM to run some of the tools we put into this pipeline. The exact amount of RAM needed is difficult to predict and can depend on factors like read length and/or sequencing depth - but we suspect that at least 32GB RAM should be available to avoid RAM-related issues. 
 
-If your read data is very deep, you may wish to try and set a maximum coverage to trigger downsamplig of your data using `--max_coverage 100x`.
-
-If this is already the case for you, then it is more likely that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) or from the command line - in which case GABI will use the built-in default (64GB Ram) - which will perhaps exceed the limits of your system. Please check our section on manipulating [resource](usage.md#resources) limits from the command line. 
+It is also possible that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) or from the command line - in which case GABI will use the built-in default (64GB Ram) - which will perhaps exceed the limits of your system. Please check our section on manipulating [resource](usage.md#resources) limits from the command line. 
 
 ### Why is the pipeline so slow?
 

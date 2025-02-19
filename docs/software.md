@@ -38,6 +38,9 @@ Version 2.9, [doi](https://doi.org/10.1038/s41587-019-0072-8) | [PubMed](https:/
 **Hamronization**
 Version 1.1.4, [github](https://github.com/pha4ge/hAMRonization)
 
+**Homopolish**
+Version 0.4.1, [doi](https://doi.org/10.1186/s13059-021-02282-6) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/33789731/) | [github](https://github.com/ythuang0522/homopolish)
+
 **Lissero**
 Version 0.4.9, [github](https://github.com/MDU-PHL/LisSero)
 

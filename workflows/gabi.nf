@@ -361,25 +361,8 @@ workflow GABI {
     )
     ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
     ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
-
-    /*
-    Combine the assembly with the best reference genome and annotation
-    Here we use only the chromosomal assembly, since Plasmids may skew the metrics
-    */
-    ch_assembly_without_plasmids.map { m, s ->
-        tuple(m.sample_id, s)
-    }.join(
-        FIND_REFERENCES.out.reference.map { m, r, g, k ->
-            tuple(m.sample_id, m, r, g, k)
-        }
-    ).map { i,s, m, r, g, k ->
-        tuple(m, s, r, g, k)
-    }.set { ch_assemblies_without_plasmids_with_reference_and_gbk }
-
-    // and we create a channel with taxon-enriched metadata and assembly for other analyses
-    ch_assemblies_without_plasmids_with_reference_and_gbk.map { m,s, r, g, k ->
-        tuple(m,s)
-    }.set { ch_assemblies_without_plasmids_with_taxa }
+    ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
+    ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
 
     // as well as a channel with the clean assembly incl Plasmids and taxon information
     ch_assemblies_clean.map {m,s ->
@@ -390,6 +373,7 @@ workflow GABI {
         }
     ).map { m,s,n -> tuple(n,s) }
     .set { ch_assemblies_clean_with_taxa }
+    
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Perform serotyping of assemblies

@@ -66,10 +66,30 @@ workflow FIND_REFERENCES {
 
     meta_with_genbank = meta_with_sequence.map{m,s,a,k -> [m,k]}
 
+    /*
+    Combine the assembly with the best reference genome and annotation
+    */
+    assembly.map { m, s ->
+        tuple(m.sample_id, s)
+    }.join(
+        meta_with_sequence.map { m, r, g, k ->
+            tuple(m.sample_id, m, r, g, k)
+        }
+    ).map { i,s, m, r, g, k ->
+        tuple(m, s, r, g, k)
+    }.set { assembly_with_reference_and_gbk }
+
+    // and we create a channel with taxon-enriched metadata and assembly for other analyses
+    assembly_with_reference_and_gbk.map { m,s, r, g, k ->
+        tuple(m,s)
+    }.set { assembly_with_taxa }
+
     emit:
     taxon = meta_with_sequence.map {m,s,a,k -> m }
     gbk = meta_with_genbank
     reference = meta_with_sequence
+    assembly_with_ref = assembly_with_reference_and_gbk
+    assembly_with_tax = assembly_with_taxa
     versions = ch_versions
     
 }
