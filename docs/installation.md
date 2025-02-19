@@ -20,7 +20,7 @@ You can choose one of the following options:
 
 [Podman](https://podman.io/docs/installation)
 
-[Conda](https://github.com/conda-forge/miniforge)
+[Conda](https://github.com/conda-forge/miniforge) (Discouraged!!)
 
 [Apptainer](https://apptainer.org/)
 
@@ -77,6 +77,23 @@ conda {
   useMamba = true
   cacheDir = "/path/to/conda_cache"
 }
-``` 
+```
 
 This would be for a single computer, with 16 cores and 64GB Ram, using Conda/Mamba. Conda environments are cached to the specified location and can be re-used for subsequent pipeline runs. 
+
+Or for Singualrity
+
+```GROOVY
+params {
+
+  max_cpus = 16
+  max_memory = 64.GB
+  max_time = 24.h
+
+}
+
+singularity {
+  enabled = true
+  cacheDir = "/path/to/singularity_cache"
+}
+``` 
