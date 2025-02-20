@@ -21,6 +21,8 @@ process FASTP {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: meta.sample_id
 
+    def options = meta.single_end ? "--trim_tail1 1" : "--trim_tail1 1 --trim_tail2 1"
+
     r1 = reads[0]
 
     suffix = '_trimmed.fastq.gz'
@@ -34,6 +36,7 @@ process FASTP {
         """
         fastp --in1 ${r1} \
         --out1 $r1_trim \
+        $options \
         -w ${task.cpus} \
         -j $json \
         -h $html $args
@@ -52,6 +55,7 @@ process FASTP {
         --out1 $r1_trim \
         --out2 $r2_trim \
         --detect_adapter_for_pe \
+        $options \
         -w ${task.cpus} \
         -j $json \
         -h $html \

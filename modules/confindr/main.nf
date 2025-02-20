@@ -25,7 +25,7 @@ process CONFINDR {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}_${meta.platform}"
     def db_options = db ? "-d ${db}" : ''
-    def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 20 -b 5" : ""
+    def options = meta.platform == "NANOPORE" ? "-dt Nanopore -q 20 -b 5" : "-dt Illumina -bf 0.05 -q 20 -b 2"
     
     """
     confindr.py \\
