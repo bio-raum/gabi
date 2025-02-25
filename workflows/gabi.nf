@@ -509,6 +509,7 @@ workflow GABI {
     display jointly (scale etc)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
+
     MULTIQC_ILLUMINA(
         ch_multiqc_illumina.collect(),
         ch_multiqc_config,

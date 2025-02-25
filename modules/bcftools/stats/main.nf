@@ -4,8 +4,8 @@ process BCFTOOLS_STATS {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0':
-        'quay.io/biocontainers/bcftools:1.20--h8b25389_0' }"
+        'https://depot.galaxyproject.org/singularity/bcftools:1.21--h3a4d415_1':
+        'quay.io/biocontainers/bcftools:1.21--h3a4d415_1' }"
 
     input:
     tuple val(meta),  path(vcf), path(tbi)
