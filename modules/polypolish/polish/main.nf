@@ -26,7 +26,7 @@ process POLYPOLISH_POLISH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        flye: \$( flye --version )
+        polypolish: \$( polypolish --version 2>&1 | cut -f2 -d ' ' )
     END_VERSIONS
     """
 }
