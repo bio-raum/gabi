@@ -109,9 +109,18 @@ workflow COVERAGE {
         SAMTOOLS_INDEX.out.bam.filter { m,b,i -> m.platform == "ILLUMINA"}
     )
 
+    MOSDEPTH.out.global_txt.branch { m,r ->
+        illumina: m.platform == "ILLUMINA"
+        ont: m.platform == "NANOPORE"
+        pacbio: m.platform == "PACBIO"
+    }.set { reports_by_platform }
+
     emit:
     versions    = ch_versions
     report      = MOSDEPTH.out.global_txt
+    report_illumina = reports_by_platform.illumina
+    report_ont  = reports_by_platform.ont
+    report_pacbio = reports_by_platform.pacbio
     bam         = SAMTOOLS_INDEX.out.bam
     bam_stats   = SAMTOOLS_STATS.out.stats
     summary     = MOSDEPTH.out.summary_txt

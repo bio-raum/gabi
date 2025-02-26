@@ -8,8 +8,6 @@ include { MULTIQC }                     from './../modules/multiqc'
 include { MULTIQC as MULTIQC_ILLUMINA } from './../modules/multiqc'
 include { MULTIQC as MULTIQC_NANOPORE } from './../modules/multiqc'
 include { MULTIQC as MULTIQC_PACBIO }   from './../modules/multiqc'
-include { SHOVILL }                     from './../modules/shovill'
-include { RENAME_CTG as RENAME_SHOVILL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_EXTERNAL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
 include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
@@ -33,6 +31,7 @@ include { FIND_REFERENCES }             from './../subworkflows/find_references'
 include { SEROTYPING }                  from './../subworkflows/serotyping'
 include { COVERAGE }                    from './../subworkflows/coverage'
 include { VARIANTS }                    from './../subworkflows/variants'
+include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
 
@@ -94,14 +93,13 @@ ch_multiqc_illumina = Channel.from([])
 ch_multiqc_nanopore = Channel.from([])
 ch_multiqc_pacbio   = Channel.from([])
 
-
 workflow GABI {
     main:
 
     INPUT_CHECK(samplesheet)
 
     // If we pass existing assemblies instead of raw reads:
-    // standardize the names and process
+    // rename to sample_id
     RENAME_EXTERNAL_CTG(
         INPUT_CHECK.out.assemblies,
         'fasta'
@@ -168,8 +166,6 @@ workflow GABI {
     SUB: Predict taxonomy from read data
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    //ch_reads_for_taxonomy = ch_hybrid_reads.map { m, i, n -> [m, i ] }
-    //ch_reads_for_taxonomy = ch_reads_for_taxonomy.mix(ch_short_reads_only, ch_ont_reads_only, ch_pb_reads_only)
     
     ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean,ch_pacbio_trimmed)
 
@@ -191,25 +187,16 @@ workflow GABI {
     */
 
     /*
-    Option: Short reads only
-    Shovill
+    Illumina short-reads only
     */
-
-    SHOVILL(
+    ILLUMINA_ASSEMBLY(
         ch_short_reads_only
     )
-    ch_versions = ch_versions.mix(SHOVILL.out.versions)
-
-    //Shovill generates generic output names, must rename to sample id
-    RENAME_SHOVILL_CTG(
-        SHOVILL.out.contigs,
-        'fasta'
-    )
-    ch_assemblies = ch_assemblies.mix(RENAME_SHOVILL_CTG.out)
+    ch_versions = ch_versions.mix(ILLUMINA_ASSEMBLY.out.versions)
+    ch_assemblies = ch_assemblies.mix(ILLUMINA_ASSEMBLY.out.assembly)
 
     /*
-    ONT assembly including multiple rounds of optional
-    polishing, with and without short reads
+    ONT assembly including polishing with and without short reads
     */    
     ONT_ASSEMBLY(
         ch_dragonflye,
@@ -280,34 +267,16 @@ workflow GABI {
         ch_pacbio_trimmed
     )
     ch_versions   = ch_versions.mix(COVERAGE.out.versions)
-    ch_multiqc_illumina = ch_multiqc_illumina.mix(
-        COVERAGE.out.report.filter { m,r -> 
-            m.platform == "ILLUMINA"
-        }.map { m,r -> r}
-    )
-    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(
-        COVERAGE.out.report.filter { m,r ->
-            m.platform == "NANOPORE"
-        }.map { m,r -> r }
-    )
-    ch_multiqc_pacbio = ch_multiqc_pacbio.mix(
-        COVERAGE.out.report.filter { m,r ->
-            m.platform == "PACBIO"
-        }.map { m,r -> r }
-    )
-    multiqc_files = multiqc_files.mix(
-        COVERAGE.out.report.filter { m,r ->
-            m.platform == "ALL"
-        }.map { m,r -> r }
-    )
-    //ch_report = ch_report.mix(COVERAGE.out.summary)
+
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(COVERAGE.out.report_illumina.map{ m,r -> r })
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(COVERAGE.out.report_ont.map{ m,r -> r })
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(COVERAGE.out.report_pacbio.map{ m,r -> r })
 
     ch_report = ch_report.mix(
         COVERAGE.out.summary,
-        COVERAGE.out.report
+        COVERAGE.out.report,
+        COVERAGE.out.bam_stats
     )
-
-    ch_report = ch_report.mix(COVERAGE.out.bam_stats)
     
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

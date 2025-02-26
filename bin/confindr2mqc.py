@@ -32,7 +32,8 @@ def main(output):
             for row in rows:
                 matrix["data"][row["Sample"]] = {
                     "Contaminated": row["ContamStatus"],
-                    "Genus": row["Genus"]
+                    "Genus": row["Genus"],
+                    "SNVs": row["NumContamSNVs"]
                 }
 
     with open(output, 'w') as fo:

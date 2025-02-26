@@ -10,6 +10,7 @@ workflow ALIGN_LONG_READS {
 
     main:
 
+    // Align reads with minimap
     MINIMAP2_ALIGN(
         ch_reads_with_assembly,
         "bam"

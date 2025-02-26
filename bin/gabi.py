@@ -104,8 +104,12 @@ def main(yaml, template, output, reference, version, call, wd):
                             contaminated_illumina = read["NumContamSNVs"]
 
                         if read["ContamStatus"] == "True":
-                            confindr_illumina_status = status["fail"]
-                            messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
+                            if (float(read["PercentContam"]) > 3):
+                                confindr_illumina_status = status["fail"]
+                                messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
+                            else:
+                                confindr_illumina_status = status["warn"]
+                                messages.append(f"Low levels of contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
                         else:
                             confindr_illumina_status = status["pass"]
 
@@ -128,9 +132,12 @@ def main(yaml, template, output, reference, version, call, wd):
                             contaminated_nanopore = read["NumContamSNVs"]
 
                         if read["ContamStatus"] == "True":
-                            confindr_nanopore_status = status["fail"]
-
-                            messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
+                            if (float(read["PercentContam"]) > 3):
+                                confindr_nanopore_status = status["fail"]
+                                messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
+                            else:
+                                confindr_nanopore_status = status["warn"]
+                                messages.append(f"Low levels of contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
                         else:
                             confindr_nanopore_status = status["pass"]
 

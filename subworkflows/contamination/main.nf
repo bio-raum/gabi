@@ -37,7 +37,7 @@ workflow CONTAMINATION {
     Report failed samples to the screen
     */
     confindr_by_status.fail.subscribe { m, r ->
-        log.warn "Failed contamination check for sample ${m.sample_id} - please check the report ${r.getSimpleName()}"
+        log.warn "Warning in contamination check for sample ${m.sample_id} - please check the report ${r.getSimpleName()}"
     }
 
     // Samples can be failed forver or be forwarded with a warning

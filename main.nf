@@ -24,6 +24,12 @@ summary["Busco"]                = params.busco_lineage
 summary["ConfindR DB"]          = params.confindr_db ? params.confindr_db : "built-in"
 summary["Max Coverage"]         = params.max_coverage ? params.max_coverage : "Not applied"
 summary["Shovill assembler"]    = params.shovill_assembler
+summary["Shovill min contig length"] = params.shovill_contig_minlen
+summary["Medaka model"]         = params.medaka_model
+summary["ONT HQ reads"]         = params.onthq
+summary["ONT min Q"]            = params.ont_min_q
+summary["ONT min reads"]        = params.ont_min_reads
+summary["Homopolish model"]     = params.homopolish_model
 summary["AMRfinder"]            = [:]
 summary["Abricate"]             = [:]
 summary["AMRfinder"]["min_cov"] = params.arg_amrfinderplus_coveragemin
@@ -80,6 +86,9 @@ workflow.onComplete {
     email_info = ''
     for (s in emailFields) {
         email_info += "\n${s.key}: ${s.value}"
+    }
+    for (p in params) {
+        email_info += "\n${p.key}: ${p.value}"
     }
 
     outputDir = new File("${params.outdir}/pipeline_info/")
