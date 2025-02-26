@@ -177,8 +177,10 @@ def main(yaml, template, output, reference, version, call, wd):
             # Get Bracken results
             ####################
 
-            taxon_count = "-"
-            taxon_count_status = status["missing"]
+            taxon_count_illumina = "-"
+            taxon_count_illumina_status = status["missing"]
+            taxon_count_nanopore = "-"
+            taxon_count_nanopore_status = status["missing"]
 
             if "bracken" in jdata:
 
@@ -211,6 +213,14 @@ def main(yaml, template, output, reference, version, call, wd):
                     elif (taxon_count > 1):
                         taxon_count_status = status["warn"]
                         messages.append(f"More than one taxon detected in the {platform} read data!")
+
+                    if platform == "ILLUMINA":
+                        taxon_count_illumina = taxon_count
+                        taxon_count_illumina_status = taxon_count_status
+                    elif platform == "NANOPORE":
+                        taxon_count_nanopore = taxon_count
+                        taxon_count_nanopore_status = taxon_count_status
+
 
             ####################
             # Get samtools stats
@@ -520,8 +530,10 @@ def main(yaml, template, output, reference, version, call, wd):
                 "quality_nanopore": nanostat_q15,
                 "nanopore_n50": nanostat_read_n50,
                 "busco_status": busco_status,
-                "taxon_count": taxon_count,
-                "taxon_count_status": taxon_count_status,
+                "taxon_count_illumina": taxon_count_illumina,
+                "taxon_count_illumina_status": taxon_count_illumina_status,
+                "taxon_count_nanopore": taxon_count_nanopore,
+                "taxon_count_nanopore_status": taxon_count_nanopore_status,
                 "coverage": coverage,
                 "coverage_status": coverage_status,
                 "coverage_illumina": coverage_illumina,

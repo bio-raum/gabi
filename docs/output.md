@@ -95,7 +95,7 @@ For each sample, a folder is created with results from various tools, as follows
   - confindr_results - ConfindR contamination check
 - taxonomy - Taxonomic profiling using raw reads
   - kraken2 - Results from Kraken2/Bracken
-- sample.json - A coarse summary of various sample-level results - can be used to roll your own reporting formats or tie into downstream data processing. 
+- sample.json - A comprehensive summary of various sample-level results - can be used to roll your own reporting formats or tie into downstream data processing. 
 
 </details>
 
@@ -130,7 +130,7 @@ This folder contains the pipeline run metrics
 
 - pipeline_dag.svg - the workflow graph (only available if GraphViz is installed)
 - pipeline_report.html - the (graphical) summary of all completed tasks and their resource usage
-- pipeline_report.txt - a short summary of this analysis run in text format
+- pipeline_report.txt - a short summary of this analysis run and all parameters, in text format
 - pipeline_timeline.html - chronological report of compute tasks and their duration
 - pipeline_trace.txt - Detailed trace log of all processes and their various metrics
 

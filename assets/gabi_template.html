@@ -120,7 +120,7 @@ The summary table with all key metrics per sample
         <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
-        <th colspan=1 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
+        <th colspan=2 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
     </tr>
     <tr class="row">
         <th scope="subcol-inactive"></th>
@@ -147,7 +147,8 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ONT N50 (bp)<span class="tooltiptext">N50 of ONT reads</span></div></th>
         <th scope="subcol"><div class="tooltip">ILM<span class="tooltiptext">Contaminating SNPs in Illumina reads.</span></div></th>
         <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
-        <th scope="subcol">Taxa</th>
+        <th scope="subcol">ILM</th>
+        <th scope="subcol">ONT</th>
     </tr>
 <!--
 Our data structure is a list of dictionaries; where each dictionary holds
@@ -188,7 +189,8 @@ all the information for one sample
         <td scope="missing">{{row.nanopore_n50}}</td>
         <td scope={{row.confindr_illumina_status}}>{{row.contamination_illumina}}</td>
         <td scope={{row.confindr_nanopore_status}}>{{row.contamination_nanopore}}</td>
-        <td scope={{row.taxon_count_status}}>{{row.taxon_count}}</td>
+        <td scope={{row.taxon_count_illumina_status}}>{{row.taxon_count_illumina}}</td>
+        <td scope={{row.taxon_count_nanopore_status}}>{{row.taxon_count_nanopore}}</td>
     </tr>
     <tr class="row-hidden">
         <th colspan="23">{{row.messages}}</th>
