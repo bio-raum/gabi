@@ -10,7 +10,7 @@
 
 If you are really impatient, check out our [quickstart](docs/quickstart.md) guide. 
 
-![schema](images/GABI_Schema_v10.png)
+![schema](images/GABI_Schema_v11.png)
 
 ## Documentation 
 
