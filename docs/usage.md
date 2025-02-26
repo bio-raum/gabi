@@ -70,12 +70,12 @@ The `-r` option specifies a github [release tag](https://github.com/bio-raum/gab
 GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
 
 - Samples with only short reads (Assembler: Shovill)
-- Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Racon + Medaka (+ Polypolish))
-- Samples with only Pacbio HiFi reads (Assembler: Flye)
+- Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
+- Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
 
 This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
 
-Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary)
+Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
 
 ## Options
 

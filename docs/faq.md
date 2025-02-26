@@ -2,6 +2,12 @@
 
 This section will be expanded as we find new questions and potential pitfalls. 
 
+## How is GABI different from other pipelines, like AQUAMIS?
+
+GABI was heavily inspired by AQUAMIS, so that question is quite sensible. GABI is fully implemented in Nextflow using a modular code design. With Nextflow come a range of "advantages" such as being able to translate the pipeline to various compute infrastructures and run with different kinds of software provisioning frameworks. It should also be significantly easier to extend than a pipeline written in Snakemake. Case in point, GABI supports not only Illumina short reads, but also Nanopore and Pacbio long reads - which means that you won't have to switch between different pipelines for different technologies. GABI also provides functionality beyond mere assembly, such as AMR profiling, serotyping and annotation. Finally, GABI is very strictly versioned and switching between versions does not require you to install separate versions of the pipeline - versioning is handled via Github and and the nextflow `release` option (-r).
+
+With all that said, GABI and AQUAMIS should behave fairly similarily on Illumina data as far as assembly and QC are concerned. 
+
 ## Which parameters should I pay attention to?
 
 Generally, GABI runs fine with all-default settings. Parameterization is most typically needed for ONT data.
