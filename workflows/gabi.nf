@@ -10,7 +10,6 @@ include { MULTIQC as MULTIQC_NANOPORE } from './../modules/multiqc'
 include { MULTIQC as MULTIQC_PACBIO }   from './../modules/multiqc'
 include { RENAME_CTG as RENAME_EXTERNAL_CTG } from './../modules/rename_ctg'
 include { RENAME_CTG as RENAME_PLASMID_CTG } from './../modules/rename_ctg'
-include { BIOBLOOM_CATEGORIZER }        from './../modules/biobloom/categorizer'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './../modules/custom/dumpsoftwareversions'
 
 /*
@@ -113,7 +112,8 @@ workflow GABI {
     */
     QC(
         INPUT_CHECK.out.reads,
-        confindr_db
+        confindr_db,
+        ch_bloom_filter
     )
     ch_versions         = ch_versions.mix(QC.out.versions)
     ch_illumina_trimmed = QC.out.illumina
@@ -126,23 +126,6 @@ workflow GABI {
     ch_multiqc_nanopore = ch_multiqc_nanopore.mix(QC.out.qc_nanopore)
     ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(QC.out.qc_pacbio)
 
-    /*
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Clean reads against a bloom filter to remove any
-    potential host contaminations - currently: horse, from
-    blood medium used during growth of campylobacter
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    */
-    if (params.remove_host) {
-        BIOBLOOM_CATEGORIZER(
-            ch_illumina_trimmed,
-            ch_bloom_filter
-        )
-        ch_illumina_clean = BIOBLOOM_CATEGORIZER.out.reads
-        ch_versions = ch_versions.mix(BIOBLOOM_CATEGORIZER.out.versions)
-    } else {
-        ch_illumina_clean = ch_illumina_trimmed
-    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -151,7 +134,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     GROUP_READS(
-        ch_illumina_clean,
+        ch_illumina_trimmed,
         ch_ont_trimmed,
         ch_pacbio_trimmed
     )
@@ -166,8 +149,7 @@ workflow GABI {
     SUB: Predict taxonomy from read data
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    
-    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_clean,ch_pacbio_trimmed)
+    ch_reads_for_taxonomy = ch_ont_trimmed.mix(ch_illumina_trimmed,ch_pacbio_trimmed)
 
     TAXONOMY_PROFILING(
         ch_reads_for_taxonomy,

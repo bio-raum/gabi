@@ -82,6 +82,8 @@ def main(yaml, template, output, reference, version, call, wd):
             if genus in ref_data:
                 this_refs.append(ref_data[genus])
 
+            this_refs.append(ref_data["all Species"])
+
             #############################################
             # Check for contaminated reads using confindr
             #############################################
@@ -104,11 +106,12 @@ def main(yaml, template, output, reference, version, call, wd):
                             contaminated_illumina = read["NumContamSNVs"]
 
                         if read["ContamStatus"] == "True":
-                            if (float(read["PercentContam"]) > 3):
-                                confindr_illumina_status = status["fail"]
+
+                            confindr_illumina_status = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
+
+                            if confindr_illumina_status == status["fail"]:
                                 messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
                             else:
-                                confindr_illumina_status = status["warn"]
                                 messages.append(f"Low levels of contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
                         else:
                             confindr_illumina_status = status["pass"]
@@ -132,11 +135,12 @@ def main(yaml, template, output, reference, version, call, wd):
                             contaminated_nanopore = read["NumContamSNVs"]
 
                         if read["ContamStatus"] == "True":
-                            if (float(read["PercentContam"]) > 3):
-                                confindr_nanopore_status = status["fail"]
+
+                            confindr_nanopore_status = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
+
+                            if confindr_nanopore_status == status["fail"]:
                                 messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
                             else:
-                                confindr_nanopore_status = status["warn"]
                                 messages.append(f"Low levels of contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
                         else:
                             confindr_nanopore_status = status["pass"]
@@ -192,11 +196,15 @@ def main(yaml, template, output, reference, version, call, wd):
                         bracken_data_all[platform] = []
 
                     taxon_count = 0
+                    # Closely related taxa may apear as hits when they shouldnt, so we use this to get a count of different genera vs same genera for triggering alerts
+                    taxon_count_same = 0
+
                     taxon_count_status = status["pass"]
 
                     bracken_results = {}
                     for tax in bracken:
                         this_taxon = tax["name"].replace('"', '')
+                        genus = this_taxon.split(" ")[0]
                         # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
                         tperc = round((float(tax["fraction_total_reads"].replace('"', '')) * 100), 2)
 
@@ -204,13 +212,15 @@ def main(yaml, template, output, reference, version, call, wd):
 
                         if (tperc > 5.0):
                             taxon_count += 1
+                            if genus in taxon:
+                                taxon_count_same += 1
 
                     bracken_data_all[platform].append(bracken_results)
 
-                    if (taxon_count > 3):
+                    if ((taxon_count-taxon_count_same) > 3):
                         taxon_count_status = status["fail"]
                         messages.append(f"More than three taxa detected in {platform} read data!")
-                    elif (taxon_count > 1):
+                    elif ((taxon_count-taxon_count_same) > 1):
                         taxon_count_status = status["warn"]
                         messages.append(f"More than one taxon detected in the {platform} read data!")
 
@@ -241,7 +251,7 @@ def main(yaml, template, output, reference, version, call, wd):
             ####################
 
             assembly = round((int(jdata["quast"]["Total length"]) / 1000000), 2)
-            assembly_status = check_assembly(this_refs, int(jdata["quast"]["Total length"]))
+            assembly_status = check("Total length", this_refs, int(jdata["quast"]["Total length"]))
             if assembly_status == status["warn"]:
                 messages.append("Assembly size slightly outside of reference range")
             elif assembly_status == status["fail"]:
@@ -266,7 +276,7 @@ def main(yaml, template, output, reference, version, call, wd):
             # This might indicate a problem with our assembly (or the mash database...)
 
             contigs = int(jdata["quast"]["# contigs"])
-            contigs_status = check_contigs(this_refs, int(jdata["quast"]["# contigs"]))
+            contigs_status = check("# contigs (>= 0 bp)", this_refs, int(jdata["quast"]["# contigs"]))
 
             if contigs_status == status["warn"]:
                 messages.append("Number of contigs slightly outside of reference range")
@@ -274,7 +284,7 @@ def main(yaml, template, output, reference, version, call, wd):
                 messages.append("Number of contigs well outside of reference range")
 
             n50 = round((int(jdata["quast"]["N50"]) / 1000), 2)
-            n50_status = check_n50(this_refs, int(jdata["quast"]["N50"]))
+            n50_status = check("N50", this_refs, int(jdata["quast"]["N50"]))
 
             if n50_status == status["warn"]:
                 messages.append("N50 of this assembly slightly outside of reference range")
@@ -289,9 +299,9 @@ def main(yaml, template, output, reference, version, call, wd):
             quast["size_1k"] = round(float(int(jdata["quast"]["Total length (>= 1000 bp)"]) / 1000000), 2)
             quast["size_5k"] = round(float(int(jdata["quast"]["Total length (>= 5000 bp)"]) / 1000000), 2)
             quast["gc"] = float(jdata["quast"]["GC (%)"])
-            quast["gc_status"] = check_gc(this_refs, float(jdata["quast"]["GC (%)"]))
+            quast["gc_status"] = check("GC (%)", this_refs, float(jdata["quast"]["GC (%)"]))
             quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 4)
-            quast["duplication_status"] = check_duplication(this_refs, quast["duplication_ratio"])
+            quast["duplication_status"] = check("Duplication ratio", this_refs, quast["duplication_ratio"])
 
             if (quast["gc_status"] == status["warn"]):
                 messages.append("GC ratio slightly outside of reference range.")
@@ -351,14 +361,20 @@ def main(yaml, template, output, reference, version, call, wd):
             busco["duplicated"] = busco_duplicated
             busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
-            if (busco_completeness > 90.0):
+            # Reduced genome, always underperforms in BUSCO
+            if "Campylobacter" in taxon:
+                busco_thresholds = [ 80.0, 70.0 ]
+            else:
+                busco_thresholds = [ 90.0, 80.0 ]
+
+            if (busco_completeness > busco_thresholds[0]):
                 busco_status = status["pass"]
-            elif (busco_completeness > 80.0):
+            elif (busco_completeness > busco_thresholds[1]):
                 busco_status = status["warn"]
-                messages.append("Less than 90% of bacterial BUSCOs recovered - assembly might be incomplete")
+                messages.append(f"Less than {busco_thresholds[0]}% of bacterial BUSCOs recovered - assembly might be incomplete")
             else:
                 busco_status = status["fail"]
-                messages.append("Less than 80% of bacterial BUSCOs recovered - assembly likely incomplete")
+                messages.append(f"Less than {busco_thresholds[0]}% of bacterial BUSCOs recovered - assembly likely incomplete")
 
             # Warn if there are duplications in the gene set and busco wasnt already failed
             if (busco_duplicated > 5.0) & (busco_status != status["fail"]):
@@ -402,14 +418,13 @@ def main(yaml, template, output, reference, version, call, wd):
 
             if "total" in jdata["mosdepth"]:
                 coverage = float(jdata["mosdepth"]["total"]["mean"])
-                if coverage >= 40.0:
-                    coverage_status = status["pass"]
-                elif coverage >= 20.0:
-                    coverage_status = status["warn"]
-                    messages.append("Overall mean coverage below 40X - this may be too low!")
-                else:
-                    coverage_status = status["fail"]
-                    messages.append("Overall mean coverage below 20X - this is most likely too low!")
+                coverage_status = check("assembly_coverageDepth", this_refs, coverage)
+
+                if coverage_status == status["fail"]:
+                    messages.append("Overall coverage below threshold!")
+                elif coverage_status == status["warn"]:
+                    messages.append("Overall coverage very low")
+
 
             if "illumina" in jdata["mosdepth"]:
                 coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
@@ -462,6 +477,9 @@ def main(yaml, template, output, reference, version, call, wd):
                         if coverage_40_illumina < 90:
                             coverage_40_illumina_status = status["warn"]
                             messages.append("Less than 90% of assembly coveraged at 40X by Illumina reads - this may be too low")
+                        elif coverage_40_illumina < 50:
+                            coverage_40_illumina_status = status["fail"]
+                            messages.append("Less than 50% of assembly coveraged at 40X by Illumina reads - this likely too low")
                         else:
                             coverage_40_illumina_status = status["pass"]
                 if "nanopore" in jdata["mosdepth_global"]:
@@ -497,7 +515,7 @@ def main(yaml, template, output, reference, version, call, wd):
             ######################################
 
             # The metrics that by themselves determine overall status:
-            for estatus in [confindr_illumina_status, confindr_nanopore_status, taxon_count_status, assembly_status]:
+            for estatus in [confindr_illumina_status, confindr_nanopore_status, taxon_count_status, assembly_status, coverage_status]:
                 # if any one metric failed, the whole sample failed
                 if estatus == status["fail"]:
                     this_status = estatus
@@ -649,100 +667,65 @@ def main(yaml, template, output, reference, version, call, wd):
             j2_template = Template(template_file.read())
             output_file.write(j2_template.render(data))
 
-
-def check_duplication(refs, query):
-
+def check(key,refs,query):
+    
     for ref in refs:
+        if key in ref:
+            thresholds = sorted([float(x) for x in ref[key][0]["interval"]])
+            bins = ref[key][0]["binscore"]
 
-        if "Duplication ratio" in ref:
+            # Must be smaller than this reference value
+            if bins == [0,1]:
+                if query < thresholds[0]:
+                    return status["pass"]
+                elif query < (thresholds[0]*1.1):
+                    return status["warn"]
+                else:
+                    return status["fail"]
+            # Must be larger than this reference value
+            elif bins == [1,0]:
+                if query > thresholds[0]:
+                    return status["pass"]
+                elif (query*1.1) > thresholds[0]:
+                    return status["warn"]
+                else:
+                    return status["fail"]
+            # Must be within this interval
+            elif bins == [1, 0, 1]:
+                if (any(x >= query for x in thresholds) and any(x <= query for x in thresholds)):
+                    return status["pass"]
+                elif (any(x >= (query * 0.95) for x in thresholds) and any(x <= (query * 1.05) for x in thresholds)):
+                    return status["warn"]
+                else:
+                    return status["fail"]
+            # Must be within these intervals, with outlier limits
+            elif bins == [2, 1, 0, 1, 2]:
+                low, low_ok, high_ok, high = thresholds
 
-            max = float(ref["Duplication ratio"][0]["interval"][0])
-
-            # excessive deviations of more than 5% trigger a fail
-            if query > (max*1.05):
-                return status["fail"]
-            if query > max:
-                return status["warn"]
-            else:
-                return status["pass"]
-
-    return status["missing"]
-
-
-def check_assembly(refs, query):
-
-    for ref in refs:
-
-        if "Total length" in ref:
-
-            # intervals are ranging from lower bound to upper bound, with the accepted range in between
-            low, low_ok, high_ok, high = sorted([int(x) for x in ref["Total length"][0]["interval"]])
-
-            if ((query >= low_ok) and (query <= high_ok)):
-                return status["pass"]
-            elif (query < low):
-                return status["fail"]
-            elif (query < low_ok):
-                return status["warn"]
-            elif (query > high):
-                return status["fail"]
-            elif (query > high_ok):
-                return status["warn"]
-
-    return status["missing"]
-
-
-def check_contigs(refs, query):
-
-    for ref in refs:
-
-        if "# contigs (>= 0 bp)" in ref:
-
-            ref_intervals = [int(x) for x in ref["# contigs (>= 0 bp)"][0]["interval"]]
-
-            if (any(x >= query for x in ref_intervals)):
-                return status["pass"]
-            elif (any((x * 1.2) >= query for x in ref_intervals)):
-                return status["warn"]
-            else:
-                return status["fail"]
-
-    return status["missing"]
-
-
-def check_n50(refs, query):
-
-    for ref in refs:
-
-        if "N50" in ref:
-
-            ref_intervals = [int(x) for x in ref["N50"][0]["interval"]]
-
-            if (any(x <= query for x in ref_intervals)):
-                return status["pass"]
-            elif (any((x * 0.8) <= query for x in ref_intervals)):
-                return status["warn"]
-            else:
-                return status["fail"]
-
-    return status["missing"]
-
-
-def check_gc(refs, query):
-
-    for ref in refs:
-
-        if "GC (%)" in ref:
-
-            ref_intervals = [float(x) for x in ref["GC (%)"][0]["interval"]]
-
-            # check if gc falls within expected range, or range +/- 5% - else fail
-            if (any(x >= query for x in ref_intervals) and any(x <= query for x in ref_intervals)):
-                return status["pass"]
-            elif (any(x >= (query * 0.95) for x in ref_intervals) and any(x <= (query * 1.05) for x in ref_intervals)):
-                return status["warn"]
-            else:
-                return status["fail"]
+                if ((query >= low_ok) and (query <= high_ok)):
+                    return status["pass"]
+                elif (query < low):
+                    return status["fail"]
+                elif (query < low_ok):
+                    return status["warn"]
+                elif (query > high):
+                    return status["fail"]
+                elif (query > high_ok):
+                    return status["warn"]
+            # Must be above these limits, with outlier
+            elif bins == [2, 1, 0]:
+                if query >= thresholds[-1]:
+                    return status["pass"]
+                elif query >= thresholds[0]:
+                    return status["warn"]
+                else:
+                    return status["fail"]
+            # Must be below these values, with outlier
+            elif bins == [0, 1, 2]:
+                if query >= thresholds[-1]:
+                    return status["fail"]
+                else:
+                    return status["warn"]
 
     return status["missing"]
 
