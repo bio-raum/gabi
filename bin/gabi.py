@@ -98,6 +98,7 @@ def main(yaml, template, output, reference, version, call, wd):
                         confindr_illumina_status = status["pass"]
 
                     for read in set:
+                        print(read)
                         contam_type = "intra-species"
                         if ":" in read["Genus"]:
                             contaminated_illumina = read["Genus"]
@@ -323,16 +324,16 @@ def main(yaml, template, output, reference, version, call, wd):
                         if (stool == "ectyper"):
                             serotype = sresults["Serotype"]
                             pathogenes = sresults["PathotypeGenes"]
-                        elif (stool == "Stecfinder"):
+                        elif (stool == "stecfinder"):
                             serotype = sresults["Serotype"]
                             pathogenes = sresults["stx type"]
-                        elif (stool == "SeqSero2"):
+                        elif (stool == "seqSero2"):
                             serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
                             pathogenes = ""
-                        elif (stool == "Sistr"):
+                        elif (stool == "sistr"):
                             serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
                             pathogenes = ""
-                        elif (stool == "Lissero"):
+                        elif (stool == "lissero"):
                             serotype = sresults["SEROTYPE"]
                             pathogenes = ""
 

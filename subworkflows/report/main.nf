@@ -14,7 +14,8 @@ workflow REPORT {
     main:
 
     GABI_SUMMARY(
-        reports
+        reports,
+        yml.collect()
     )
     ch_versions = ch_versions.mix(GABI_SUMMARY.out.versions)
 
