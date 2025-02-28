@@ -149,6 +149,8 @@ def parse_samtools_stats(lines):
             pos = int(elements[1])
             if pos > 0 and pos < 1000:
                 inserts.append(int(elements[2]))
+
+    data["insert_sizes"] = inserts
     return data
 
 
@@ -233,7 +235,7 @@ def main(sample, taxon, yaml_file, output):
             matrix["nanostat"] = parse_nanostat(lines)
         elif re.search(".fastp.json", file):
             fastp = parse_json(lines)
-            matrix["fastp"] = fastp["summary"]
+            matrix["fastp"] = fastp
         elif re.search(".*mlst.json", file):
             mlst = parse_json(lines)
             matrix["mlst"].append(mlst[0])
