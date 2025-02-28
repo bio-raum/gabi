@@ -3,11 +3,12 @@ process GABI_SUMMARY {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/perl-json-xs:4.03--pl5321h4ac6f70_2' :
-        'quay.io/biocontainers/perl-json-xs:4.03--pl5321h4ac6f70_2' }"
+        'https://depot.galaxyproject.org/singularity/dajin2:0.5.5--pyhdfd78af_0' :
+        'quay.io/biocontainers/dajin2:0.5.5--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(reports, stageAs: '?/*')
+    path(yaml)
 
     output:
     path('*.json')          , emit: json
@@ -19,14 +20,15 @@ process GABI_SUMMARY {
     result = prefix + '.json'
 
     """
-    gabi_summary.pl --sample ${meta.sample_id} \
+    gabi_json.py --sample ${meta.sample_id} \
     --taxon '${meta.taxon}' \
+    --yaml $yaml \\
     $args \
-    --outfile $result
+    --output $result
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        perl: \$(perl --version  | head -n2 | tail -n1 | sed -e "s/.*(//" -e "s/).*//")
+        python: \$(python --version  | sed -e "s/Python //")
     END_VERSIONS
     """
 }
