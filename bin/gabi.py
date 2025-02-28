@@ -665,8 +665,7 @@ def main(yaml, template, output, reference, version, call, wd):
             j2_template = Template(template_file.read())
             output_file.write(j2_template.render(data))
 
-def check(key,refs,query):
-    
+def check(key, refs, query):
 
     for ref in refs:
         if key in ref:
