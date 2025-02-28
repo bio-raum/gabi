@@ -1,6 +1,7 @@
 include { FASTP }                       from './../../modules/fastp'
 include { CAT_FASTQ }                   from './../../modules/cat_fastq'
 include { FASTQC }                      from './../../modules/fastqc'
+include { BIOBLOOM_CATEGORIZER }        from './../../modules/biobloom/categorizer'
 
 /*
 subworkflows
@@ -15,6 +16,7 @@ workflow QC_ILLUMINA {
     take:
     reads
     confindr_db
+    bloomfilter
 
     main:
 
@@ -54,9 +56,27 @@ workflow QC_ILLUMINA {
     ch_versions = ch_versions.mix(FASTQC.out.versions)
     multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
     
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Clean reads against a bloom filter to remove any
+    potential host contaminations - currently: horse, from
+    blood medium used during growth of campylobacter
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    if (params.remove_host) {
+        BIOBLOOM_CATEGORIZER(
+            FASTP.out.reads,
+            bloomfilter
+        )
+        ch_illumina_clean = BIOBLOOM_CATEGORIZER.out.reads
+        ch_versions = ch_versions.mix(BIOBLOOM_CATEGORIZER.out.versions)
+    } else {
+        ch_illumina_clean = FASTP.out.reads
+    }
+
     // Run the contamination subworkflow
     CONTAMINATION(
-        FASTP.out.reads,
+        ch_illumina_clean,
         confindr_db
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
