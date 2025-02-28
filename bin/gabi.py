@@ -231,7 +231,6 @@ def main(yaml, template, output, reference, version, call, wd):
                         taxon_count_nanopore = taxon_count
                         taxon_count_nanopore_status = taxon_count_status
 
-
             ####################
             # Get samtools stats
             ####################
@@ -363,9 +362,9 @@ def main(yaml, template, output, reference, version, call, wd):
 
             # Reduced genome, always underperforms in BUSCO
             if "Campylobacter" in taxon:
-                busco_thresholds = [ 80.0, 70.0 ]
+                busco_thresholds = [80.0, 70.0]
             else:
-                busco_thresholds = [ 90.0, 80.0 ]
+                busco_thresholds = [90.0, 80.0]
 
             if (busco_completeness > busco_thresholds[0]):
                 busco_status = status["pass"]
@@ -424,7 +423,6 @@ def main(yaml, template, output, reference, version, call, wd):
                     messages.append("Overall coverage below threshold!")
                 elif coverage_status == status["warn"]:
                     messages.append("Overall coverage very low")
-
 
             if "illumina" in jdata["mosdepth"]:
                 coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
@@ -669,13 +667,14 @@ def main(yaml, template, output, reference, version, call, wd):
 
 def check(key,refs,query):
     
+
     for ref in refs:
         if key in ref:
             thresholds = sorted([float(x) for x in ref[key][0]["interval"]])
             bins = ref[key][0]["binscore"]
 
             # Must be smaller than this reference value
-            if bins == [0,1]:
+            if bins == [0, 1]:
                 if query < thresholds[0]:
                     return status["pass"]
                 elif query < (thresholds[0]*1.1):
@@ -683,7 +682,7 @@ def check(key,refs,query):
                 else:
                     return status["fail"]
             # Must be larger than this reference value
-            elif bins == [1,0]:
+            elif bins == [1, 0]:
                 if query > thresholds[0]:
                     return status["pass"]
                 elif (query*1.1) > thresholds[0]:
