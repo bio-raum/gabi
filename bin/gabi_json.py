@@ -97,10 +97,15 @@ def parse_tabular(lines):
         for idx, h in enumerate(header):
             if idx < len(elements):
                 entry = elements[idx]
+                # value is an integer
                 if re.match(r"^[0-9]+$", entry):
                     entry = int(entry)
+                # value is a float
                 elif re.match(r"^[0-9]+\.[0-9]+$", entry):
                     entry = float(entry)
+                # value is a file path (messes up md5 fingerprinting)
+                elif re.match(r"^\/.*\/.*$", entry):
+                    entry = entry.split("/")[-1]
                 this_data[h] = entry
                 data.append(this_data)
     return data
