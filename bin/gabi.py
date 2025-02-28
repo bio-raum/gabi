@@ -98,7 +98,6 @@ def main(yaml, template, output, reference, version, call, wd):
                         confindr_illumina_status = status["pass"]
 
                     for read in set:
-                        print(read)
                         contam_type = "intra-species"
                         if ":" in read["Genus"]:
                             contaminated_illumina = read["Genus"]
@@ -111,9 +110,9 @@ def main(yaml, template, output, reference, version, call, wd):
                             confindr_illumina_status = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
 
                             if confindr_illumina_status == status["fail"]:
-                                messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
+                                messages.append(f"Contamination ({contam_type}) detected in Illumina reads {read['Sample']}")
                             else:
-                                messages.append(f"Low levels of contamination ({contam_type}) detected in Illumina reads {read["Sample"]}")
+                                messages.append(f"Low levels of contamination ({contam_type}) detected in Illumina reads {read['Sample']}")
                         else:
                             confindr_illumina_status = status["pass"]
 
@@ -140,9 +139,9 @@ def main(yaml, template, output, reference, version, call, wd):
                             confindr_nanopore_status = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
 
                             if confindr_nanopore_status == status["fail"]:
-                                messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
+                                messages.append(f"Contamination ({contam_type}) detected in Nanopore reads {read['Sample']}")
                             else:
-                                messages.append(f"Low levels of contamination ({contam_type}) detected in Nanopore reads {read["Sample"]}")
+                                messages.append(f"Low levels of contamination ({contam_type}) detected in Nanopore reads {read['Sample']}")
                         else:
                             confindr_nanopore_status = status["pass"]
 
@@ -218,10 +217,10 @@ def main(yaml, template, output, reference, version, call, wd):
 
                     bracken_data_all[platform].append(bracken_results)
 
-                    if ((taxon_count-taxon_count_same) > 3):
+                    if ((taxon_count - taxon_count_same) > 3):
                         taxon_count_status = status["fail"]
                         messages.append(f"More than three taxa detected in {platform} read data!")
-                    elif ((taxon_count-taxon_count_same) > 1):
+                    elif ((taxon_count - taxon_count_same) > 1):
                         taxon_count_status = status["warn"]
                         messages.append(f"More than one taxon detected in the {platform} read data!")
 
@@ -321,6 +320,7 @@ def main(yaml, template, output, reference, version, call, wd):
                 serotypes = jdata["serotype"]
                 for sentry in serotypes:
                     for stool, sresults in sentry.items():
+                        
                         if (stool == "ectyper"):
                             serotype = sresults["Serotype"]
                             pathogenes = sresults["PathotypeGenes"]
@@ -593,21 +593,21 @@ def main(yaml, template, output, reference, version, call, wd):
         if "ILLUMINA" in bracken_data_all:
             kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
+            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
         if "NANOPORE" in bracken_data_all:
             print("Creating Bracken ONT graph")
             kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
+            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
         if "PACBIO" in bracken_data_all:
             print("Creating Bracken Pacbio graph")
             kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
+            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_PACBIO"] = fig.to_html(full_html=False)
 
@@ -629,7 +629,7 @@ def main(yaml, template, output, reference, version, call, wd):
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = (len(samples) * 35) if len(samples) > 10 else (200+len(samples)*50)
+        h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
         print(h)
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)
@@ -678,7 +678,7 @@ def check(key, refs, query):
             if bins == [0, 1]:
                 if query < thresholds[0]:
                     return status["pass"]
-                elif query < (thresholds[0]*1.1):
+                elif query < (thresholds[0] * 1.1):
                     return status["warn"]
                 else:
                     return status["fail"]
@@ -686,7 +686,7 @@ def check(key, refs, query):
             elif bins == [1, 0]:
                 if query > thresholds[0]:
                     return status["pass"]
-                elif (query*1.1) > thresholds[0]:
+                elif (query * 1.1) > thresholds[0]:
                     return status["warn"]
                 else:
                     return status["fail"]

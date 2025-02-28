@@ -281,7 +281,7 @@ def main(sample, taxon, yaml_file, output):
         elif re.search(".*mosdepth.global.dist.txt", file):
             matrix["mosdepth_global"]["total"] = parse_mosdepth_global(lines)
         elif re.search(".sistr.tab", file):
-            matrix["serotype"].append({"sistr": parse_tabular(lines)})
+            matrix["serotype"].append({"sistr": parse_tabular(lines)[0]})
         elif re.search(".gbff$", file):
             matrix["reference"] = parse_genbank(lines)
         elif re.search(".stats$", file):
