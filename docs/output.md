@@ -96,6 +96,38 @@ For each sample, a folder is created with results from various tools, as follows
 - taxonomy - Taxonomic profiling using raw reads
   - kraken2 - Results from Kraken2/Bracken
 - sample.json - A comprehensive summary of various sample-level results - can be used to roll your own reporting formats or tie into downstream data processing. 
+- sample.qc.json - The same JSON as above, with added QC vote
+
+```JSON
+ "qc": {
+        "fail": [],
+        "warn": [
+            "confindr_illumina"
+        ],
+        "pass": [
+            "fastp_q30_rate",
+            "taxon_illumina_count",
+            "quast_assembly",
+            "quast_contigs",
+            "quast_n50",
+            "quast_gc",
+            "quast_duplication",
+            "busco_completeness",
+            "busco_duplicates",
+            "coverage_illumina_mean",
+            "coverage_total_mean",
+            "coverage_illumina_40x",
+            "coverage_total_40x"
+        ],
+        "missing": [
+            "confindr_nanopore"
+        ],
+        "messages": [
+            "Low levels of contamination (inter-species) detected in illumina reads S01-R1-1"
+        ],
+        "call": "warn"
+    }
+```
 
 </details>
 

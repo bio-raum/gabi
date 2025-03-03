@@ -89,7 +89,7 @@ def main(yaml, template, output, version, call, wd):
             # Check for contaminated reads using confindr
             #############################################
 
-            contaminated = { 
+            contaminated = {
                 "illumina": {"contaminated": "-", "confindr_status": status["missing"]},
                 "nanopore": {"contaminated": "-", "confindr_status": status["missing"]}
             }
@@ -306,7 +306,7 @@ def main(yaml, template, output, version, call, wd):
                 coverage = float(jdata["mosdepth"]["total"]["mean"])
 
             if "illumina" in jdata["mosdepth"]:
-                coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])       
+                coverage_illumina = float(jdata["mosdepth"]["illumina"]["mean"])
 
             if "nanopore" in jdata["mosdepth"]:
                 coverage_nanopore = float(jdata["mosdepth"]["nanopore"]["mean"])
