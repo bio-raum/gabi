@@ -111,37 +111,39 @@ def main(input, refs, output):
 
     # confindr
     for platform, confindr in data["confindr"].items():
-        platform_contaminated = status["missing"]
-        contaminated = status["missing"]
+        if len(confindr) > 0:
 
-        for set in confindr:
-            if platform_contaminated == "missing":
-                platform_contaminated = status["pass"]
+            platform_contaminated = status["missing"]
+            contaminated = status["missing"]
 
-            if contaminated == status["missing"]:
-                contaminated = status["pass"]
+            for set in confindr:
+                if platform_contaminated == "missing":
+                    platform_contaminated = status["pass"]
 
-            for read in set:
-                contam_type = "intra-species"
-                if ":" in read["Genus"]:
-                    contam_type = "inter-species"
-
-                if read["ContamStatus"] == "True":
-                    contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
-
-                    if contaminated == status["fail"]:
-                        qc_calls["messages"].append(f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
-                    else:
-                        qc_calls["messages"].append(f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
-                else:
+                if contaminated == status["missing"]:
                     contaminated = status["pass"]
 
-                if contaminated == status["fail"]:
-                    platform_contaminated = status["fail"]
-                elif contaminated == status["warn"] and platform_contaminated != status["fail"]:
-                    platform_contaminated = status["warn"]
+                for read in set:
+                    contam_type = "intra-species"
+                    if ":" in read["Genus"]:
+                        contam_type = "inter-species"
 
-        qc_calls[platform_contaminated].append(f"confindr_{platform}")
+                    if read["ContamStatus"] == "True":
+                        contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
+
+                        if contaminated == status["fail"]:
+                            qc_calls["messages"].append(f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
+                        else:
+                            qc_calls["messages"].append(f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
+                    else:
+                        contaminated = status["pass"]
+
+                    if contaminated == status["fail"]:
+                        platform_contaminated = status["fail"]
+                    elif contaminated == status["warn"] and platform_contaminated != status["fail"]:
+                        platform_contaminated = status["warn"]
+
+            qc_calls[platform_contaminated].append(f"confindr_{platform}")
 
     # fastp
     if "fastp" in data:
