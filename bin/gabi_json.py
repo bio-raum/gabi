@@ -15,13 +15,6 @@ parser.add_argument("--sample", "-s")
 
 args = parser.parse_args()
 
-status = {
-    "pass": "pass",
-    "warn": "warn",
-    "fail": "fail",
-    "missing": "missing"
-}
-
 
 def parse_bracken(lines):
     header = lines.pop(0).strip().split("\t")
@@ -67,6 +60,8 @@ def parse_quast(lines):
         key, value = line.split("\t")
         if re.match(r"^[0-9]*$", value):
             value = int(value)
+        elif re.match(r"^[0-9]*\.[0-9]*$", value):
+            value = float(value)
         data[key] = value
     return data
 
@@ -207,7 +202,7 @@ def main(sample, taxon, yaml_file, output):
         "taxon": taxon,
         "quast": {},
         "mlst": [],
-        "confindr_illumina": [],
+        "confindr": {"illumina": [], "nanopore": []},
         "confindr_nanopore": [],
         "serotype": [],
         "mosdepth": {},
@@ -240,17 +235,17 @@ def main(sample, taxon, yaml_file, output):
             mlst = parse_json(lines)
             matrix["mlst"].append(mlst[0])
         elif re.search(r"^.*ILLUMINA.*confindr.*", file):
-            matrix["confindr_illumina"].append(parse_csv(lines))
+            matrix["confindr"]["illumina"].append(parse_csv(lines))
         elif re.search(r"^.*NANOPORE.*confindr.*", file):
             confindr = parse_csv(lines)
-            matrix["confindr_nanopore"].append(confindr)
+            matrix["confindr"]["nanopore"].append(confindr)
         elif re.search(r".*/report.tsv", file):
             matrix["quast"] = parse_quast(lines)
         elif "Protein identifier" in lines[0]:
             matrix["amrfinder"] = parse_tabular(lines)
         elif re.search(".*ectyper.tsv", file):
             ectyper = parse_tabular(lines)
-            matrix["serotype"].append({"ecyper": ectyper[0]})
+            matrix["serotype"].append({"ectyper": ectyper[0]})
         elif re.search(".*seqsero2.tsv", file):
             seqsero = parse_tabular(lines)
             matrix["serotype"].append({"seqsero": seqsero[0]})

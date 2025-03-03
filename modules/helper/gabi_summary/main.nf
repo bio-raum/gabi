@@ -11,8 +11,8 @@ process GABI_SUMMARY {
     path(yaml)
 
     output:
-    path('*.json')          , emit: json
-    path 'versions.yml'     , emit: versions
+    tuple val(meta), path('*.json') , emit: json
+    path 'versions.yml'             , emit: versions
 
     script:
     def args = task.ext.args ?: ''

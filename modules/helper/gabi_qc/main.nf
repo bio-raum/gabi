@@ -1,5 +1,5 @@
-process GABI_REPORT {
-    tag "All"
+process GABI_QC {
+    tag "${meta.sample_id}"
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -7,29 +7,21 @@ process GABI_REPORT {
         'quay.io/biocontainers/dajin2:0.5.5--pyhdfd78af_0' }"
 
     input:
-    path(reports)
-    path(template)
-    path(yml)
+    tuple val(meta), path(summary)
+    path(refs)
 
     output:
-    path('*.html')          , emit: html
+    path('*.qc.json')       , emit: json
     path 'versions.yml'     , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: params.run_name
-    result = prefix + '.html'
-
-    version = workflow.manifest.version
-    call = workflow.commandLine
-    wd = workflow.workDir
+    def prefix = task.ext.prefix ?: meta.sample_id
+    result = prefix + '.qc.json'
 
     """
-    gabi_v2.py --template $template \
-    --input $yml \
-    --version $version \
-    --call '$call' \
-    --wd $wd \
+    gabi_json_qc.py --input $summary \
+    --refs $refs \
     $args \
     --output $result
 
