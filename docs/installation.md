@@ -77,6 +77,7 @@ singularity {
   cacheDir = "/path/to/singularity_cache"
 }
 ``` 
+This would be for a single computer, with 16 cores and 64GB Ram, using Singularity. Containers are cached to the specified location to be re-used on subsequent pipeline runs.  
 
 Or with the Conda/Mamba package manager:
 
@@ -95,8 +96,4 @@ conda {
   cacheDir = "/path/to/conda_cache"
 }
 ```
-
-This would be for a single computer, with 16 cores and 64GB Ram, using Conda/Mamba. Conda environments are cached to the specified location and can be re-used for subsequent pipeline runs. 
-
-Or for Singualrity
 
