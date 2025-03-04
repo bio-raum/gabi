@@ -29,6 +29,6 @@ Yes, GABI does make that distinction - meaning that some parts of the pipeline s
 | Reference genome | Chromosomes  |
 | Variant calling  | Chromosomes  |
 | Coverages        | All contigs  |
-| Assembly QC      | Chromosomes  |
+| Assembly QC      | All contigs  |
 
 Why are we doing this? Basically, steps like idenfying the best reference genome match should not include plasmids, because these could throw off the algorithm. Likewise, if we want to know how complete our assembly is, this should ideally only include the chromosomes since the plasmids are generally "fluid" and not part of the "core" genome. That said, for most analysis steps, the entire assembly is used since the "biochemistry" of an isolate is determined by all the genes in the cell, not just those on the chromosomes. 
