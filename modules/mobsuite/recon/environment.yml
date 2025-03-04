@@ -1,6 +1,10 @@
+# see: https://github.com/phac-nml/mob-suite/issues/178
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
   - bioconda::mob_suite=3.1.9
+  - sqlite=3.42.0 
+  - pandas=1.5.3 
+  - ete3=3.1.3
