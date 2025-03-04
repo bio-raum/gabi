@@ -169,7 +169,7 @@ def main(input, refs, output):
                 taxon_count += 1
                 if genus in taxon:
                     taxon_count_same += 1
-
+        # Some genera will yield multiple taxa hits, so we only trigger this if the signals come from different genera
         if ((taxon_count - taxon_count_same) > 3):
             taxon_count_status = status["fail"]
             qc_calls["messages"].append(f"More than three taxa detected in {platform} read data!")
@@ -258,7 +258,7 @@ def main(input, refs, output):
                 qc_calls["messages"].append(f"Less than 90% of assembly coveraged at 40X by {platform} reads - this may be too low")
             elif coverage < 50:
                 coverage_status = status["fail"]
-                qc_calls["messages"].append(f"Less than 50% of assembly coveraged at 40X by {platform} reads - this likely too low")
+                qc_calls["messages"].append(f"Less than 50% of assembly coveraged at 40X by {platform} reads - this is likely too low")
             else:
                 coverage_status = status["pass"]
         qc_calls[coverage_status].append(f"coverage_{platform}_40x")

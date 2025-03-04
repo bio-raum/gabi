@@ -61,7 +61,24 @@ If you absolutely do not want to add your system to this repository, you can man
 nextflow -c my.config run bio-raum/gabi --input samples.csv --run_name my_run_name --reference_base /path/to/references
 ```
 
-A basic example may look as follows:
+A basic example using Singularity may look as follows:
+
+```GROOVY
+params {
+
+  max_cpus = 16
+  max_memory = 64.GB
+  max_time = 24.h
+
+}
+
+singularity {
+  enabled = true
+  cacheDir = "/path/to/singularity_cache"
+}
+``` 
+
+Or with the Conda/Mamba package manager:
 
 ```GROOVY
 params {
@@ -83,17 +100,3 @@ This would be for a single computer, with 16 cores and 64GB Ram, using Conda/Mam
 
 Or for Singualrity
 
-```GROOVY
-params {
-
-  max_cpus = 16
-  max_memory = 64.GB
-  max_time = 24.h
-
-}
-
-singularity {
-  enabled = true
-  cacheDir = "/path/to/singularity_cache"
-}
-``` 

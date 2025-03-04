@@ -259,12 +259,15 @@ def main(yaml, template, output, version, call, wd):
 
             busco = jdata["busco"]
             busco_completeness_status = check_status("busco_completeness", qc)
-            busco_dupicates_status = check_status("busco_duplicates", qc)
+            busco_duplicates_status = check_status("busco_duplicates", qc)
             busco_status = status["missing"]
-            if status["warn"] in [busco_completeness_status, busco_dupicates_status]:
+            if status["warn"] in [busco_completeness_status, busco_duplicates_status]:
                 busco_status = status["warn"]
-            if status["fail"] in [busco_completeness_status, busco_dupicates_status]:
+            if status["fail"] in [busco_completeness_status, busco_duplicates_status]:
                 busco_status = status["fail"]
+            if busco_status == status["missing"]:
+                if status["pass"] in [busco_completeness_status, busco_duplicates_status]:
+                    busco_status = status["pass"]
 
             busco_total = int(busco["dataset_total_buscos"])
             busco_completeness = round(((int(busco["C"])) / int(busco_total)), 2) * 100

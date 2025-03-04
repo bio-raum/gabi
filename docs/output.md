@@ -95,8 +95,7 @@ For each sample, a folder is created with results from various tools, as follows
   - confindr_results - ConfindR contamination check
 - taxonomy - Taxonomic profiling using raw reads
   - kraken2 - Results from Kraken2/Bracken
-- sample.json - A comprehensive summary of various sample-level results - can be used to roll your own reporting formats or tie into downstream data processing. 
-- sample.qc.json - The same JSON as above, with added QC vote
+- sample.json - The main results in JSON format, with QC vote for individual parameters and the overall sample ("call")
 
 ```JSON
  "qc": {
