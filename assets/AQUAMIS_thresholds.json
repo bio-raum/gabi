@@ -202,7 +202,7 @@
       "busco_duplicates": [
         {
           "source": "All_Taxons",
-          "interval": [0.00671140939597315],
+          "interval": [0.05],
           "binscore": [0, 1],
           "bincolor": ["#81B294", "#F2CC8F"]
         }
