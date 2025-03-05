@@ -20,9 +20,11 @@ You can choose one of the following options:
 
 [Podman](https://podman.io/docs/installation)
 
-[Conda](https://github.com/conda-forge/miniforge) (Discouraged!!)
-
 [Apptainer](https://apptainer.org/)
+
+There is also the option to use Conda, but we **strongly discourage** this because Conda environments are not guaranteed to be reproducible. 
+
+[Conda](https://github.com/conda-forge/miniforge)
 
 The pipeline comes with simple pre-set profiles for all of these as described [here](usage.md); if you plan to use this pipeline regularly, consider adding your own custom profile to our [central repository](https://github.com/bio-raum/nf-configs) to better leverage your available resources.
 

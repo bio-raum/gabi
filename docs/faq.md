@@ -8,6 +8,15 @@ GABI was heavily inspired by [AQUAMIS](https://gitlab.com/bfr_bioinformatics/AQU
 
 With all that said, GABI and AQUAMIS should behave fairly similarily on Illumina data as far as assembly and QC are concerned. 
 
+## Is it OK to use Conda, or should I use a container manager?
+
+**Please** do not use Conda if at all possible. We are making it an option in GABI because it has a broad user base. But Conda is *not* suitable for production purposes. 
+
+Conda environments are prone to breaking; when you update your conda installation, or try to add additional packages. But more importantly, conda environments are not guaranteed to be reproducible. Many packages
+have fairly lose dependencies. That's not condas' fault, but it means that a package you install today is not guaranteed to yield the same results as an installation performed a year from now - even with the exact same version! This is pretty much the opposite of "reproducibility" and a big no-no in scientific data analysis. 
+
+Properly versioned containers on the other hand are fully reproducible - they are built once and can be re-used as many times and on as many systems as you like. They are always "the same". And your system does not have to perform time-consuming environment solving; you just download the container and are good to go.  
+
 ## Which parameters should I pay attention to?
 
 Generally, GABI runs fine with all-default settings. Parameterization is most typically needed for ONT data.

@@ -48,6 +48,10 @@ include { BUILD_REFERENCES }    from './workflows/build_references'
 
 multiqc_report = Channel.from([])
 
+if (!workflow.containerEngine) {
+   log.warn "NEVER USE CONDA FOR PRODUCTION PURPOSES!"
+}
+
 workflow {
     if (params.build_references) {
         BUILD_REFERENCES()

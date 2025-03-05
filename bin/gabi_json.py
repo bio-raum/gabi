@@ -248,7 +248,7 @@ def main(sample, taxon, yaml_file, output):
             matrix["serotype"].append({"ectyper": ectyper[0]})
         elif re.search(".*seqsero2.tsv", file):
             seqsero = parse_tabular(lines)
-            matrix["serotype"].append({"seqsero": seqsero[0]})
+            matrix["serotype"].append({"seqsero2": seqsero[0]})
         elif re.search(".*lissero.tsv", file):
             lissero = parse_tabular(lines)
             matrix["serotype"].append({"lissero": lissero[0]})

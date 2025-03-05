@@ -102,18 +102,10 @@ def main(yaml, template, output, version, call, wd):
                 for set in confindr:
 
                     for read in set:
-                        contam_type = "intra-species"
                         if ":" in read["Genus"]:
                             contaminated[platform]["contaminated"] = read["Genus"]
-                            contam_type = "inter-species"
                         else:
                             contaminated[platform]["contaminated"] = read["NumContamSNVs"]
-
-                        if read["ContamStatus"] == "True":
-                            if contaminated[platform]["confindr_status"] == status["fail"]:
-                                messages.append(f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
-                            else:
-                                messages.append(f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
 
             ########################
             # Read quality via FastP
@@ -235,7 +227,7 @@ def main(yaml, template, output, version, call, wd):
                         elif (stool == "stecfinder"):
                             serotype = sresults["Serotype"]
                             pathogenes = sresults["stx type"]
-                        elif (stool == "seqSero2"):
+                        elif (stool == "seqsero2"):
                             serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
                             pathogenes = ""
                         elif (stool == "sistr"):

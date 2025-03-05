@@ -48,6 +48,7 @@ and only populate variables if we are actually running the main
 workflow - else this will break on a fresh install 
 */
 if (params.input) {
+
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
         log.info 'The required reference directory was not found on your system, exiting!'
