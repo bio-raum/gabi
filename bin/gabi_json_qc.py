@@ -132,9 +132,13 @@ def main(input, refs, output):
                         contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
 
                         if contaminated == status["fail"]:
-                            qc_calls["messages"].append(f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
+                            m = f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                            if m not in qc_calls["messages"]:
+                                qc_calls["messages"].append(m)
                         else:
-                            qc_calls["messages"].append(f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}")
+                            m = f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                            if m not in qc_calls["messages"]:
+                                qc_calls["messages"].append(m)
                     else:
                         contaminated = status["pass"]
 

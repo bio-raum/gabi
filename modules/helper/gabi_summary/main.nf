@@ -3,8 +3,8 @@ process GABI_SUMMARY {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/dajin2:0.5.5--pyhdfd78af_0' :
-        'quay.io/biocontainers/dajin2:0.5.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/multiqc:1.27.1--pyhdfd78af_0' :
+        'quay.io/biocontainers/multiqc:1.27.1--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(reports, stageAs: '?/*')
