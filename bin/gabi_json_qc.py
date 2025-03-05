@@ -147,6 +147,10 @@ def main(input, refs, output):
                     elif contaminated == status["warn"] and platform_contaminated != status["fail"]:
                         platform_contaminated = status["warn"]
 
+                    if read["BasesExamined"] == 0:
+                        contaminated = status["missing"]
+                        qc_calls["messages"].append("No ConfindR databases for this species available, contamination check skipped.")
+
             qc_calls[platform_contaminated].append(f"confindr_{platform}")
 
     # fastp
