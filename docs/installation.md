@@ -60,7 +60,7 @@ Site-specific config-files for our pipeline ecosystem are stored centrally on [g
 If you absolutely do not want to add your system to this repository, you can manually pass a compatible configuration to nextflow using the `-c`  command line option:
 
 ```bash
-nextflow -c my.config run bio-raum/gabi --input samples.csv --run_name my_run_name --reference_base /path/to/references
+nextflow -c my.config run bio-raum/gabi -profile myprofile -r 1.0.0 --input samples.csv --run_name my_run_name --reference_base /path/to/references
 ```
 
 A basic example using Singularity may look as follows:

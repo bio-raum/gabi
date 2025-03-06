@@ -289,7 +289,7 @@ def main(input, refs, output):
             data["qc"]["call"] = status["pass"]
 
     with open(output, "w") as fo:
-        json.dump(data, fo, indent=4)
+        json.dump(data, fo, indent=4, sort_keys=True)
 
 
 if __name__ == '__main__':
