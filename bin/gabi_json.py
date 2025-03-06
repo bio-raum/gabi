@@ -204,7 +204,7 @@ def main(sample, taxon, yaml_file, output):
         "mlst": [],
         "confindr": {"illumina": [], "nanopore": []},
         "confindr_nanopore": [],
-        "serotype": [],
+        "serotype": {},
         "mosdepth": {},
         "reference": {},
         "mosdepth_global": {},
@@ -245,16 +245,16 @@ def main(sample, taxon, yaml_file, output):
             matrix["amrfinder"] = parse_tabular(lines)
         elif re.search(".*ectyper.tsv", file):
             ectyper = parse_tabular(lines)
-            matrix["serotype"].append({"ectyper": ectyper[0]})
+            matrix["serotype"]["ectyper"]: ectyper[0]
         elif re.search(".*seqsero2.tsv", file):
             seqsero = parse_tabular(lines)
-            matrix["serotype"].append({"seqsero2": seqsero[0]})
+            matrix["serotype"]["seqsero2"]: seqsero[0]
         elif re.search(".*lissero.tsv", file):
             lissero = parse_tabular(lines)
-            matrix["serotype"].append({"lissero": lissero[0]})
+            matrix["serotype"]["lissero"]: lissero[0]
         elif re.search(".stecfinder.tsv", file):
             stecfinder = parse_tabular(lines[0:2])
-            matrix["serotype"].append({"stecfinder": stecfinder[0]})
+            matrix["serotype"]["stecfinder"]: stecfinder[0]
         elif re.search("ILLUMINA.mosdepth.summary.txt", file):
             mosdepth = [d for d in parse_tabular(lines) if d['chrom'] == "total"]
             matrix["mosdepth"]["illumina"] = mosdepth[0]
@@ -290,7 +290,7 @@ def main(sample, taxon, yaml_file, output):
             matrix["busco"] = busco
 
     with open(output, "w") as fo:
-        json.dump(matrix, fo, indent=4)
+        json.dump(matrix, fo, indent=4, sort_keys=True)
 
 
 if __name__ == '__main__':

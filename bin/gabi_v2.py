@@ -219,23 +219,22 @@ def main(yaml, template, output, version, call, wd):
 
             if "serotype" in jdata:
                 serotypes = jdata["serotype"]
-                for sentry in serotypes:
-                    for stool, sresults in sentry.items():
-                        if (stool == "ectyper"):
-                            serotype = sresults["Serotype"]
-                            pathogenes = sresults["PathotypeGenes"]
-                        elif (stool == "stecfinder"):
-                            serotype = sresults["Serotype"]
-                            pathogenes = sresults["stx type"]
-                        elif (stool == "seqsero2"):
-                            serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
-                            pathogenes = ""
-                        elif (stool == "sistr"):
-                            serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
-                            pathogenes = ""
-                        elif (stool == "lissero"):
-                            serotype = sresults["SEROTYPE"]
-                            pathogenes = ""
+                for stool, sresults in serotypes.items():
+                    if (stool == "ectyper"):
+                        serotype = sresults["Serotype"]
+                        pathogenes = sresults["PathotypeGenes"]
+                    elif (stool == "stecfinder"):
+                        serotype = sresults["Serotype"]
+                        pathogenes = sresults["stx type"]
+                    elif (stool == "seqsero2"):
+                        serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
+                        pathogenes = ""
+                    elif (stool == "sistr"):
+                        serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
+                        pathogenes = ""
+                    elif (stool == "lissero"):
+                        serotype = sresults["SEROTYPE"]
+                        pathogenes = ""
                     stool_name = f"{stool} ({taxon})"
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
