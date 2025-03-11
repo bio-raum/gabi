@@ -86,12 +86,18 @@ This pipeline expects a CSV-formatted sample sheet to properly pull various meta
 #### Raw reads
 If you want to assemble genomes "from scratch", you can pass raw reads:
 
-```CSV
-sample_id,platform,R1,R2
-S100,ILLUMINA,/home/marc/projects/gaba/data/S100_R1.fastq.gz,/home/marc/projects/gaba/data/S100_R2.fastq.gz
+```TSV
+sample  platform    fq1 fq2
+S100    ILLUMINA    /home/marc/projects/gaba/data/S100_R1.fastq.gz  /home/marc/projects/gaba/data/S100_R2.fastq.gz
 ```
 
-If the pipeline sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the R2 column should remain empty. 
+This samplesheet can be generated with a script of your own design, or with a companion pipeline, [bio-raum/samplesheet](https://github.com/bio-raum/samplesheet):
+
+```BASH
+nextflow run bio-raum/samplesheet -r main -profile singularity --input /path/to/reads --platform
+```
+
+If GABI sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the fq2 column should remain empty. 
 
 Allowed platforms and data types are:
 
@@ -108,8 +114,8 @@ You can also run GABI on pre-assembled genomes, using only those parts of the pi
 The required samplesheet then looks as follows:
 
 ```CSV
-sample_id,assembly
-S100,/path/to/S100.fasta
+sample  assembly
+S100    /path/to/S100.fasta
 ```
 
 ### `--build_references` [ default = null ]

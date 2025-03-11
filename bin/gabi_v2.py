@@ -132,14 +132,25 @@ def main(yaml, template, output, version, call, wd):
             # Get Bracken results
             ####################
 
-            taxon_count_illumina = "-"
-            taxon_count_illumina_status = check_status("taxon_illumina_count", qc)
-            taxon_count_nanopore = "-"
-            taxon_count_nanopore_status = check_status("taxon_nanopore_count", qc)
+            taxon_count = {
+                "ILLUMINA": {
+                    "count": "-",
+                    "status": "missing"
+                },
+                "NANOPORE": {
+                    "count": "-",
+                    "status": "missing"
+                }
+            }
+
+            taxon_count["ILLUMINA"]["status"] = check_status("taxon_illumina_count", qc)
+            taxon_count["NANOPORE"]["status"] = check_status("taxon_nanopore_count", qc)
 
             if "bracken" in jdata:
 
                 for platform, bracken in jdata["bracken"].items():
+
+                    tcount = 0
 
                     # Rather than defining it at the beginning, we check if we need this platform in the results
                     # This avoids having to filter all platforms that werent in this analysis
@@ -149,10 +160,13 @@ def main(yaml, template, output, version, call, wd):
                     bracken_results = {}
                     for tax in bracken:
                         this_taxon = tax["name"].replace('"', '')
+                        tcount += 1
                         # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
                         tperc = round((float(tax["fraction_total_reads"].replace('"', '')) * 100), 2)
 
                         bracken_results[this_taxon] = tperc
+
+                    taxon_count[platform]["count"] = tcount
 
                     bracken_data_all[platform].append(bracken_results)
 
@@ -362,10 +376,10 @@ def main(yaml, template, output, version, call, wd):
                 "quality_nanopore": nanostat_q15,
                 "nanopore_n50": nanostat_read_n50,
                 "busco_status": busco_status,
-                "taxon_count_illumina": taxon_count_illumina,
-                "taxon_count_illumina_status": taxon_count_illumina_status,
-                "taxon_count_nanopore": taxon_count_nanopore,
-                "taxon_count_nanopore_status": taxon_count_nanopore_status,
+                "taxon_count_illumina": taxon_count["ILLUMINA"]["count"],
+                "taxon_count_illumina_status": taxon_count["ILLUMINA"]["status"],
+                "taxon_count_nanopore": taxon_count["NANOPORE"]["count"],
+                "taxon_count_nanopore_status": taxon_count["NANOPORE"]["status"],
                 "coverage": coverage,
                 "coverage_status": coverage_status,
                 "coverage_illumina": coverage_illumina,
