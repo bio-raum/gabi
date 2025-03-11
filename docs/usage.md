@@ -97,7 +97,7 @@ This samplesheet can be generated with a script of your own design, or with a co
 nextflow run bio-raum/samplesheet -r main -profile singularity --input /path/to/reads --platform
 ```
 
-If GABI sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the R2 column should remain empty. 
+If GABI sees more than one set of reads for a given sample ID and platform type, it will merge them automatically at the appropriate time. Based on what types of reads the pipeline sees, it will automatically trigger suitable tool chains. If the data set consists of only one read file (e.g. Nanopore, Pacbio), then the fq2 column should remain empty. 
 
 Allowed platforms and data types are:
 
