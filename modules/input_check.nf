@@ -25,7 +25,7 @@ def input_channel(LinkedHashMap row) {
     meta = [:]
 
     if (!row.sample) {
-        exit 1, "ERROR: Please check input samplesheet -> no sample_id column found!\n"
+        exit 1, "ERROR: Please check input samplesheet -> no sample column found!\n"
     }
 
     meta.sample_id    = row.sample
