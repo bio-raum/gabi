@@ -125,31 +125,37 @@ def main(input, refs, output):
 
                 for read in set:
                     contam_type = "intra-species"
-                    if ":" in read["Genus"]:
-                        contam_type = "inter-species"
-
-                    if read["ContamStatus"] == "True":
-                        contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
-
-                        if contaminated == status["fail"]:
-                            m = f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
-                            if m not in qc_calls["messages"]:
-                                qc_calls["messages"].append(m)
-                        else:
-                            m = f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
-                            if m not in qc_calls["messages"]:
-                                qc_calls["messages"].append(m)
-                    else:
-                        contaminated = status["pass"]
-
-                    if contaminated == status["fail"]:
-                        platform_contaminated = status["fail"]
-                    elif contaminated == status["warn"] and platform_contaminated != status["fail"]:
-                        platform_contaminated = status["warn"]
 
                     if read["BasesExamined"] == 0:
                         contaminated = status["missing"]
-                        qc_calls["messages"].append("No ConfindR databases for this species available, contamination check skipped.")
+                        m = "No ConfindR databases for this species available, contamination check skipped." 
+                        if m not in qc_calls["messages"]:
+                            qc_calls["messages"].append(m)
+                        platform_contaminated = status["missing"]
+
+                    else:
+                        
+                        if ":" in read["Genus"]:
+                            contam_type = "inter-species"
+
+                        if read["ContamStatus"] == "True":
+                            contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
+
+                            if contaminated == status["fail"]:
+                                m = f"Contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                                if m not in qc_calls["messages"]:
+                                    qc_calls["messages"].append(m)
+                            else:
+                                m = f"Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                                if m not in qc_calls["messages"]:
+                                    qc_calls["messages"].append(m)
+                        else:
+                            contaminated = status["pass"]
+
+                        if contaminated == status["fail"]:
+                            platform_contaminated = status["fail"]
+                        elif contaminated == status["warn"] and platform_contaminated != status["fail"]:
+                            platform_contaminated = status["warn"]
 
             qc_calls[platform_contaminated].append(f"confindr_{platform}")
 
