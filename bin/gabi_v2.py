@@ -133,7 +133,7 @@ def main(yaml, template, output, version, call, wd):
             ####################
 
             taxon_count = {
-                "ILLUMINA" : {
+                "ILLUMINA": {
                     "count": "-",
                     "status": "missing"
                 },
