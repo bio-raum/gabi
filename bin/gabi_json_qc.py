@@ -128,13 +128,11 @@ def main(input, refs, output):
 
                     if read["BasesExamined"] == 0:
                         contaminated = status["missing"]
-                        m = "No ConfindR databases for this species available, contamination check skipped." 
+                        m = "No ConfindR databases for this species available, contamination check skipped."
                         if m not in qc_calls["messages"]:
                             qc_calls["messages"].append(m)
                         platform_contaminated = status["missing"]
-
                     else:
-                        
                         if ":" in read["Genus"]:
                             contam_type = "inter-species"
 
