@@ -22,7 +22,7 @@ process MULTIQC {
     script:
     def args = task.ext.args ?: ''
     def config = multiqc_config ? "--config $multiqc_config" : ''
-    def logo = multiqc_logo ? /--cl-config 'custom_logo: "${multiqc_logo}"'/ : ''
+    def logo = multiqc_logo ? "--cl-config 'custom_logo: \"${multiqc_logo}\"'" : ''
     def prefix = task.ext.prefix ?: "${params.run_name}_multiqc_report"
     """
     multiqc \\

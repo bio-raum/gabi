@@ -23,7 +23,7 @@ process HAMRONIZATION_ABRICATE {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${report.getBaseName()}"
+    def prefix = task.ext.prefix ?: "${reports.getBaseName()}"
     """
     hamronize \\
         abricate \\

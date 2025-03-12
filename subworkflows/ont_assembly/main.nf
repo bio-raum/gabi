@@ -7,8 +7,6 @@ include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
 
-ch_versions = Channel.from([])
-
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
 Since Dragonflye isn't regularly maintained, GABI re-implements the
@@ -21,6 +19,8 @@ workflow ONT_ASSEMBLY {
     homopolish_db
 
     main:
+
+    ch_versions = Channel.from([])
 
     // Get long reads
     reads.map { m,s,o ->

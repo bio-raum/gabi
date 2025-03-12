@@ -4,15 +4,15 @@ include Modules
 include { BWAMEM2_INDEX }   from './../../modules/bwamem2/index'
 include { BWAMEM2_MEM }     from './../../modules/bwamem2/mem'
 
-ch_bam = Channel.from([])
-ch_versions = Channel.from([])
-
 workflow ALIGN_SHORT_READS {
 
     take:
     ch_assembly_with_reads
 
     main:
+
+    ch_bam = Channel.from([])
+    ch_versions = Channel.from([])
 
     // Index the assembly
     BWAMEM2_INDEX(

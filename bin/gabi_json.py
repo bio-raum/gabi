@@ -102,7 +102,8 @@ def parse_tabular(lines):
                 elif re.match(r"^\/.*\/.*$", entry):
                     entry = entry.split("/")[-1]
                 this_data[h] = entry
-                data.append(this_data)
+        data.append(this_data)
+    
     return data
 
 
@@ -276,11 +277,13 @@ def main(sample, taxon, yaml_file, output):
         elif re.search(".*mosdepth.global.dist.txt", file):
             matrix["mosdepth_global"]["total"] = parse_mosdepth_global(lines)
         elif re.search(".sistr.tab", file):
-            matrix["serotype"]["sistr"]: parse_tabular(lines)[0]
+            matrix["serotype"]["sistr"] = parse_tabular(lines)[0]
         elif re.search(".gbff$", file):
             matrix["reference"] = parse_genbank(lines)
         elif re.search(".stats$", file):
             matrix["samtools"] = parse_samtools_stats(lines)
+        elif re.search("mobtyper_results.txt", file):
+            matrix["plasmids"] = parse_tabular(lines)
         elif re.search(r".*short_summary.*json", file):
             busco = parse_json(lines)
             dataset = busco["dataset"]

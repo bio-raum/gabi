@@ -22,7 +22,7 @@ workflow INPUT_CHECK {
 }
 
 def input_channel(LinkedHashMap row) {
-    meta = [:]
+    def meta = [:]
 
     if (!row.sample) {
         exit 1, "ERROR: Please check input samplesheet -> no sample column found!\n"
@@ -51,9 +51,9 @@ def input_channel(LinkedHashMap row) {
         meta.single_end = true
 
 
-        array = []
+        def array = []
 
-        valid_platforms = [ 'ILLUMINA', 'NANOPORE', 'PACBIO']
+        def valid_platforms = [ 'ILLUMINA', 'NANOPORE', 'PACBIO']
 
         if (!valid_platforms.contains(row.platform)) {
             exit 1, "ERROR: Please check input samplesheet -> incorrect platform provided!\n${row.platform}"

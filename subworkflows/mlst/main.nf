@@ -1,12 +1,12 @@
 include { MLST }                            from './../../modules/mlst'
 
-ch_versions = Channel.from([])
-
 workflow MLST_TYPING {
     take:
     assembly
 
     main:
+
+    ch_versions = Channel.from([])
 
     assembly.branch { m, a ->
         annotated: m.taxon != 'unknown'

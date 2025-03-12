@@ -4,10 +4,6 @@ include { TABIX_TABIX }     from './../../modules/tabix/tabix'
 include { TABIX_BGZIP }     from './../../modules/tabix/bgzip'
 include { BCFTOOLS_STATS }  from './../../modules/bcftools/stats'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-ch_variants = Channel.from([])
-
 /*
 Call variants against the assembled genome
 to check how many sites are polymorphic and indicative
@@ -19,6 +15,10 @@ workflow VARIANTS {
     reads_with_assembly
 
     main:
+
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
+    ch_variants = Channel.from([])
 
     reads_with_assembly.branch { m,r,a ->
         nanopore: m.platform == "NANOPORE"

@@ -33,7 +33,7 @@ workflow GROUP_READS {
     ch_reads_with_nanopore                      = ch_reads_cross_grouped_joined.filter { it.last() }
     ch_reads_with_nanopore_no_short             = ch_reads_with_nanopore.filter { !it[1] }
     ch_reads_with_nanopore.filter { it[1] }.transpose().map { [ it[3], it[2], it[4] ] }.map { m, i, n ->
-        newMeta = [:]
+        def newMeta = [:]
         newMeta.sample_id = m.sample_id
         newMeta.platform = 'ILLUMINA_AND_NANOPORE'
         tuple(newMeta, i, n)

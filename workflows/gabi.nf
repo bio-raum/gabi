@@ -33,21 +33,21 @@ include { VARIANTS }                    from './../subworkflows/variants'
 include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
+include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
 
+workflow GABI {
 
-/*
---------------------
-Set default channels
---------------------
-*/
-samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:true)) : Channel.value([])
+    main:
 
-/*
-Check that the reference directory is actually present
-and only populate variables if we are actually running the main
-workflow - else this will break on a fresh install 
-*/
-if (params.input) {
+    ch_versions     = Channel.from([])
+    multiqc_files   = Channel.from([])
+    ch_assemblies   = Channel.from([])
+    ch_report       = Channel.from([])
+    ch_multiqc_illumina = Channel.from([])
+    ch_multiqc_nanopore = Channel.from([])
+    ch_multiqc_pacbio   = Channel.from([])
+
+    samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:true)) : Channel.value([])
 
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
@@ -82,19 +82,6 @@ if (params.input) {
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
     ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
-
-}
-
-ch_versions     = Channel.from([])
-multiqc_files   = Channel.from([])
-ch_assemblies   = Channel.from([])
-ch_report       = Channel.from([])
-ch_multiqc_illumina = Channel.from([])
-ch_multiqc_nanopore = Channel.from([])
-ch_multiqc_pacbio   = Channel.from([])
-
-workflow GABI {
-    main:
 
     INPUT_CHECK(samplesheet)
 
@@ -270,6 +257,7 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
+    ch_report = ch_report.mix(PLASMIDS.out.reports)
 
     RENAME_PLASMID_CTG(
         PLASMIDS.out.chromosome,
@@ -483,7 +471,11 @@ workflow GABI {
         ch_multiqc_config,
         ch_multiqc_logo
     )
-
+    
+    PIPELINE_COMPLETION(
+        MULTIQC.out.report
+    )
+    
     emit:
     qc = MULTIQC.out.report
 }

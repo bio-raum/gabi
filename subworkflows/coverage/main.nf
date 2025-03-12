@@ -13,11 +13,6 @@ Import Subworkflows
 include { ALIGN_SHORT_READS }   from './../align_short_reads'
 include { ALIGN_LONG_READS }    from './../align_long_reads'
 
-ch_bam      = Channel.from([])
-ch_qc       = Channel.from([])
-ch_versions = Channel.from([])
-ch_summary_by_platform = Channel.from([])
-
 workflow COVERAGE {
 
     take:
@@ -27,6 +22,10 @@ workflow COVERAGE {
     pacbio_reads
 
     main:
+
+    ch_bam      = Channel.from([])
+    ch_versions = Channel.from([])
+    ch_summary_by_platform = Channel.from([])
 
     short_reads.mix(ont_reads).mix(pacbio_reads).map { m,r ->
         [ m.sample_id,m,r]
@@ -65,7 +64,7 @@ workflow COVERAGE {
     to the platform-level reports
     */
     bam_mapped = ch_bam.map { meta, bam ->
-        new_meta = [:]
+        def new_meta = [:]
         new_meta.sample_id = meta.sample_id
         def groupKey = meta.sample_id
         tuple( groupKey, new_meta, bam)

@@ -4,14 +4,14 @@ include { LISSERO }     from './../../modules/lissero'
 include { SISTR }       from './../../modules/sistr'
 include { STECFINDER }  from './../../modules/stecfinder'
 
-ch_versions = Channel.from([])
-ch_reports = Channel.from([])
-
 workflow SEROTYPING {
     take:
     assembly // [ meta, assembly ]
 
     main:
+
+    ch_versions = Channel.from([])
+    ch_reports = Channel.from([])
 
     assembly.branch { m, a ->
         ecoli: m.taxon ==~ /^Escherichia.*/

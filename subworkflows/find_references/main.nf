@@ -2,14 +2,14 @@ include { SOURMASH_SKETCH } from './../../modules/sourmash/sketch'
 include { SOURMASH_SEARCH } from './../../modules/sourmash/search'
 include { DOWNLOAD_GENOME } from './../../modules/helper/download_genome'
 
-ch_versions = Channel.from([])
-
 workflow FIND_REFERENCES {
     take:
     assembly
     sourmashdb
 
     main:
+
+    ch_versions = Channel.from([])
 
     // sketch the assembly
     SOURMASH_SKETCH(
@@ -26,7 +26,7 @@ workflow FIND_REFERENCES {
 
     SOURMASH_SEARCH.out.csv.map { m,c ->
         def newMeta = [:]
-        (gbk,taxon) = sourmash_get_acc(c)
+        def (gbk,taxon) = sourmash_get_acc(c)
         newMeta.sample_id = m.sample_id
         newMeta.gbk = gbk
         newMeta.taxon = taxon
@@ -97,10 +97,10 @@ workflow FIND_REFERENCES {
 def sourmash_get_acc(csv) {
     def gbk = ''
     def taxon = 'unknown'
-    lines = file(csv).readLines()
+    def lines = file(csv).readLines()
     if (lines.size() > 1 ) {
         def elements = lines[1].trim().split(",")
-        gbk_file = elements[3].split(" ")[0]
+        def  gbk_file = elements[3].split(" ")[0]
         taxon = elements[3].split(" ")[1..2].join(" ")
         if (gbk_file.contains('GCF_')) {
             gbk = gbk_file.replace('"','')

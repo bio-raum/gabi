@@ -2,8 +2,6 @@ include { GABI_SUMMARY }    from './../../modules/helper/gabi_summary'
 include { GABI_QC }         from './../../modules/helper/gabi_qc'
 include { GABI_REPORT }     from './../../modules/helper/gabi_report'
 
-ch_versions = Channel.from([])
-
 workflow REPORT {
     take:
     reports
@@ -12,6 +10,8 @@ workflow REPORT {
     yml
 
     main:
+
+    ch_versions = Channel.from([])
 
     GABI_SUMMARY(
         reports,

@@ -4,14 +4,14 @@ include { KMC }                     from '../../modules/kmc'
 include { DNAAPLER }                from '../../modules/dnaapler'
 include { RACON }                   from '../../modules/racon'
 
-ch_versions = Channel.from([])
-
 workflow PACBIO_ASSEMBLY {
 
     take:
     reads // [ meta, hifi_reads ]
 
     main:
+
+    ch_versions = Channel.from([])
 
     // FLYE long read assembler
     FLYE_PACBIO(

@@ -1,14 +1,14 @@
 include { KMC }     from '../../modules/kmc'
 include { RASUSA }  from '../../modules/rasusa'
 
-ch_versions = Channel.from([])
-
 workflow DOWNSAMPLE_READS {
 
     take:
     reads
 
     main:
+
+    ch_versions = Channel.from([])
 
     // Determine genome size from Kmers
     KMC(
@@ -43,7 +43,7 @@ def parse_genome_size(aFile) {
     aFile.eachLine { line ->
         if (line.contains("unique counted k-mers")) {
             def elements = line.trim().split(/\s+/)
-            raw = (elements[-1].toInteger()/1000000).round(1)
+            def raw = (elements[-1].toInteger()/1000000).round(1)
             gsize = "${raw}Mb"
         }
 

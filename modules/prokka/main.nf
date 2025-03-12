@@ -34,7 +34,7 @@ process PROKKA {
     def args = task.ext.args   ?: ''
     prefix   = task.ext.prefix ?: "${meta.sample_id}"
     def proteins_opt = proteins ? "--proteins ${proteins[0]}" : ''
-    def prodigal_tf = prodigal_tf ? "--prodigaltf ${prodigal_tf[0]}" : ''
+    def prodigal_tf_opt = prodigal_tf ? "--prodigaltf ${prodigal_tf[0]}" : ''
     if (meta.containsKey('taxon') && meta.taxon != 'unknown') {
         elements = meta.taxon.split(' ')
         (genus,species) = elements[0..1]
@@ -51,7 +51,7 @@ process PROKKA {
         --cpus $task.cpus \\
         --prefix $prefix \\
         $proteins_opt \\
-        $prodigal_tf \\
+        $prodigal_tf_opt \\
         $fasta
 
     cat <<-END_VERSIONS > versions.yml
