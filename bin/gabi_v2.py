@@ -249,6 +249,12 @@ def main(yaml, template, output, version, call, wd):
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
+                    elif (stool == "btyper3"):
+                        serotype = sresults["Adjusted_panC_Group(predicted_species)"]
+                        pathogenes = sresults["Bt(genes)"]
+                    elif (stool == "sccmec"):
+                        serotype = sresults["subtype"]
+                        pathogenes = "mecA" if sresults["mecA"] else ""
                     stool_name = f"{stool} ({taxon})"
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})

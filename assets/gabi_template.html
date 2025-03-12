@@ -168,7 +168,11 @@ all the information for one sample
         <td scope="sample-id">{{row.sample}}</td>
         <td scope={{row.status}}>{{row.status}}</td>
         <td scope="missing">{{row.taxon}}</td>
-        <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{{row.reference.assembly}}" target="_blank" title="{{row.reference.definition}}" alt="Genome in GenBank">{{row.reference.assembly}}</a></td>
+        {% if row.reference.assembly %}
+            <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{{row.reference.assembly}}" target="_blank" title="{{row.reference.definition}}" alt="Genome in GenBank">{{row.reference.assembly}}</a></td>
+        {% else %}
+            <td scope="missing"><a href="https://www.ncbi.nlm.nih.gov/nuccore/{{row.reference.locus}}" target="_blank" title="{{row.reference.definition}}" alt="Genome in GenBank">{{row.reference.locus}}</a></td>
+        {% endif %}
         <td scope={{row.fraction_status}}>{{row.fraction}}</td>
         <td scope={{row.assembly_status}}>{{row.assembly}}</td>
         <td scope={{row.contigs_status}}>{{row.contigs}}</td>

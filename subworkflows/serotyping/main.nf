@@ -3,6 +3,9 @@ include { SEQSERO2 }    from './../../modules/seqsero2'
 include { LISSERO }     from './../../modules/lissero'
 include { SISTR }       from './../../modules/sistr'
 include { STECFINDER }  from './../../modules/stecfinder'
+include { SCCMEC }      from './../../modules/sccmec'
+include { BTYPER3 }     from './../../modules/btyper3'
+
 
 workflow SEROTYPING {
     take:
@@ -17,7 +20,18 @@ workflow SEROTYPING {
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/
+        staphylococcus: m.taxon ==~ /^Staphylococcus.*/
+        bacillus: m.taxon ==~ /^Bacillus.*/
     }.set { assembly_by_taxon }
+
+    /* ~~~~~~~~~~~~~
+    Bacillus Btyper3
+    ~~~~~~~~~~~~~~*/
+    BTYPER3(
+        assembly_by_taxon.bacillus
+    )
+    ch_versions = ch_versions.mix(BTYPER3.out.versions)
+    ch_reports = ch_reports.mix(BTYPER3.out.tsv)
 
     /*
     Run Ectyper - Serotyping of E. coli
@@ -54,6 +68,15 @@ workflow SEROTYPING {
     )
     ch_versions = ch_versions.mix(SISTR.out.versions)
     ch_reports = ch_reports.mix(SISTR.out.tsv)
+
+    /*
+    Run Sccmec for Staphylococcus
+    */
+    SCCMEC(
+        assembly_by_taxon.staphylococcus
+    )
+    ch_versions = ch_versions.mix(SCCMEC.out.versions)
+    ch_reports = ch_reports.mix(SCCMEC.out.tsv)
 
     /*
     Run LisSero - Serotyping L. monocytogenes

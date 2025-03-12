@@ -27,6 +27,7 @@ workflow AMR_PROFILING {
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/
         campylobacter: m.taxon ==~ /^Campylobacter.*/
+        bacillus: m.taxon ==~ /^Bacillus.*/
     }.set { assembly_by_taxon }
 
     /*
@@ -103,6 +104,7 @@ workflow AMR_PROFILING {
     emit:
     report = HAMRONIZATION_SUMMARIZE.out.json
     amrfinder_report = AMRFINDERPLUS_RUN.out.report
+    abricate_report = ABRICATE_RUN.out.report
     versions = ch_versions
     qc = multiqc_files
 }

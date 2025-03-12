@@ -34,6 +34,7 @@ include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembl
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
 include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
+include { ABRICATE_RUN } from '../modules/abricate/run/main.nf'
 
 workflow GABI {
 
@@ -301,8 +302,8 @@ workflow GABI {
     )
     ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
     ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
-    ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
-    ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
+    //ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
+    //ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
 
     // Assembly with plasmids and the detected reference + gbk/gff
     ch_assemblies_clean.map { m, s ->
@@ -342,7 +343,6 @@ workflow GABI {
         MLST_TYPING(
             ch_assemblies_clean_with_taxa
         )
-        ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
         ch_report = ch_report.mix(MLST_TYPING.out.report)
     }
@@ -360,9 +360,6 @@ workflow GABI {
         ch_prokka_prodigal
     )
     ch_versions = ch_versions.mix(ANNOTATE.out.versions)
-    fna = ANNOTATE.out.fna
-    faa = ANNOTATE.out.faa
-    gff = ANNOTATE.out.gff
     multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
 
     /*
@@ -377,7 +374,7 @@ workflow GABI {
             abricate_dbs
         )
         ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
-        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report, AMR_PROFILING.out.abricate_report)
     }
 
     /*

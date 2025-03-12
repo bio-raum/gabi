@@ -26,7 +26,7 @@ process ABRICATE_RUN {
         --threads $task.cpus \\
         $assembly \\
         --db $db \\
-        > ${prefix}.txt
+        > ${prefix}.abricate.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

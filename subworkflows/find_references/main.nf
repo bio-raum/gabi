@@ -102,10 +102,9 @@ def sourmash_get_acc(csv) {
         def elements = lines[1].trim().split(",")
         def  gbk_file = elements[3].split(" ")[0]
         taxon = elements[3].split(" ")[1..2].join(" ")
-        if (gbk_file.contains('GCF_')) {
+        if (gbk_file.contains('GC')) {
             gbk = gbk_file.replace('"','')
         }
     }
-
     return [ gbk, taxon ]
 }
