@@ -273,7 +273,7 @@ workflow GABI {
     errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_variants) {
+    if (!params.skip_variants && !params.skip_optional) {
         VARIANTS(
             ch_illumina_trimmed.mix(ch_ont_trimmed).map { m,r ->
                 tuple(m.sample_id,m,r)
@@ -326,7 +326,7 @@ workflow GABI {
     SUB: Perform serotyping of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_serotyping) {
+    if (!params.skip_serotyping && !params.skip_optional) {
         SEROTYPING(
             ch_assemblies_clean_with_taxa
         )
@@ -339,7 +339,7 @@ workflow GABI {
     SUB: Perform MLST typing of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_mlst) {
+    if (!params.skip_mlst && !params.skip_optional) {
         MLST_TYPING(
             ch_assemblies_clean_with_taxa
         )
@@ -354,20 +354,22 @@ workflow GABI {
     genus/species to the Prokka output(s)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ANNOTATE(
-        ch_assemblies_clean_with_taxa,
-        ch_prokka_proteins,
-        ch_prokka_prodigal
-    )
-    ch_versions = ch_versions.mix(ANNOTATE.out.versions)
-    multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
+    if (!params.skip_annotation && !params.skip_optional) {
+        ANNOTATE(
+            ch_assemblies_clean_with_taxa,
+            ch_prokka_proteins,
+            ch_prokka_prodigal
+        )
+        ch_versions = ch_versions.mix(ANNOTATE.out.versions)
+        multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify antimocrobial resistance genes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_amr) {
+    if (!params.skip_amr && !params.skip_optional) {
         AMR_PROFILING(
             ch_assemblies_clean_with_taxa,
             amrfinder_db,

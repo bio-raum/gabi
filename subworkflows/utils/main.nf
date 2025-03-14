@@ -4,8 +4,7 @@ workflow PIPELINE_COMPLETION {
     multiqc_report
 
     main:
-
-    log.info "Finished"
+    log.info ""
 
 }
 

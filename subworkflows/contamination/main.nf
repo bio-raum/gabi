@@ -73,7 +73,6 @@ workflow CONTAMINATION {
 def parse_confindr_report(aFile) {
     def pass = true
     def lines = aFile.readLines()
-    def header = lines.head()
     def entries = lines.tail()
 
     entries.each { line ->

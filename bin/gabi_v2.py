@@ -112,8 +112,10 @@ def main(yaml, template, output, version, call, wd):
             ########################
 
             fastp_q30_status = check_status("fastp_q30_rate", qc)
-            fastp_summary = jdata["fastp"]["summary"]
-            fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
+            fastp_q30 = "-"
+            if "fastp" in jdata:
+                fastp_summary = jdata["fastp"]["summary"]
+                fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
 
             ##########################
             # Read stats from NanoStat

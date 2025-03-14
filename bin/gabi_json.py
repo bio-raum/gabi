@@ -187,6 +187,18 @@ def parse_yaml(lines):
     return data
 
 
+def parse_bcftools(lines):
+    data = {}
+
+    for line in lines:
+        if re.search("^SN", line):
+            elements = line.split("\t")
+            value = int(elements[-1])
+            key = elements[-2].split(" ")[-1][:-1]
+            data[key] = value
+    return data
+
+
 def main(sample, taxon, yaml_file, output):
 
     files = [os.path.abspath(f) for f in glob.glob("*/*")]
@@ -291,6 +303,8 @@ def main(sample, taxon, yaml_file, output):
             matrix["serotype"]["btyper3"] = parse_tabular(lines)[0]
         elif re.search("sccmec", file):
             matrix["serotype"]["sccmec"] = parse_tabular(lines)[0]
+        elif re.search("bcftools_stats.txt", file):
+            matrix["variants"] = parse_bcftools(lines)
         elif re.search(r".*short_summary.*json", file):
             busco = parse_json(lines)
             dataset = busco["dataset"]

@@ -218,6 +218,10 @@ By default, all samples are processed all the way to the end of the pipeline. Th
 
 Skip prediction of AMR genes
 
+### `--skip_annotation` [ default = false ]
+
+Skip annotation of gene models
+
 ### `--skip_circos` [ default = false ]
 
 Skip generation of circos plots.
@@ -226,9 +230,17 @@ Skip generation of circos plots.
 
 Skip MLST analyses
 
+### `--skip_optional` [ default = false ]
+
+Short-cut to skip mlst, amr, variant analyses, serotyping and annotation (equivalent to: `--skip_amr --skip_mlst --skip_variants --skip_annotation --skip_serotyping`)
+
 ### `--skip_serotyping` [ default = false ]
 
 Skip Serotyping
+
+### `--skip_variants` [ default = false ]
+
+Skip variant calling
 
 ## Resources
 
