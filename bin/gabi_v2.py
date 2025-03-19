@@ -258,6 +258,7 @@ def main(yaml, template, output, version, call, wd):
                         serotype = sresults["subtype"]
                         pathogenes = "mecA" if sresults["mecA"] else ""
                     stool_name = f"{stool} ({taxon})"
+                    pathogenes = [ f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:

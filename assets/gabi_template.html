@@ -398,7 +398,7 @@ Results from one or multiple serotyping tools
                 <tr>
                     <td scope="sample-id">{{stype.sample}}</td>
                     <td scope="col">{{stype.serotype}}</td>
-                    <td scope="col">{{stype.genes}}</td>
+                    <td scope="col">{{','.join(stype.genes)}}</td>
                 </tr>
             {% endfor %}
         </table>

@@ -34,7 +34,7 @@ include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembl
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
 include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
-include { ABRICATE_RUN } from '../modules/abricate/run/main.nf'
+include { ABRICATE_RUN }                from '../modules/abricate/run/main.nf'
 
 workflow GABI {
 
