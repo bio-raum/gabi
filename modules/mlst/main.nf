@@ -1,5 +1,5 @@
 process MLST {
-    tag "${meta.sample_id}|${db}"
+    tag "${meta.sample_id}"
 
     label 'short_parallel'
 
@@ -9,7 +9,7 @@ process MLST {
         'quay.io/biocontainers/mlst:2.23.0--hdfd78af_1' }"
 
     input:
-    tuple val(meta), path(assembly), val(db)
+    tuple val(meta), path(assembly)
 
     output:
     tuple val(meta), path('*mlst.tsv')  , emit: report
@@ -23,11 +23,10 @@ process MLST {
 
     """
     mlst \\
-    --scheme $db \\
     $args \\
     --threads ${task.cpus} \\
-    --json ${prefix}.${db}.mlst.json \\
-    $assembly > ${prefix}.${db}.mlst.tsv
+    --json ${prefix}.mlst.json \\
+    $assembly > ${prefix}.mlst.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
