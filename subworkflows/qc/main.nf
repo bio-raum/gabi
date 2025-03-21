@@ -10,12 +10,6 @@ Modules
 */
 include { CONFINDR2MQC_SUMMARY } from './../../modules/helper/confindr2mqc_summary'
 
-ch_versions         = Channel.from([])
-multiqc_files       = Channel.from([])
-ch_confindr_reports = Channel.from([])
-ch_confindr_json    = Channel.from([])
-ch_qc               = Channel.from([])
-
 workflow QC {
     take:
     reads
@@ -24,8 +18,15 @@ workflow QC {
 
     main:
 
+
+    ch_versions         = Channel.from([])
+    multiqc_files       = Channel.from([])
+    ch_confindr_reports = Channel.from([])
+    ch_confindr_json    = Channel.from([])
+    ch_qc               = Channel.from([])
+
     // Divide reads up into their sequencing technologies
-    reads.branch { meta, reads ->
+    reads.branch { meta, fastq ->
         illumina: meta.platform == 'ILLUMINA'
         ont: meta.platform == 'NANOPORE'
         pacbio: meta.platform == 'PACBIO'
@@ -33,7 +34,7 @@ workflow QC {
     }.set { ch_reads }
 
     ch_reads.torrent.subscribe { m, r ->
-        log.warn "Torrent data not yet supported, skipping ${meta.sample_id}..."
+        log.warn "Torrent data not yet supported, skipping ${m.sample_id}..."
     }
 
     /*

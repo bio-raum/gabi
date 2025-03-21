@@ -112,8 +112,10 @@ def main(yaml, template, output, version, call, wd):
             ########################
 
             fastp_q30_status = check_status("fastp_q30_rate", qc)
-            fastp_summary = jdata["fastp"]["summary"]
-            fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
+            fastp_q30 = "-"
+            if "fastp" in jdata:
+                fastp_summary = jdata["fastp"]["summary"]
+                fastp_q30 = (round(fastp_summary["after_filtering"]["q30_rate"], 2) * 100)
 
             ##########################
             # Read stats from NanoStat
@@ -241,15 +243,22 @@ def main(yaml, template, output, version, call, wd):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
                     elif (stool == "seqsero2"):
-                        serotype = f"{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})"
+                        serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})</a>"
                         pathogenes = ""
                     elif (stool == "sistr"):
-                        serotype = f"{sresults['serovar']} ({sresults['serogroup']})"
+                        serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['serovar']} ({sresults['serogroup']})</a>"
                         pathogenes = ""
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
+                    elif (stool == "btyper3"):
+                        serotype = sresults["Adjusted_panC_Group(predicted_species)"]
+                        pathogenes = sresults["Bt(genes)"]
+                    elif (stool == "sccmec"):
+                        serotype = sresults["subtype"]
+                        pathogenes = "mecA" if sresults["mecA"] else ""
                     stool_name = f"{stool} ({taxon})"
+                    pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:

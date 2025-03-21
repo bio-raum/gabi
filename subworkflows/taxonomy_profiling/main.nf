@@ -1,14 +1,14 @@
 include { KRAKEN2_KRAKEN2 }     from './../../modules/kraken2/kraken2'
 include { BRACKEN_BRACKEN }     from './../../modules/bracken/bracken'
 
-ch_versions = Channel.from([])
-
 workflow TAXONOMY_PROFILING {
     take:
     reads
     kraken2_db
 
     main:
+
+    ch_versions = Channel.from([])
 
     // Kraken2 raw estimates
     KRAKEN2_KRAKEN2(

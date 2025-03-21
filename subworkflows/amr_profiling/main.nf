@@ -10,11 +10,6 @@ include { HAMRONIZATION_SUMMARIZE as HAMRONIZATION_SUMMARIZE_HTML } from './../.
 include { ABRICATE_RUN }                    from './../../modules/abricate/run'
 include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_VIRULENCE } from './../../modules/abricate/run'
 
-
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-ch_hamronization_input = Channel.from([])
-
 workflow AMR_PROFILING {
     take:
     assembly
@@ -22,12 +17,17 @@ workflow AMR_PROFILING {
     abricate_dbs    // A list of abricate databases to run (should be generic!)
 
     main:
-    
+
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
+    ch_hamronization_input = Channel.from([])
+
     assembly.branch { m, a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/
         campylobacter: m.taxon ==~ /^Campylobacter.*/
+        bacillus: m.taxon ==~ /^Bacillus.*/
     }.set { assembly_by_taxon }
 
     /*
@@ -104,6 +104,7 @@ workflow AMR_PROFILING {
     emit:
     report = HAMRONIZATION_SUMMARIZE.out.json
     amrfinder_report = AMRFINDERPLUS_RUN.out.report
+    abricate_report = ABRICATE_RUN.out.report
     versions = ch_versions
     qc = multiqc_files
 }

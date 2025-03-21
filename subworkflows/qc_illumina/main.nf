@@ -9,9 +9,6 @@ subworkflows
 include { CONTAMINATION }               from './../contamination'
 include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-
 workflow QC_ILLUMINA {
     take:
     reads
@@ -20,18 +17,21 @@ workflow QC_ILLUMINA {
 
     main:
 
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
+
     // Split trimmed reads by sample to find multi-lane data set
-    reads.map {m,r ->
+    reads.map {m, fastq ->
         def newMeta = [:]
         newMeta.sample_id = m.sample_id
         newMeta.platform = m.platform
         newMeta.single_end = m.single_end
-        tuple(newMeta,r)
-    }.groupTuple().branch { meta, reads ->
-        single: reads.size() == 1
-            return [ meta, reads.flatten()]
-        multi: reads.size() > 1
-            return [ meta, reads.flatten()]
+        tuple(newMeta,fastq)
+    }.groupTuple().branch { meta, fastq ->
+        single: fastq.size() == 1
+            return [ meta, fastq.flatten()]
+        multi: fastq.size() > 1
+            return [ meta, fastq.flatten()]
     }.set { ch_reads_illumina }
 
     // Concatenate samples with multiple PE files
@@ -40,7 +40,7 @@ workflow QC_ILLUMINA {
     )
 
     ch_reads_merged = ch_reads_illumina.single.mix(CAT_FASTQ.out.reads)
- 
+     
     // Short read trimming and QC
     // this will also standardize the read names to sample_id_R1/2_trimmed.fastq.gz
     // This is only acceptable because we concatenate the reads beforehand!

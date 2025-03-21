@@ -9,9 +9,6 @@ subworkflows
 include { CONTAMINATION }               from './../contamination'
 include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-
 workflow QC_PACBIO {
     take:
     reads
@@ -19,12 +16,15 @@ workflow QC_PACBIO {
 
     main:
 
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
+
     // Merge Nanopore reads per sample
-    reads.groupTuple().branch { meta, reads ->
-        single: reads.size() == 1
-            return [ meta, reads.flatten()]
-        multi: reads.size() > 1
-            return [ meta, reads.flatten()]
+    reads.groupTuple().branch { meta, fastq ->
+        single: fastq.size() == 1
+            return [ meta, fastq.flatten()]
+        multi: fastq.size() > 1
+            return [ meta, fastq.flatten()]
     }.set { ch_reads_pb }
 
     CAT_FASTQ(

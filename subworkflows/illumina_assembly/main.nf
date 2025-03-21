@@ -2,14 +2,15 @@
 include { SHOVILL }                             from './../../modules/shovill'
 include { RENAME_CTG as RENAME_SHOVILL_CTG }    from './../../modules/rename_ctg'
 
-ch_versions = Channel.from([])
-
 workflow ILLUMINA_ASSEMBLY {
 
     take:
     reads
 
     main:
+
+    ch_versions = Channel.from([])
+
     /*
     Shovill
     */

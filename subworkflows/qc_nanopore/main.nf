@@ -12,15 +12,15 @@ include { CHOPPER }                     from './../../modules/chopper'
 include { CONTAMINATION }               from './../contamination'
 include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-
 workflow QC_NANOPORE {
     take:
     reads
     confindr_db
 
     main:
+
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
 
     if (!params.skip_porechop) {
         // Nanopore adapter trimming
@@ -35,17 +35,17 @@ workflow QC_NANOPORE {
     }
 
     // Merge Nanopore reads per sample
-    ch_porechop_reads.map { m,r ->
+    ch_porechop_reads.map { m, fastq ->
         def newMeta = [:]
         newMeta.sample_id = m.sample_id
         newMeta.platform = m.platform
         newMeta.single_end = m.single_end
-        tuple(newMeta,r)
-    }.groupTuple().branch { meta, reads ->
-        single: reads.size() == 1
-            return [ meta, reads.flatten()]
-        multi: reads.size() > 1
-            return [ meta, reads.flatten()]
+        tuple(newMeta,fastq)
+    }.groupTuple().branch { meta, fastq ->
+        single: fastq.size() == 1
+            return [ meta, fastq.flatten()]
+        multi: fastq.size() > 1
+            return [ meta, fastq.flatten()]
     }.set { ch_reads_ont }
 
     CAT_FASTQ(

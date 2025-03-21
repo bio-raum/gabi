@@ -11,6 +11,9 @@ Version 3.11.18, [doi](https://doi.org/10.1038/s41598-021-91456-0) | [PubMed](ht
 **Bracken**
 Version 2.9, [github](https://github.com/jenniferlu717/Bracken)
 
+**BTyper3**
+Version 3.4.0, [doi](https://doi.org/10.3389/fmicb.2020.580691), [Pubmed](https://pubmed.ncbi.nlm.nih.gov/33072050/), [github](https://github.com/lmc297/BTyper3)
+
 **Busco**
 Version 5.3.0, [doi](https://doi.org/10.1007/978-1-4939-9173-0_14) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/31020564/) | [Website](https://busco.ezlab.org/)
 
@@ -94,6 +97,9 @@ Version 1.1.0, [github](https://github.com/tseemann/shovill)
 
 **Sistr**
 Version 1.1.1, [github](https://github.com/phac-nml/sistr_cmd)
+
+**Sccmec**
+Version 1.2.0 [github](https://github.com/rpetit3/sccmec)
 
 **Snippy**
 Version 4.6.0, [github](https://github.com/tseemann/snippy)

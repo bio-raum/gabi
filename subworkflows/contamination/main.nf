@@ -2,15 +2,15 @@ include { CONFINDR }        from './../../modules/confindr'
 include { CONFINDR2MQC }    from './../../modules/helper/confindr2mqc'
 include { CONFINDR2JSON }   from './../../modules/helper/confindr2json'
 
-ch_versions = Channel.from([])
-ch_qc       = Channel.from([])
-
 workflow CONTAMINATION {
     take:
     reads
     confindr_db
 
     main:
+
+    ch_versions = Channel.from([])
+    ch_qc       = Channel.from([])
 
     /*
     Find potential contaminations with ConfindR
@@ -72,12 +72,11 @@ workflow CONTAMINATION {
 
 def parse_confindr_report(aFile) {
     def pass = true
-    lines = aFile.readLines()
-    header = lines.head()
-    entries = lines.tail()
+    def lines = aFile.readLines()
+    def entries = lines.tail()
 
     entries.each { line ->
-        elements = line.trim().split(',')
+        def elements = line.trim().split(',')
         def contam_stat = elements[3]
         if (contam_stat != 'False') {
             pass = false

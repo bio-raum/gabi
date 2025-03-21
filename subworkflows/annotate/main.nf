@@ -1,8 +1,5 @@
 include { PROKKA }          from './../../modules/prokka'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-
 workflow ANNOTATE {
     take:
     assembly
@@ -10,6 +7,9 @@ workflow ANNOTATE {
     ch_prokka_prodigal
 
     main:
+
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
 
     PROKKA(
         assembly,

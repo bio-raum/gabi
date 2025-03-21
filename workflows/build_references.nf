@@ -9,18 +9,18 @@ include { GUNZIP as GUNZIP_GENOME }                         from './../modules/g
 include { GUNZIP as GUNZIP_HOMOPOLISH_DB }                  from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
 
-kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
-confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
-sourmash_db_url     = params.references['sourmashdb'].url
-sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
-homopolish_db       = Channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
-ch_busco_lineage    = Channel.from(['bacteria_odb10'])
-host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
-
 
 workflow BUILD_REFERENCES {
     main:
-    
+
+    kraken_db_url       = Channel.fromPath(params.references['kraken2'].url)
+    confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
+    sourmash_db_url     = params.references['sourmashdb'].url
+    sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
+    homopolish_db       = Channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
+    ch_busco_lineage    = Channel.from(['bacteria_odb10'])
+    host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
+
     /*
     Decompress homopolish database
     */
@@ -78,9 +78,6 @@ workflow BUILD_REFERENCES {
         confindr_db_url
     )
 
-}
-
-if (params.build_references) {
     workflow.onComplete = {
         log.info 'Installation complete - deleting staged files. '
         workDir.resolve("stage-${workflow.sessionId}").deleteDir()

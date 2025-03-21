@@ -102,7 +102,8 @@ def parse_tabular(lines):
                 elif re.match(r"^\/.*\/.*$", entry):
                     entry = entry.split("/")[-1]
                 this_data[h] = entry
-                data.append(this_data)
+        data.append(this_data)
+
     return data
 
 
@@ -186,6 +187,18 @@ def parse_yaml(lines):
     return data
 
 
+def parse_bcftools(lines):
+    data = {}
+
+    for line in lines:
+        if re.search("^SN", line):
+            elements = line.split("\t")
+            value = int(elements[-1])
+            key = elements[-2].split(" ")[-1][:-1]
+            data[key] = value
+    return data
+
+
 def main(sample, taxon, yaml_file, output):
 
     files = [os.path.abspath(f) for f in glob.glob("*/*")]
@@ -210,6 +223,7 @@ def main(sample, taxon, yaml_file, output):
         "mosdepth_global": {},
         "kraken": {},
         "bracken": {},
+        "amr": {},
         "software": versions
     }
 
@@ -242,19 +256,19 @@ def main(sample, taxon, yaml_file, output):
         elif re.search(r".*/report.tsv", file):
             matrix["quast"] = parse_quast(lines)
         elif "Protein identifier" in lines[0]:
-            matrix["amrfinder"] = parse_tabular(lines)
-        elif re.search(".*ectyper.tsv", file):
+            matrix["amr"]["amrfinder"] = parse_tabular(lines)
+        elif re.search("ectyper.tsv", file):
             ectyper = parse_tabular(lines)
-            matrix["serotype"]["ectyper"]: ectyper[0]
+            matrix["serotype"]["ectyper"] = ectyper[0]
         elif re.search(".*seqsero2.tsv", file):
             seqsero = parse_tabular(lines)
-            matrix["serotype"]["seqsero2"]: seqsero[0]
+            matrix["serotype"]["seqsero2"] = seqsero[0]
         elif re.search(".*lissero.tsv", file):
             lissero = parse_tabular(lines)
-            matrix["serotype"]["lissero"]: lissero[0]
+            matrix["serotype"]["lissero"] = lissero[0]
         elif re.search(".stecfinder.tsv", file):
             stecfinder = parse_tabular(lines[0:2])
-            matrix["serotype"]["stecfinder"]: stecfinder[0]
+            matrix["serotype"]["stecfinder"] = stecfinder[0]
         elif re.search("ILLUMINA.mosdepth.summary.txt", file):
             mosdepth = [d for d in parse_tabular(lines) if d['chrom'] == "total"]
             matrix["mosdepth"]["illumina"] = mosdepth[0]
@@ -276,11 +290,21 @@ def main(sample, taxon, yaml_file, output):
         elif re.search(".*mosdepth.global.dist.txt", file):
             matrix["mosdepth_global"]["total"] = parse_mosdepth_global(lines)
         elif re.search(".sistr.tab", file):
-            matrix["serotype"]["sistr"]: parse_tabular(lines)[0]
+            matrix["serotype"]["sistr"] = parse_tabular(lines)[0]
         elif re.search(".gbff$", file):
             matrix["reference"] = parse_genbank(lines)
         elif re.search(".stats$", file):
             matrix["samtools"] = parse_samtools_stats(lines)
+        elif re.search("mobtyper_results.txt", file):
+            matrix["plasmids"] = parse_tabular(lines)
+        elif re.search("abricate", file):
+            matrix["amr"]["abricate"] = parse_tabular(lines)
+        elif re.search("btyper3.tsv", file):
+            matrix["serotype"]["btyper3"] = parse_tabular(lines)[0]
+        elif re.search("sccmec", file):
+            matrix["serotype"]["sccmec"] = parse_tabular(lines)[0]
+        elif re.search("bcftools_stats.txt", file):
+            matrix["variants"] = parse_bcftools(lines)
         elif re.search(r".*short_summary.*json", file):
             busco = parse_json(lines)
             dataset = busco["dataset"]

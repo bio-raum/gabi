@@ -3,9 +3,6 @@ include { BUSCO_DOWNLOAD }      from './../../modules/busco/download'
 include { QUAST }               from './../../modules/quast'
 include { MUMMER2CIRCOS }       from './../../modules/mummer2circos'
 
-ch_versions = Channel.from([])
-multiqc_files = Channel.from([])
-
 workflow ASSEMBLY_QC {
     take:
     assembly        // [ meta, assembly, reference_fa, reference_gff, reference_gbk ]
@@ -13,6 +10,9 @@ workflow ASSEMBLY_QC {
     busco_db_path   // db_path
 
     main:
+
+    ch_versions = Channel.from([])
+    multiqc_files = Channel.from([])
 
     /*
     Generate a circos plot against

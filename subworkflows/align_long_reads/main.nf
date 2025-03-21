@@ -1,14 +1,14 @@
 include { MINIMAP2_ALIGN }    from './../../modules/minimap2/align'
 
-ch_versions = Channel.from([])
-ch_bam      = Channel.from([])
-
 workflow ALIGN_LONG_READS {
 
     take:
     ch_reads_with_assembly
 
     main:
+
+    ch_versions = Channel.from([])
+    ch_bam      = Channel.from([])
 
     // Align reads with minimap
     MINIMAP2_ALIGN(

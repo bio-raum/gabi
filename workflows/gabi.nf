@@ -33,21 +33,22 @@ include { VARIANTS }                    from './../subworkflows/variants'
 include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
+include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
+include { ABRICATE_RUN }                from '../modules/abricate/run/main.nf'
 
+workflow GABI {
 
-/*
---------------------
-Set default channels
---------------------
-*/
-samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:true)) : Channel.value([])
+    main:
 
-/*
-Check that the reference directory is actually present
-and only populate variables if we are actually running the main
-workflow - else this will break on a fresh install 
-*/
-if (params.input) {
+    ch_versions     = Channel.from([])
+    multiqc_files   = Channel.from([])
+    ch_assemblies   = Channel.from([])
+    ch_report       = Channel.from([])
+    ch_multiqc_illumina = Channel.from([])
+    ch_multiqc_nanopore = Channel.from([])
+    ch_multiqc_pacbio   = Channel.from([])
+
+    samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:true)) : Channel.value([])
 
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
@@ -82,19 +83,6 @@ if (params.input) {
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
     ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
-
-}
-
-ch_versions     = Channel.from([])
-multiqc_files   = Channel.from([])
-ch_assemblies   = Channel.from([])
-ch_report       = Channel.from([])
-ch_multiqc_illumina = Channel.from([])
-ch_multiqc_nanopore = Channel.from([])
-ch_multiqc_pacbio   = Channel.from([])
-
-workflow GABI {
-    main:
 
     INPUT_CHECK(samplesheet)
 
@@ -270,6 +258,7 @@ workflow GABI {
         ch_assemblies_clean
     )
     ch_versions = ch_versions.mix(PLASMIDS.out.versions)
+    ch_report = ch_report.mix(PLASMIDS.out.reports)
 
     RENAME_PLASMID_CTG(
         PLASMIDS.out.chromosome,
@@ -284,7 +273,7 @@ workflow GABI {
     errors
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_variants) {
+    if (!params.skip_variants && !params.skip_optional) {
         VARIANTS(
             ch_illumina_trimmed.mix(ch_ont_trimmed).map { m,r ->
                 tuple(m.sample_id,m,r)
@@ -313,8 +302,8 @@ workflow GABI {
     )
     ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
     ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
-    ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
-    ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
+    //ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
+    //ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
 
     // Assembly with plasmids and the detected reference + gbk/gff
     ch_assemblies_clean.map { m, s ->
@@ -337,7 +326,7 @@ workflow GABI {
     SUB: Perform serotyping of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_serotyping) {
+    if (!params.skip_serotyping && !params.skip_optional) {
         SEROTYPING(
             ch_assemblies_clean_with_taxa
         )
@@ -350,11 +339,10 @@ workflow GABI {
     SUB: Perform MLST typing of assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_mlst) {
+    if (!params.skip_mlst && !params.skip_optional) {
         MLST_TYPING(
             ch_assemblies_clean_with_taxa
         )
-        ch_mlst = MLST_TYPING.out.report
         ch_versions = ch_versions.mix(MLST_TYPING.out.versions)
         ch_report = ch_report.mix(MLST_TYPING.out.report)
     }
@@ -366,30 +354,29 @@ workflow GABI {
     genus/species to the Prokka output(s)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ANNOTATE(
-        ch_assemblies_clean_with_taxa,
-        ch_prokka_proteins,
-        ch_prokka_prodigal
-    )
-    ch_versions = ch_versions.mix(ANNOTATE.out.versions)
-    fna = ANNOTATE.out.fna
-    faa = ANNOTATE.out.faa
-    gff = ANNOTATE.out.gff
-    multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
+    if (!params.skip_annotation && !params.skip_optional) {
+        ANNOTATE(
+            ch_assemblies_clean_with_taxa,
+            ch_prokka_proteins,
+            ch_prokka_prodigal
+        )
+        ch_versions = ch_versions.mix(ANNOTATE.out.versions)
+        multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify antimocrobial resistance genes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    if (!params.skip_amr) {
+    if (!params.skip_amr && !params.skip_optional) {
         AMR_PROFILING(
             ch_assemblies_clean_with_taxa,
             amrfinder_db,
             abricate_dbs
         )
         ch_versions = ch_versions.mix(AMR_PROFILING.out.versions)
-        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report)
+        ch_report   = ch_report.mix(AMR_PROFILING.out.amrfinder_report, AMR_PROFILING.out.abricate_report)
     }
 
     /*
@@ -483,7 +470,11 @@ workflow GABI {
         ch_multiqc_config,
         ch_multiqc_logo
     )
-
+    
+    PIPELINE_COMPLETION(
+        MULTIQC.out.report
+    )
+    
     emit:
     qc = MULTIQC.out.report
 }

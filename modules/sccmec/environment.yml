@@ -1,7 +1,7 @@
-name: filtersketches
+name: sccmec
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
-  - conda-forge::perl=5.32
+  - bioconda::sccmec=1.2.0
