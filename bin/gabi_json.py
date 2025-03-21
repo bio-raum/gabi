@@ -103,7 +103,7 @@ def parse_tabular(lines):
                     entry = entry.split("/")[-1]
                 this_data[h] = entry
         data.append(this_data)
-    
+
     return data
 
 
