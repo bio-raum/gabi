@@ -24,6 +24,10 @@ include { paramsSummaryLog }    from 'plugin/nf-schema'
 
 workflow {
 
+    // Print summary of supplied parameters
+    log.info paramsSummaryLog(workflow)
+
+
     multiqc_report = Channel.from([])
     if (!workflow.containerEngine) {
         log.warn "NEVER USE CONDA FOR PRODUCTION PURPOSES!"

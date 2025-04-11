@@ -33,7 +33,6 @@ include { VARIANTS }                    from './../subworkflows/variants'
 include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
-include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
 include { ABRICATE_RUN }                from '../modules/abricate/run/main.nf'
 
 workflow GABI {
@@ -469,10 +468,6 @@ workflow GABI {
         ch_multiqc_pacbio.collect(),
         ch_multiqc_config,
         ch_multiqc_logo
-    )
-    
-    PIPELINE_COMPLETION(
-        MULTIQC.out.report
     )
     
     emit:
