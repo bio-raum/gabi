@@ -3,6 +3,7 @@
 Import Modules
 ----------------------
 */
+include { STAGE_FILE as STAGE_SAMPLESHEET } from './../modules/helper/stage_file'
 include { INPUT_CHECK }                 from './../modules/input_check'
 include { MULTIQC }                     from './../modules/multiqc'
 include { MULTIQC as MULTIQC_ILLUMINA } from './../modules/multiqc'
@@ -82,6 +83,8 @@ workflow GABI {
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
     ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
+
+    STAGE_SAMPLESHEET(samplesheet)
 
     INPUT_CHECK(samplesheet)
 
