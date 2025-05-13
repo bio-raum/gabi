@@ -275,8 +275,13 @@
         },
         "max_coverage": {
           "type": "string",
-          "default": "100x",
+          "default": null,
           "description": "Maximum coverage desired for assembly (triggers downsampling)"
+        },
+        "random_seed": {
+          "type": "integer",
+          "default": null,
+          "description": "Fix the random seed during downsampling to this integer"
         }
       }
     }
