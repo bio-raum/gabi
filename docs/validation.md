@@ -36,7 +36,7 @@ This approach will not cover the entirety of the analysis, but includes the "pri
 md5sum results/samples/SAMEA2707761/SAMEA2707761.qc.json
 ```
 
-This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current data as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
+This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
 
 ## Additional caveats
 
