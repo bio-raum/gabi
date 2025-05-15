@@ -22,6 +22,7 @@ If you are really impatient, check out our [quickstart](docs/quickstart.md) guid
 5. [Troubleshooting](docs/troubleshooting.md)
 6. [Developer guide](docs/developer.md)
 7. [FAQs](docs/faq.md)
+8. [Validation](docs/validation.md)
 
 ## Developer team
 
