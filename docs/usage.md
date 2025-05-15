@@ -186,9 +186,9 @@ A local version of the ConfindR rMLST database, available [here](https://olc-bio
 
 By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-### `--max_coverage` [ default = '100x']
+### `--max_coverage` [ default = null ]
 
-Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. This option is set to 100x by default since we are not aware of any benefit from going deeper. Set to false if you do not wish to perform downsampling. 
+Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with `--random_seed` if you would like the results to be reproducible.
 
 ### `--max_contigs` [ default = 150 ]
 
@@ -202,6 +202,10 @@ If you analyse a single species and wish to optimize the quality of the genome a
 ### `--prokka_prodigal` [ default = null ]
 
 If you analyse a single species and wish to optimize the quality of the genome annotation, you can pass a custom prodigal training file using this option, as described [here](https://github.com/tseemann/prokka?tab=readme-ov-file#option---prodigaltf).
+
+### `--random_seed` [ default = false ]
+
+A random seed to use during read downsampling (when using --max_coverage). Downsampling will randomly choose reads to retain; if you need your analysis to be perfectly reproducible, provide a random number as seed to fix the sampling to a specific set of reads. 
 
 ### `--remove_host` [ default = false ]
 

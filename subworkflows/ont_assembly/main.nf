@@ -60,7 +60,7 @@ workflow ONT_ASSEMBLY {
     }.set { polished_with_short_reads }
 
     // Homopolish to remove homopolymer errors when no short reads
-    // are available ; skippable if users chooses to  
+    // are available ; skippable if user chooses to  
     if (!params.skip_homopolish) {
             HOMOPOLISH(
             polished_with_short_reads.without.map { m,p,r ->

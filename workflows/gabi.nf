@@ -3,6 +3,7 @@
 Import Modules
 ----------------------
 */
+include { STAGE_FILE as STAGE_SAMPLESHEET } from './../modules/helper/stage_file'
 include { INPUT_CHECK }                 from './../modules/input_check'
 include { MULTIQC }                     from './../modules/multiqc'
 include { MULTIQC as MULTIQC_ILLUMINA } from './../modules/multiqc'
@@ -33,7 +34,6 @@ include { VARIANTS }                    from './../subworkflows/variants'
 include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
-include { PIPELINE_COMPLETION }         from './../subworkflows/utils'
 include { ABRICATE_RUN }                from '../modules/abricate/run/main.nf'
 
 workflow GABI {
@@ -83,6 +83,8 @@ workflow GABI {
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
     ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
+
+    STAGE_SAMPLESHEET(samplesheet)
 
     INPUT_CHECK(samplesheet)
 
@@ -469,10 +471,6 @@ workflow GABI {
         ch_multiqc_pacbio.collect(),
         ch_multiqc_config,
         ch_multiqc_logo
-    )
-    
-    PIPELINE_COMPLETION(
-        MULTIQC.out.report
     )
     
     emit:
