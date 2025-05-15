@@ -35,12 +35,8 @@ This approach will not cover the entirety of the analysis, but includes the "pri
 ```bash
 md5sum results/samples/SAMEA2707761/SAMEA2707761.qc.json
 ```
-Expected result: 
-| Pipeline version | md5sum |
-|------------------|--------|
-| 1.0.1            | `d9b5b54af902d49d865fba47d514a4b6` |
 
-This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user as well as the version of Nextflow used. If for some reason these are not identical on your two systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
+This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
 
 ## Additional caveats
 
