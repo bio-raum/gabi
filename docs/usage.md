@@ -245,19 +245,3 @@ Skip Serotyping
 ### `--skip_variants` [ default = false ]
 
 Skip variant calling
-
-## Resources
-
-The following options can be set to control resource usage outside of a site-specific [config](https://github.com/bio-raum/nf-configs) file.
-
-### `--max_cpus` [ default = 8]
-
-The maximum number of cpus a single job can request. This is typically the maximum number of cores available on a compute node or your local (development) machine. 
-
-### `--max_memory` [ default = 64.GB ]
-
-The maximum amount of memory a single job can request. This is typically the maximum amount of RAM available on a compute node or your local (development) machine, minus a few percent to prevent the machine from running out of memory while running basic background tasks.
-
-### `--max_time`[ default = 240.h ]
-
-The maximum allowed run/wall time a single job can request. This is mostly relevant for environments where run time is restricted, such as in a computing cluster with active resource manager or possibly some cloud environments.  
