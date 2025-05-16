@@ -60,18 +60,14 @@ Site-specific config-files for our pipeline ecosystem are stored centrally on [g
 If you absolutely do not want to add your system to this repository, you can manually pass a compatible configuration to nextflow using the `-c`  command line option:
 
 ```bash
-nextflow -c my.config run bio-raum/gabi -profile myprofile -r 1.0.0 --input samples.csv --run_name my_run_name --reference_base /path/to/references
+nextflow -c my.config run bio-raum/gabi -profile myprofile -r 1.0.1 --input samples.csv --run_name my_run_name --reference_base /path/to/references
 ```
 
 A basic example using Singularity may look as follows:
 
 ```GROOVY
-params {
-
-  max_cpus = 16
-  max_memory = 64.GB
-  max_time = 24.h
-
+process {
+  resourceLimits = [ cpus: 16, memory: 64.GB, time: 72.h ]
 }
 
 singularity {
@@ -84,12 +80,8 @@ This would be for a single computer, with 16 cores and 64GB Ram, using Singulari
 Or with the Conda/Mamba package manager:
 
 ```GROOVY
-params {
-
-  max_cpus = 16
-  max_memory = 64.GB
-  max_time = 24.h
-
+process {
+  resourceLimits = [ cpus: 16, memory: 64.GB, time: 72.h ]
 }
 
 conda {

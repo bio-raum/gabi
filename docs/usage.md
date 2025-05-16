@@ -16,8 +16,6 @@ Please fist check out our [installation guide](installation.md), if you haven't 
 
 [Expert options](#expert-options)
 
-[Resources](#resources)
-
 ## Running the pipeline
 
 A basic execution of the pipeline looks as follows:
