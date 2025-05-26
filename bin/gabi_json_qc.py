@@ -167,29 +167,30 @@ def main(input, refs, output):
 
     # bracken
     for platform, bracken in data["bracken"].items():
-        taxon_count = 0
-        taxon_count_same = 0
-        taxon_count_status = status["pass"]
+
+        genus_stats = {}
 
         for tax in bracken:
             this_taxon = tax["name"].replace('"', '')
             genus = this_taxon.split(" ")[0]
             # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
-            tperc = round((float(tax["fraction_total_reads"].replace('"', '')) * 100), 2)
+            tperc = round(float(tax["fraction_total_reads"].replace('"', '')), 2)
 
-            if (tperc > 5.0):
-                taxon_count += 1
-                if genus in taxon:
-                    taxon_count_same += 1
-        # Some genera will yield multiple taxa hits, so we only trigger this if the signals come from different genera
-        if ((taxon_count - taxon_count_same) > 3):
-            taxon_count_status = status["fail"]
-            qc_calls["messages"].append(f"More than three taxa detected in {platform} read data!")
-        elif ((taxon_count - taxon_count_same) > 1):
-            taxon_count_status = status["warn"]
-            qc_calls["messages"].append(f"More than one taxon detected in the {platform} read data!")
+            if genus_stats[genus]:
+                genus_stats[genus] += tperc
+            else:
+                genus_stats[genus] = tperc
 
-        qc_calls[taxon_count_status].append(f"taxon_{platform.lower()}_count")
+        # Sort abundances from high to low
+        abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
+        first_hit = abundances[0]
+        second_hit = abundances[1]
+
+        first_hit_status = check("read_hit1_genus_fraction", this_refs, first_hit[1])
+        second_hit_status = check("read_hit2_genus_fraction", this_refs, second_hit[1])
+
+        qc_calls[first_hit_status].append(f"read_hit1_genus_fraction_{platform}")
+        qc_calls[second_hit_status].append(f"read_hit2_genus_fraction_{platform}")
 
     # quast
     assembly = int(data["quast"]["Total length"])

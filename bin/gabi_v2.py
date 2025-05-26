@@ -145,8 +145,8 @@ def main(yaml, template, output, version, call, wd):
                 }
             }
 
-            taxon_count["ILLUMINA"]["status"] = check_status("taxon_illumina_count", qc)
-            taxon_count["NANOPORE"]["status"] = check_status("taxon_nanopore_count", qc)
+            taxon_count["ILLUMINA"]["status"] = check_status("read_hit1_genus_fraction", qc)
+            taxon_count["NANOPORE"]["status"] = status["missing"]
 
             if "bracken" in jdata:
 
@@ -169,7 +169,7 @@ def main(yaml, template, output, version, call, wd):
                         bracken_results[this_taxon] = tperc
 
                     taxon_count[platform]["count"] = tcount
-
+                    
                     bracken_data_all[platform].append(bracken_results)
 
             ####################
