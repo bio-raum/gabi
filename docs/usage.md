@@ -136,7 +136,7 @@ Some options specific to assembling Illumina short reads.
 
 Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
 
-### `--shovill_contig_minlen` [ default = 600 ]
+### `--shovill_contig_minlen` [ default = 300 ]
 
 Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
 

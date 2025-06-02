@@ -85,6 +85,11 @@ def check(key, refs, query):
                     return status["fail"]
                 else:
                     return status["warn"]
+            elif bins == [2, 0]:
+                if query >= thresholds[-1]:
+                    return status["pass"]
+                else:
+                    return status["fail"]
 
     return status["missing"]
 
@@ -176,7 +181,7 @@ def main(input, refs, output):
             # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
             tperc = round(float(tax["fraction_total_reads"].replace('"', '')), 2)
 
-            if genus_stats[genus]:
+            if genus in genus_stats:
                 genus_stats[genus] += tperc
             else:
                 genus_stats[genus] = tperc
@@ -184,13 +189,19 @@ def main(input, refs, output):
         # Sort abundances from high to low
         abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
         first_hit = abundances[0]
-        second_hit = abundances[1]
-
+        print(first_hit)
         first_hit_status = check("read_hit1_genus_fraction", this_refs, first_hit[1])
-        second_hit_status = check("read_hit2_genus_fraction", this_refs, second_hit[1])
-
         qc_calls[first_hit_status].append(f"read_hit1_genus_fraction_{platform}")
-        qc_calls[second_hit_status].append(f"read_hit2_genus_fraction_{platform}")
+        if first_hit_status == status["fail"]:
+            qc_calls["messages"].append("Read abundance of dominant genus below threshold - possible contamination issue.")
+
+        # If there is a second genus detected
+        if len(abundances) > 1:
+            second_hit = abundances[1]
+            second_hit_status = check("read_hit2_genus_fraction", this_refs, second_hit[1])
+            qc_calls[second_hit_status].append(f"read_hit2_genus_fraction_{platform}")
+        else:
+            qc_calls[status["missing"]].append(f"read_hit2_genus_fraction_{platform}")
 
     # quast
     assembly = int(data["quast"]["Total length"])
@@ -280,7 +291,7 @@ def main(input, refs, output):
 
     data["qc"]["call"] = status["missing"]
 
-    fail_categories = ["confindr_illumina", "confindr_nanopore", "quast_contigs", "coverage_total_mean"]
+    fail_categories = ["confindr_illumina", "confindr_nanopore", "quast_contigs", "coverage_total_mean", "read_hit1_genus_fraction_ILLUMINA", "read_hit1_genus_fraction_NANOPORE"]
 
     # overall qc ruling
     for category in fail_categories:
