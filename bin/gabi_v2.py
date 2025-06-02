@@ -169,7 +169,7 @@ def main(yaml, template, output, version, call, wd):
                         bracken_results[this_taxon] = tperc
 
                     taxon_count[platform]["count"] = tcount
-                    
+
                     bracken_data_all[platform].append(bracken_results)
 
             ####################
