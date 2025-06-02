@@ -38,7 +38,7 @@ Conda, in our eyes, is not well suited for production purposes - for excactly th
 
 This could simply be an issue with your executing machine not having enough RAM to run some of the tools we put into this pipeline. The exact amount of RAM needed is difficult to predict and can depend on factors like read length and/or sequencing depth - but we suspect that at least 32GB RAM should be available to avoid RAM-related issues. 
 
-It is also possible that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) or from the command line - in which case GABI will use the built-in default (64GB Ram) - which will perhaps exceed the limits of your system. Please check our section on manipulating [resource](usage.md#resources) limits from the command line. 
+It is also possible that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) - in which case GABI will use the built-in default (64GB Ram); this perhaps exceed the limits of your system.  
 
 ### Why is the pipeline so slow?
 
