@@ -5,79 +5,12 @@
   "description": "GABI Pipeline for assembly and profiling of bacterial isolates",
   "type": "object",
   "$defs": {
-    "tool_options": {
-      "title": "Tool options",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        "amrfinderplus_db": {
-          "type": "string"
-        },
-        "arg_amrfinderplus_identmin": {
-          "type": "integer",
-          "default": -1
-        },
-        "arg_amrfinderplus_translationtable": {
-          "type": "integer",
-          "default": 11
-        },
-        "arg_amrfinderplus_coveragemin": {
-          "type": "number",
-          "default": 0.5
-        },
-        "arg_amrfinderplus_plus": {
-          "type": "boolean"
-        },
-        "arg_amrfinderplus_name": {
-          "type": "boolean"
-        },
-        "arg_hamronization_summarizeformat": {
-          "type": "string",
-          "default": "tsv"
-        },
-        "arg_abricate_minid": {
-          "type": "integer",
-          "default": 80
-        },
-        "arg_abricate_mincov": {
-          "type": "integer",
-          "default": 80
-        },
-        "abricate_dbs": {
-          "type": "string",
-          "default": "['vfdb']"
-        },
-        "busco_lineage": {
-          "type": "string",
-          "default": "bacteria"
-        },
-        "busco_db_path": {
-          "type": "string"
-        },
-        "prokka_proteins": {
-          "type": "string"
-        },
-        "prokka_prodigal": {
-          "type": "string"
-        },
-        "confindr_db": {
-          "type": "string"
-        },
-        "remove_host": {
-          "type": "boolean"
-        },
-        "fast_ref": {
-          "type": "boolean"
-        }
-      }
-    },
     "input_output_options": {
       "title": "Input/output options",
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "description": "Define where the pipeline should find input data and save output data.",
-      "required": ["outdir", "run_name"],
+      "required": ["input", "outdir", "run_name"],
       "properties": {
         "input": {
           "type": "string",
@@ -86,7 +19,7 @@
           "schema": "assets/schema_input.json",
           "mimetype": "text/csv",
           "pattern": "^\\S+\\.csv$",
-          "description": "Path to tab-separated file containing information about the samples in the experiment.",
+          "description": "Path to comma-separated file containing information about the samples in the experiment.",
           "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
           "fa_icon": "fas fa-file-csv"
         },
@@ -97,13 +30,13 @@
           "fa_icon": "fas fa-folder-open",
           "default": "results"
         },
-        "run_name": {
-          "type": "string",
-          "description": "A descriptive name for this analysis run"
-        },
         "build_references": {
           "type": "boolean",
-          "description": "Alternative workflow to build the required references"
+          "description": "Optional workflow to download and format the reference databases"
+        },
+        "run_name": {
+          "type": "string",
+          "description": "A descriptive name for this pipeline run"
         }
       }
     },
@@ -125,26 +58,11 @@
           "default": 1,
           "hidden": true
         },
-        "logo": {
-          "type": "string",
-          "default": "/home/marc/git/bio-raum/gabi/assets/pipelinelogo.png",
-          "hidden": true
-        },
-        "email": {
-          "type": "boolean",
-          "hidden": true
-        },
-        "custom_config_base": {
-          "type": "string",
-          "default": "https://raw.githubusercontent.com/bio-raum/nf-configs/main",
-          "hidden": true
-        },
-        "publish_dir_mode": {
-          "type": "string",
-          "default": "copy",
-          "hidden": true
-        },
         "reference_base": {
+          "type": "string",
+          "description": "Location where the reference have been installed to"
+        },
+        "random_seed": {
           "type": "string",
           "hidden": true
         },
@@ -152,95 +70,28 @@
           "type": "string",
           "default": "/home/marc/git/bio-raum/gabi/assets/AQUAMIS_thresholds.json",
           "hidden": true
-        }
-      }
-    },
-    "ont_options": {
-      "title": "ONT options",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        "homopolish_model": {
+        },
+        "fast_ref": {
+          "type": "boolean",
+          "description": "Perform a faster version of the reference assembly matching (less accurate)"
+        },
+        "max_contigs": {
+          "type": "integer",
+          "default": 150,
+          "hidden": true
+        },
+        "confindr_db": {
           "type": "string",
-          "default": "R10",
-          "description": "A model to use for polishing nanopore assemlbies against references (R10, R9)"
+          "description": "Location of a custom confindR database"
         },
-        "medaka_model": {
+        "remove_host": {
+          "type": "boolean",
+          "description": "Remove host DNA from reads (Horse)"
+        },
+        "max_coverage": {
           "type": "string",
-          "description": "The basecalling model to use for Medaka (auto-detected whenusing modern base callers)"
-        },
-        "onthq": {
-          "type": "boolean",
-          "description": "ONT reads are high-quality (SUP base calling)"
-        },
-        "ont_min_length": {
-          "type": "integer",
-          "default": 5000,
-          "description": "Minimum ONT read lengths to keep"
-        },
-        "ont_min_q": {
-          "type": "integer",
-          "default": 10,
-          "description": "Minimum ONT read quality to keep"
-        },
-        "ont_min_reads": {
-          "type": "integer",
-          "default": 1000,
-          "description": "Minimum number of reads required"
-        },
-        "skip_homopolish": {
-          "type": "boolean",
-          "description": "Do not perform polishing with Homopolish"
-        },
-        "skip_porechop": {
-          "type": "boolean",
-          "default": true,
-          "description": "Skip read trimming with Porechop_abi"
-        }
-      }
-    },
-    "optional_analyses": {
-      "title": "Optional analyses",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        "skip_optional": {
-          "type": "boolean",
-          "description": "Skip all optional analyses (assembly only)"
-        },
-        "skip_amr": {
-          "type": "boolean",
-          "description": "Skip AMR prediction"
-        },
-        "skip_annotation": {
-          "type": "boolean",
-          "description": "Skip gene model annotation"
-        },
-        "skip_circos": {
-          "type": "boolean",
-          "description": "Skip generation of circos plots"
-        },
-        "skip_failed": {
-          "type": "boolean",
-          "description": "Skip assemblies that fail basic metrics"
-        },
-        "skip_mlst": {
-          "type": "boolean",
-          "description": "Skip MLST prediction"
-        },
-        "skip_report": {
-          "type": "boolean",
-          "description": "Skip final report"
-        },
-        "skip_serotyping": {
-          "type": "boolean",
-          "description": "Skip serotyping"
-        },
-        "skip_variants": {
-          "type": "boolean",
-          "description": "Skip variant calling"
+          "default": "100x",
+          "description": "Maximum coverage to downsample reads to"
         }
       }
     },
@@ -250,46 +101,190 @@
       "description": "",
       "default": "",
       "properties": {
+        "min_contig_len": {
+          "type": "integer",
+          "default": 300,
+          "description": "Minimum length of a contig to be kept in assembly"
+        },
         "shovill_assembler": {
           "type": "string",
           "default": "spades",
-          "description": "Which spades assembler tool to use"
+          "description": "Assembler to use with Shovill (skesa, velvet, megahit or spades)"
         },
-        "shovill_contig_minlen": {
-          "type": "integer",
-          "default": 600,
-          "description": "Minimum contig length to keep after assembly"
+        "unicycler": {
+          "type": "boolean",
+          "description": "Use unicycler instead of Shovill"
         }
       }
     },
-    "assembly_options": {
-      "title": "Assembly options",
+    "nanopore_options": {
+      "title": "Nanopore options",
       "type": "object",
       "description": "",
       "default": "",
       "properties": {
-        "max_contigs": {
-          "type": "integer",
-          "default": 150,
-          "description": "Maximum number of contigs allowed for Circos plot"
-        },
-        "max_coverage": {
+        "homopolish_model": {
           "type": "string",
-          "default": null,
-          "description": "Maximum coverage desired for assembly (triggers downsampling)"
+          "default": "R10",
+          "description": "Which homopolish model to use (R9, R10)"
         },
-        "random_seed": {
+        "medaka_model": {
+          "type": "string",
+          "description": "The applieed basecalling model (only needed for older data)"
+        },
+        "onthq": {
+          "type": "boolean",
+          "description": "Reads were produced with SUP base calling and are mostly Q20"
+        },
+        "ont_min_length": {
           "type": "integer",
-          "default": null,
-          "description": "Fix the random seed during downsampling to this integer"
+          "default": 5000,
+          "description": "Minimum length of ONT reads to keep"
+        },
+        "ont_min_q": {
+          "type": "integer",
+          "default": 10,
+          "description": "Minimum quality of ONT reads to keep (Q)"
+        },
+        "ont_min_reads": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Minimum number of reads to remain after trimming"
+        },
+        "skip_homopolish": {
+          "type": "boolean",
+          "description": "Do not perform homopolishing"
+        },
+        "skip_porechop": {
+          "type": "boolean",
+          "default": true,
+          "description": "Do not perform adapter trimming with Porechop"
+        }
+      }
+    },
+    "optional_steps": {
+      "title": "Optional steps",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "skip_failed": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "skip_report": {
+          "type": "boolean",
+          "description": "Do not generate final HTML report (debugging only)"
+        },
+        "skip_optional": {
+          "type": "boolean",
+          "description": "Skip all optional analyses beyond the assembly"
+        },
+        "skip_annotation": {
+          "type": "boolean",
+          "description": "Skip assembly annotation"
+        },
+        "skip_circos": {
+          "type": "boolean",
+          "description": "Skip generation of circos plots"
+        },
+        "skip_mlst": {
+          "type": "boolean",
+          "description": "Skip prediction of MLST types"
+        },
+        "skip_serotyping": {
+          "type": "boolean",
+          "description": "Skip prediction of serotypes"
+        },
+        "skip_amr": {
+          "type": "boolean",
+          "description": "Skip AMD prediction"
+        },
+        "skip_variants": {
+          "type": "boolean",
+          "description": "Skip variant calling"
+        },
+        "skip_multiqc": {
+          "type": "boolean",
+          "hidden": true
+        }
+      }
+    },
+    "databases_and_tools": {
+      "title": "Databases and tools",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "amrfinderplus_db": {
+          "type": "string",
+          "hidden": true
+        },
+        "arg_amrfinderplus_identmin": {
+          "type": "integer",
+          "default": -1,
+          "description": "Minimum identity for amrfinder to consider a hit"
+        },
+        "arg_amrfinderplus_coveragemin": {
+          "type": "number",
+          "default": 0.5,
+          "description": "Minimum coverage for amrrinder to consider a hit"
+        },
+        "arg_amrfinderplus_translationtable": {
+          "type": "integer",
+          "default": 11,
+          "description": "Translation table to be used by amrfinder",
+          "hidden": true
+        },
+        "arg_amrfinderplus_plus": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "arg_amrfinderplus_name": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "arg_hamronization_summarizeformat": {
+          "type": "string",
+          "default": "tsv",
+          "hidden": true
+        },
+        "arg_abricate_minid": {
+          "type": "integer",
+          "default": 80,
+          "description": "Minimum id required by abricate"
+        },
+        "arg_abricate_mincov": {
+          "type": "integer",
+          "default": 80,
+          "description": "Minimum coverage required by abricate"
+        },
+        "abricate_dbs": {
+          "type": "string",
+          "default": "['vfdb']",
+          "hidden": true
+        },
+        "prokka_proteins": {
+          "type": "string",
+          "hidden": true
+        },
+        "prokka_prodigal": {
+          "type": "string",
+          "hidden": true
+        },
+        "busco_lineage": {
+          "type": "string",
+          "default": "bacteria",
+          "hidden": true
+        },
+        "busco_db_path": {
+          "type": "string",
+          "hidden": true
         }
       }
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/tool_options"
-    },
     {
       "$ref": "#/$defs/input_output_options"
     },
@@ -297,21 +292,22 @@
       "$ref": "#/$defs/generic_options"
     },
     {
-      "$ref": "#/$defs/ont_options"
-    },
-    {
-      "$ref": "#/$defs/optional_analyses"
-    },
-    {
       "$ref": "#/$defs/illumina_options"
     },
     {
-      "$ref": "#/$defs/assembly_options"
+      "$ref": "#/$defs/nanopore_options"
+    },
+    {
+      "$ref": "#/$defs/optional_steps"
+    },
+    {
+      "$ref": "#/$defs/databases_and_tools"
     }
   ],
   "properties": {
-    "skip_multiqc": {
-      "type": "boolean",
+    "logo": {
+      "type": "string",
+      "default": "/home/marc/git/bio-raum/gabi/assets/pipelinelogo.png",
       "hidden": true
     },
     "multiqc_config": {
@@ -327,6 +323,16 @@
     "template": {
       "type": "string",
       "default": "/home/marc/git/bio-raum/gabi/assets/gabi_template.html",
+      "hidden": true
+    },
+    "publish_dir_mode": {
+      "type": "string",
+      "default": "copy",
+      "hidden": true
+    },
+    "custom_config_base": {
+      "type": "string",
+      "default": "https://raw.githubusercontent.com/bio-raum/nf-configs/main",
       "hidden": true
     }
   }
