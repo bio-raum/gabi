@@ -41,10 +41,10 @@ def main(input, output):
             key, value = entry.split("=")
             meta[key] = value
 
-        data.append({"id": record.id, "name": record.name , "length": int(meta["len"]), "coverage": float(meta["cov"]), "description": " ".join(entries)})
+        data.append({"id": record.id, "name": record.name, "length": int(meta["len"]), "coverage": float(meta["cov"]), "description": " ".join(entries)})
 
     # sort the entries by both sequence length and coverage (which is what Shovill gets wrong!)
-    sorted_keys = sorted(data, key=lambda x: (x["length"], x["coverage"]), reverse = True)
+    sorted_keys = sorted(data, key=lambda x: (x["length"], x["coverage"]), reverse=True)
 
     sequences = []
     counter = 0
