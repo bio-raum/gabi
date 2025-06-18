@@ -22,7 +22,7 @@ def make_id(count):
         suffix = "00"
     else:
         suffix = "0"
-    
+
     return f"{base}{suffix}{count}"
 
 
@@ -38,13 +38,13 @@ def main(input, output):
         entries.pop(0)
         meta = {}
         for entry in entries:
-            key,value = entry.split("=")
+            key, value = entry.split("=")
             meta[key] = value
 
         data.append({"id": record.id, "name": record.name , "length": int(meta["len"]), "coverage": float(meta["cov"]), "description": " ".join(entries)})
-    
+
     # sort the entries by both sequence length and coverage (which is what Shovill gets wrong!)
-    sorted_keys = sorted(data, key = lambda x: (x["length"], x["coverage"]), reverse=True)
+    sorted_keys = sorted(data, key=lambda x: (x["length"], x["coverage"]), reverse = True)
 
     sequences = []
     counter = 0
