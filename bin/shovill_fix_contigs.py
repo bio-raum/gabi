@@ -2,7 +2,6 @@
 
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
 import argparse
 
 parser = argparse.ArgumentParser(description="Script options")
@@ -10,6 +9,7 @@ parser.add_argument("--output", "-o")
 parser.add_argument("--input", "-i")
 
 args = parser.parse_args()
+
 
 def make_id(count):
 
@@ -25,6 +25,7 @@ def make_id(count):
     
     return f"{base}{suffix}{count}"
 
+
 def main(input, output):
 
     data = []
@@ -39,15 +40,15 @@ def main(input, output):
         for entry in entries:
             key,value = entry.split("=")
             meta[key] = value
-            
-        data.append( { "id": record.id, "name": record.name , "length": int(meta["len"]), "coverage": float(meta["cov"]), "description": " ".join(entries) } )
+
+        data.append({"id": record.id, "name": record.name , "length": int(meta["len"]), "coverage": float(meta["cov"]), "description": " ".join(entries)})
     
     # sort the entries by both sequence length and coverage (which is what Shovill gets wrong!)
-    sorted_keys = sorted(data, key = lambda x: (x["length"], x["coverage"]), reverse=True )
+    sorted_keys = sorted(data, key = lambda x: (x["length"], x["coverage"]), reverse=True)
 
     sequences = []
     counter = 0
-    
+
     # use the properly sorted contig names and build new SeqRecords
     for key in sorted_keys:
         counter += 1
