@@ -44,7 +44,7 @@ workflow GABI {
     multiqc_files   = Channel.from([])
     ch_assemblies   = Channel.from([])
     ch_report       = Channel.from([])
-    ch_multiqc_illumina = Channel.from([])
+    ch_multiqc_illumina = Channel.from([])  
     ch_multiqc_nanopore = Channel.from([])
     ch_multiqc_pacbio   = Channel.from([])
 

@@ -132,13 +132,17 @@ This option should point to the base directory in which you have installed the p
 
 Some options specific to assembling Illumina short reads. 
 
+### `--unicycler`  [ default = false ]
+
+Use [Unicycler](https://github.com/rrwick/Unicycler) over [Shovill](https://github.com/tseemann/shovill) for assembly. Shovill is an excellent tool, but hasn't been updated in many years and relies on an older version of Spades. Unicycler in turns is slower (expect 3-4x the runtime), but potentially (!) more accurate. Note that the reference metrics used in this pipeline were derived from Shovill assemblies, so it's likely that Unicycler assemblies will (slightly) trip some of the defined thresholds (such as GC content). This doesn't necessarily mean that the Unicycler assembly is bad/worse, just different and with fewer or different kinds of 'artifacts'.  
+
 ### `--shovill_assembler` [ default = spades ]
 
-Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades.
+Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: `--unicycler`
 
-### `--shovill_contig_minlen` [ default = 300 ]
+### `--min_contig_len` [ default = 300 ]
 
-Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids. 
+Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. The default value aims to include even the shortest of (known) plasmids and some phages. 
 
 ## Nanopore options
 
