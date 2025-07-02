@@ -21,10 +21,6 @@ Properly versioned containers on the other hand are fully reproducible - they ar
 
 Generally, GABI runs fine with all-default settings. Parameterization is most typically needed for ONT data.
 
-## My analysis does not seem to be reproducible
-
-The pipeline contains a single step in which a random seed is used, and which can thus yield slightly differing results downstream - downsamling of read data. If you request your data to be downsampled to a specific depth (`--max_coverage`) but need the downsampling result to be reproducible, you can fix the random seed to a specific number using `--random_seed <INT>` where <INT> is a number of your choice.
-
 ### ONT data
 
 `--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers
