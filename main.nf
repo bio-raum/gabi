@@ -19,6 +19,7 @@ params.version = workflow.manifest.version
 
 include { GABI }                from './workflows/gabi'
 include { BUILD_REFERENCES }    from './workflows/build_references'
+include { PIPELINE_COMPLETION } from './subworkflows/pipeline_completion'
 include { paramsSummaryLog }    from 'plugin/nf-schema'
 
 
@@ -43,4 +44,5 @@ workflow {
         multiqc_report = multiqc_report.mix(GABI.out.qc).toList()
     }
 
+    PIPELINE_COMPLETION()
 }
