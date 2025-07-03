@@ -4,8 +4,8 @@ process MEDAKA_CONSENSUS {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/medaka:2.0.1--py38h8774169_0' :
-        'quay.io/biocontainers/medaka:2.0.1--py38h8774169_0' }"
+        'https://depot.galaxyproject.org/singularity/medaka:2.1.0--py38ha0c3a46_0' :
+        'quay.io/biocontainers/medaka:2.1.0--py38ha0c3a46_0' }"
 
     input:
     tuple val(meta), path(reads), path(assembly)

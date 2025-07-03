@@ -28,7 +28,7 @@ Expected result:
 |------------------|--------|
 | 1.0.1            | `e25cdf2cfc1e833ada0b29c9e5d6ad52` |
 
-This approach will not cover the entirety of the analysis, but includes the "primary" result. See the next option for why this may be preferrable. 
+This approach will not cover the entirety of the analysis, but includes the "primary" result (i.e. the assembly). See the next option for why this may be preferrable. 
 
 
 ## md5sum of the final JSON
@@ -42,8 +42,6 @@ This check is comprehensive and preferable, but includes some caveats. Specifica
 
 Perfect reproducibility requires for all the relevant building blocks of the analysis to be "fix", i.e. identical. This is easily achieved using software containers (e.g. Apptainer, Singularity, Docker). It is however not guaranteed for Conda, where many packages have "loose" dependencies and can thus yield slightly different environments depending on Conda version and time of installation. If you find that when using Conda your md5sums do not match between your two systems, consider testing with a Container framework to make sure Conda isn't the culprit.
 
-Another influencing factor are the hardware resources used. The short-read assembler Shovill specifically is affected by the number of compute cores it can use, so this parameter has to be fixed when trying to establish repeatability. The test profile sets the number of total cores to 6 automatically; your systems should all have at least this many cores to run the test. 
-
 ## Validation of the workflow
 
 GABI has been validated for use with <i>Campylobacter</i>, <i>Escherichia coli</i>, <i>Listeria monocytogenes</i> and <i>Salmonella enterica</i> using publically available data.
@@ -55,6 +53,7 @@ GABI generates a range of results, but at its core it will perform a judgement c
  Pipeline version | Sample status | Accuracy |
 |------------------|--------| ----------- |
 | 1.0.1            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.0.1.tsv) | 0.97 |
+| 1.2.0            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.2.0.tsv) | 0.97 |
 
 All 14 differences are related to the exclusion of highly coverged, very short contigs by GABI but that AQUAMIS retains and which affect the calculation of the median coverage (i.e. which just fall below a minimum threshold in GABI but not in AQUAMIS).
 
@@ -67,24 +66,25 @@ GABIs ability to detect contaminations from sequence data has been validated for
 
  Pipeline version | Species | Genetic distance |Recall | Precision |
 |------------------|--------| ----------- | ---------- | --------- |
-| 1.0.1            | Campylobacter | >= 0.5 | 1.0 | 1.0
-| 1.0.1            | Campylobacter | 0.05 | 0.5 | 1.0
-| 1.0.1            | Campylobacter | 0.5 | 1.0 | 1.0
-| 1.0.1            | Campylobacter | 5 | 1.0 | 1.0
-| 1.0.1            | Escherichia coli | >= 0.5 | 1.0 | 1.0
-| 1.0.1            | Escherichia coli | 0.05 | 0.1 | 1.0
-| 1.0.1            | Escherichia coli | 0.5 | 1.0 | 1.0
-| 1.0.1            | Escherichia coli | 5 | 1.0 | 1.0
-| 1.0.1            | Listeria monocytogenes | >= 0.5 | 0.98 | 1.0
-| 1.0.1            | Listeria monocytogenes | 0.05 | 0.03 | 1.0
-| 1.0.1            | Listeria monocytogenes | 0.5 | 0.97 | 1.0
-| 1.0.1            | Listeria monocytogenes | 5 | 1.0 | 1.0
-| 1.0.1            | Salmonella enterica | >= 0.5 | 1.0 | 1.0
-| 1.0.1            | Salmonella enterica | 0.05 | 0.19 | 1.0
-| 1.0.1            | Salmonella enterica | 0.5 | 1.0 | 1.0
-| 1.0.1            | Salmonella enterica | 5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Campylobacter | >= 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Campylobacter | 0.05 | 0.5 | 1.0
+| 1.0.1, 1.2.0            | Campylobacter | 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Campylobacter | 5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Escherichia coli | >= 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Escherichia coli | 0.05 | 0.1 | 1.0
+| 1.0.1, 1.2.0            | Escherichia coli | 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Escherichia coli | 5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Listeria monocytogenes | >= 0.5 | 0.98 | 1.0
+| 1.0.1, 1.2.0            | Listeria monocytogenes | 0.05 | 0.03 | 1.0
+| 1.0.1, 1.2.0            | Listeria monocytogenes | 0.5 | 0.97 | 1.0
+| 1.0.1, 1.2.0            | Listeria monocytogenes | 5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Salmonella enterica | >= 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Salmonella enterica | 0.05 | 0.19 | 1.0
+| 1.0.1, 1.2.0            | Salmonella enterica | 0.5 | 1.0 | 1.0
+| 1.0.1, 1.2.0            | Salmonella enterica | 5 | 1.0 | 1.0
 
-[Data - 1.0.1](../assets/benchmark/gabi_contamination_1.0.1.tsv)
+[Data - 1.0.1](../assets/benchmark/gabi_contamination_1.0.1.tsv), 
+[Data - 1.2.0](../assets/benchmark/gabi_contamination_1.2.0.tsv)
 
 These results suggest that intraspecies contaminants are robustly detectable at a genetic distance of 0.5% or higher. 
 
@@ -92,14 +92,14 @@ These results suggest that intraspecies contaminants are robustly detectable at 
 
 Pipeline version | Species | Contaminant | Recall | Precision |
 | -------------- | ------- | ----------- | ------ | --------- |
-| 1.0.1          | Campylobacter | Escherichia coli | 1.0 | 1.0 |
-| 1.0.1          | Campylobacter | Listeria monocytogenes | 1.0 | 1.0 |
-| 1.0.1          | Campylobacter | Salmonella enterica | 1.0 | 1.0 |
-| 1.0.1          | Escherichia coli | Listeria monocytogenes | 1.0 | 1.0 |
-| 1.0.1          | Escherichia coli | Salmonella enterica | 1.0 | 1.0 |
-| 1.0.1          | Listeria monocytogenes | Escherichia coli | 1.0 | 1.0 |
-| 1.0.1          | Listeria monocytogenes | Salmonella enterica | 1.0 | 1.0 |
-| 1.0.1          | Salmonella enterica | Escherichia coli | 1.0 | 1.0 |
-| 1.0.1          | Salmonella enterica | Listeria monocytogenes | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Campylobacter | Escherichia coli | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Campylobacter | Listeria monocytogenes | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Campylobacter | Salmonella enterica | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Escherichia coli | Listeria monocytogenes | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Escherichia coli | Salmonella enterica | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Listeria monocytogenes | Escherichia coli | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Listeria monocytogenes | Salmonella enterica | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Salmonella enterica | Escherichia coli | 1.0 | 1.0 |
+| 1.0.1, 1.2.0          | Salmonella enterica | Listeria monocytogenes | 1.0 | 1.0 |
 
 \* Coverage of the contaminant is not displayed because all levels (>=10%) where correctly detected.
