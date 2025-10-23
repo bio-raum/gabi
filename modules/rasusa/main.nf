@@ -8,7 +8,7 @@ process RASUSA {
         'quay.io/biocontainers/rasusa:0.3.0--h779adbc_1' }"
 
     input:
-    tuple val(meta), path(reads), val(gsize)
+    tuple val(meta), path(reads, stageAs: '?/*'), val(gsize)
 
     output:
     tuple val(meta), path('*.fastq.gz'), emit: reads

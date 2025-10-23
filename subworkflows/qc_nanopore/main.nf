@@ -6,7 +6,7 @@ include { PORECHOP_ABI }                from './../../modules/porechop/abi'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
 include { CHOPPER }                     from './../../modules/chopper'
-
+include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
 
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
@@ -86,10 +86,16 @@ workflow QC_NANOPORE {
     multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { m, r -> r })
 
     if (params.max_coverage) {
-        
+
+        // Replace tabs in ONT fastq headers, else KMC will not work
+        SEQKIT_REPLACE(
+            ch_chopped_reads.pass
+        )
+        ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
+
         // Perform downsampling of reads
         DOWNSAMPLE_READS(
-            ch_chopped_reads.pass
+            SEQKIT_REPLACE.out.fastx
         )
 
         ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)

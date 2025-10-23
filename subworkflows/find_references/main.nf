@@ -45,7 +45,7 @@ workflow FIND_REFERENCES {
     )
     ch_versions = ch_versions.mix(DOWNLOAD_GENOME.out.versions)
 
-    ch_genome_with_gff = DOWNLOAD_GENOME.out.sequence.join(DOWNLOAD_GENOME.out.gff).join(DOWNLOAD_GENOME.out.genbank)
+    ch_genome_with_gff = DOWNLOAD_GENOME.out.sequence.join(DOWNLOAD_GENOME.out.gff, remainder: true).join(DOWNLOAD_GENOME.out.genbank)
 
     /*
     We use combine here because several assemblies may

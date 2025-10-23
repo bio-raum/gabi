@@ -10,7 +10,7 @@ process KMC {
         'quay.io/biocontainers/kmc:3.2.4--haf24da9_3' }"
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(reads, stageAs: '?/*')
 
     output:
     tuple val(meta), path('*kmc.txt')   , emit: log
