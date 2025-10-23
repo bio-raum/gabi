@@ -55,7 +55,7 @@ GABI generates a range of results, but at its core it will perform a judgement c
 | 1.0.1            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.0.1.tsv) | 0.97 |
 | 1.2.0            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.2.0.tsv) | 0.97 |
 
-All 14 differences are related to the exclusion of highly coverged, very short contigs by GABI but that AQUAMIS retains and which affect the calculation of the median coverage (i.e. which just fall below a minimum threshold in GABI but not in AQUAMIS).
+All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an approach that will count bases in overlapping reads [twice](https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs) - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.
 
 ### Against a contamination benchmark (Pightling et al, 2019)
 
