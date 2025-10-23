@@ -8,7 +8,7 @@ process QUAST {
         'quay.io/biocontainers/quast:5.2.0--py39pl5321h2add14b_1' }"
 
     input:
-    tuple val(meta) , path(assembly), path(fasta), path(gff)
+    tuple val(meta) , path(assembly), path(fasta), val(gff)
 
     output:
     tuple val(meta), path("${prefix}")                   , emit: results
