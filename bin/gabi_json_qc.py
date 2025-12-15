@@ -195,7 +195,7 @@ def main(input, refs, output):
         # Sort abundances from high to low
         abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
         first_hit = abundances[0]
-        first_hit_status = check("read_hit1_genus_fraction", this_refs, first_hit[1])
+        first_hit_status = check("read_hit1_species_fraction", this_refs, first_hit[1])
         first_hit_status = status["warn"] if first_hit_status == status["fail"] else first_hit_status
         qc_calls[first_hit_status].append(f"read_hit1_genus_fraction_{platform}")
         if first_hit_status == status["warn"]:
