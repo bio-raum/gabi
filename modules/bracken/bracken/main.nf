@@ -22,8 +22,9 @@ process BRACKEN_BRACKEN {
     script:
     def args = task.ext.args ?: ""
     def prefix = task.ext.prefix ?: "${meta.sample_id}.${meta.platform}"
-    bracken_report = "${prefix}.bracken.tsv"
-    bracken_kraken_style_report = "${prefix}.kraken2.report_bracken.txt"
+    def suffix = task.ext.suffix ? ".${task.ext.suffix}" : ""
+    bracken_report = "${prefix}${suffix}.bracken.tsv"
+    bracken_kraken_style_report = "${prefix}${suffix}.kraken2.report_bracken.txt"
     """
     bracken \\
         ${args} \\

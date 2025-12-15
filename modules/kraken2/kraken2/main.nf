@@ -26,6 +26,7 @@ process KRAKEN2_KRAKEN2 {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}.${meta.platform}"
+    def suffix = task.ext.suffix ? ".${task.ext.suffix}" : ""
     def paired       = meta.single_end ? '' : '--paired'
     def classified   = meta.single_end ? "${prefix}.classified.fastq"   : "${prefix}.classified#.fastq"
     def unclassified = meta.single_end ? "${prefix}.unclassified.fastq" : "${prefix}.unclassified#.fastq"
@@ -38,8 +39,7 @@ process KRAKEN2_KRAKEN2 {
     kraken2 \\
         --db $db \\
         --threads $task.cpus \\
-        --report ${prefix}.kraken2.report.txt \\
-        --gzip-compressed \\
+        --report ${prefix}${suffix}.kraken2.report.txt \\
         $unclassified_option \\
         $classified_option \\
         $readclassification_option \\

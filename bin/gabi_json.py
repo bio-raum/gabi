@@ -224,6 +224,7 @@ def main(sample, taxon, yaml_file, output):
         "kraken": {},
         "bracken": {},
         "amr": {},
+        "assembly": [],
         "software": versions
     }
 
@@ -232,7 +233,9 @@ def main(sample, taxon, yaml_file, output):
         with open(file, "r") as f:
             lines = [line.rstrip() for line in f]
 
-        if re.search(".ILLUMINA.bracken.tsv", file):
+        if re.search(".assembly.bracken.tsv", file):
+            matrix["assembly"] = parse_bracken(lines)
+        elif re.search(".ILLUMINA.bracken.tsv", file):
             matrix["bracken"]["ILLUMINA"] = parse_bracken(lines)
         elif re.search(".NANOPORE.bracken.tsv", file):
             matrix["bracken"]["NANOPORE"] = parse_bracken(lines)
