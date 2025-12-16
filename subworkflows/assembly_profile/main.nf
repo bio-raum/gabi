@@ -1,18 +1,21 @@
 include { KRAKEN2_KRAKEN2 as KRAKEN2_KRAKEN2_ASSEMBLY }     from './../../modules/kraken2/kraken2'
 include { BRACKEN_BRACKEN as BRACKEN_BRACKEN_ASSEMBLY }     from './../../modules/bracken/bracken'
+include { CHECKM2_PREDICT }                                 from './../../modules/checkm2/predict'
 
 workflow ASSEMBLY_PROFILE {
     take:
-    reads
+    assembly
     kraken2_db
+    checkm_db
 
     main:
 
     ch_versions = Channel.from([])
+    ch_reports = Channel.from([])
 
     // Kraken2 raw estimates
     KRAKEN2_KRAKEN2_ASSEMBLY(
-        reads,
+        assembly,
         kraken2_db,
         false,
         false
@@ -25,9 +28,17 @@ workflow ASSEMBLY_PROFILE {
         kraken2_db
     )
     ch_versions = ch_versions.mix(BRACKEN_BRACKEN_ASSEMBLY.out.versions)
+    ch_reports = ch_reports.mix(BRACKEN_BRACKEN_ASSEMBLY.out.reports)
+
+    CHECKM2_PREDICT(
+        assembly,
+        checkm_db
+    )
+    ch_versions = ch_versions.mix(CHECKM2_PREDICT.out.versions)
+    ch_reports = ch_reports.mix(CHECKM2_PREDICT.out.checkm2_tsv)
 
     emit:
-    report = BRACKEN_BRACKEN_ASSEMBLY.out.reports
+    report = ch_reports
     report_txt = BRACKEN_BRACKEN_ASSEMBLY.out.txt
     versions = ch_versions
 }

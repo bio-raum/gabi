@@ -32,6 +32,21 @@ def parse_bracken(lines):
     return data
 
 
+def parse_checkm(lines):
+    data = {}
+    header = lines.pop(0).split("\t")
+    elements = lines.pop(0).split("\t")
+    for h in header:
+        value = elements.pop(0)
+        if re.match(r"^[0-9]*$", value):
+            value = int(value)
+        elif re.match(r"^[0-9]*\.[0-9]*$", value):
+            value = float(value)
+        data[h] = value
+
+    return data
+
+
 def parse_kraken(lines):
     data = []
     for line in lines:
@@ -225,6 +240,7 @@ def main(sample, taxon, yaml_file, output):
         "bracken": {},
         "amr": {},
         "assembly": [],
+        "checkm": {},
         "software": versions
     }
 
@@ -308,6 +324,8 @@ def main(sample, taxon, yaml_file, output):
             matrix["serotype"]["sccmec"] = parse_tabular(lines)[0]
         elif re.search("bcftools_stats.txt", file):
             matrix["variants"] = parse_bcftools(lines)
+        elif re.search("checkm2_report.tsv", file):
+            matrix["checkm"] = parse_checkm(lines)
         elif re.search(r".*short_summary.*json", file):
             busco = parse_json(lines)
             dataset = busco["dataset"]

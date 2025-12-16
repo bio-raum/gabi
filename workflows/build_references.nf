@@ -8,6 +8,7 @@ include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/h
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
 include { GUNZIP as GUNZIP_HOMOPOLISH_DB }                  from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
+include { CHECKM2_DATABASEDOWNLOAD }                        from './../modules/checkm2/databasedownload'
 
 
 workflow BUILD_REFERENCES {
@@ -21,6 +22,12 @@ workflow BUILD_REFERENCES {
     ch_busco_lineage    = Channel.from(['bacteria_odb10'])
     host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
+
+    /*
+    Download the checkM database
+    */
+    CHECKM2_DATABASEDOWNLOAD(14897628)
+    
     /*
     Decompress homopolish database
     */

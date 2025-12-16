@@ -211,17 +211,22 @@ def main(input, refs, output):
             qc_calls[status["missing"]].append(f"read_hit2_genus_fraction_{platform}")
 
     # Assembly taxonomic composition
-    print("Checking assembly composition")
     genus_stats = bracken_stats(data["assembly"])
 
     abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
-    print(abundances)
 
     first_hit = abundances[0]
     first_hit_status = check("contig_hit1_genus_fraction", this_refs, first_hit[1])
     qc_calls[first_hit_status].append("contig_genus_species_fraction")
     if first_hit_status == status["fail"]:
-        qc_calls["messages"].append("Assembly composition abundance of dominant genus below threshold - possible contamination issue.")
+        qc_calls["messages"].append("Assembly composition abundance of dominant species below threshold - possible contamination issue.")
+
+    # Assembly checkM
+    checkm_stats = data["checkm"]
+    checkm_status = check("checkm_contamination", this_refs, checkm_stats["Contamination"])
+    qc_calls[checkm_status].append("checkm_contamination")
+    if checkm_status == status["fail"]:
+        qc_calls["messages"].append(("Assembly contains predictioncontamination above threshold."))
 
     # If there is a second genus detected
     if len(abundances) > 1:
@@ -319,7 +324,7 @@ def main(input, refs, output):
 
     data["qc"]["call"] = status["missing"]
 
-    fail_categories = ["confindr_illumina", "confindr_nanopore", "quast_contigs", "coverage_total_mean", "read_hit1_genus_fraction_ILLUMINA", "read_hit1_genus_fraction_NANOPORE"]
+    fail_categories = ["confindr_illumina", "confindr_nanopore", "quast_contigs", "coverage_total_mean", "read_hit1_species_fraction_ILLUMINA", "read_hit1_species_fraction_NANOPORE", "checkm_contamination"]
 
     # overall qc ruling
     for category in fail_categories:

@@ -173,6 +173,13 @@ def main(yaml, template, output, version, call, wd):
                     bracken_data_all[platform].append(bracken_results)
 
             ####################
+            # Get CheckM results
+            ####################
+
+            checkm = jdata["checkm"]["Contamination"]
+            checkm_status = check_status("checkm_contamination", qc)
+
+            ####################
             # Get samtools stats
             ####################
 
@@ -418,6 +425,8 @@ def main(yaml, template, output, version, call, wd):
                 "contamination_nanopore": contaminated["nanopore"]["contaminated"],
                 "confindr_nanopore_status": contaminated["nanopore"]["confindr_status"],
                 "quast": quast,
+                "checkm": checkm,
+                "checkm_status": checkm_status
             }
 
         data["summary"].append(rtable)
