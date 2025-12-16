@@ -19,6 +19,23 @@ status = {
 }
 
 
+def bracken_stats(hits):
+
+    genus_stats = {}
+    for tax in hits:
+        this_taxon = tax["name"].replace('"', '')
+        genus = this_taxon.split(" ")[0]
+        # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
+        tperc = round(float(tax["fraction_total_reads"].replace('"', '')), 2)
+
+        if genus in genus_stats:
+            genus_stats[genus] += tperc
+        else:
+            genus_stats[genus] = tperc
+
+    return genus_stats
+
+
 def parse_json(j):
     with open(j, "r") as json_file:
         data = json.loads(json_file.read())
@@ -173,35 +190,46 @@ def main(input, refs, output):
     # bracken
     for platform, bracken in data["bracken"].items():
 
-        genus_stats = {}
-
-        for tax in bracken:
-            this_taxon = tax["name"].replace('"', '')
-            genus = this_taxon.split(" ")[0]
-            # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
-            tperc = round(float(tax["fraction_total_reads"].replace('"', '')), 2)
-
-            if genus in genus_stats:
-                genus_stats[genus] += tperc
-            else:
-                genus_stats[genus] = tperc
+        genus_stats = bracken_stats(bracken)
 
         # Sort abundances from high to low
         abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
         first_hit = abundances[0]
-        print(first_hit)
-        first_hit_status = check("read_hit1_genus_fraction", this_refs, first_hit[1])
+        first_hit_status = check("read_hit1_species_fraction", this_refs, first_hit[1])
+        first_hit_status = status["warn"] if first_hit_status == status["fail"] else first_hit_status
         qc_calls[first_hit_status].append(f"read_hit1_genus_fraction_{platform}")
-        if first_hit_status == status["fail"]:
+        if first_hit_status == status["warn"]:
             qc_calls["messages"].append("Read abundance of dominant genus below threshold - possible contamination issue.")
 
         # If there is a second genus detected
         if len(abundances) > 1:
             second_hit = abundances[1]
             second_hit_status = check("read_hit2_genus_fraction", this_refs, second_hit[1])
+            second_hit_status = status["warn"] if second_hit_status == status["fail"] else second_hit_status
             qc_calls[second_hit_status].append(f"read_hit2_genus_fraction_{platform}")
         else:
             qc_calls[status["missing"]].append(f"read_hit2_genus_fraction_{platform}")
+
+    # Assembly taxonomic composition
+    print("Checking assembly composition")
+    genus_stats = bracken_stats(data["assembly"])
+
+    abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
+    print(abundances)
+
+    first_hit = abundances[0]
+    first_hit_status = check("contig_hit1_genus_fraction", this_refs, first_hit[1])
+    qc_calls[first_hit_status].append("contig_genus_species_fraction")
+    if first_hit_status == status["fail"]:
+        qc_calls["messages"].append("Assembly composition abundance of dominant genus below threshold - possible contamination issue.")
+
+    # If there is a second genus detected
+    if len(abundances) > 1:
+        second_hit = abundances[1]
+        second_hit_status = check("contig_hit1_genus_fraction", this_refs, second_hit[1])
+        qc_calls[second_hit_status].append(f"contig_hit1_genus_fraction{platform}")
+    else:
+        qc_calls[status["missing"]].append("contig_hit1_genus_fraction")
 
     # quast
     assembly = int(data["quast"]["Total length"])

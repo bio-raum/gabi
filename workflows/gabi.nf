@@ -22,6 +22,7 @@ include { GROUP_READS }                 from './../subworkflows/group_reads'
 include { QC }                          from './../subworkflows/qc'
 include { AMR_PROFILING }               from './../subworkflows/amr_profiling'
 include { TAXONOMY_PROFILING }          from './../subworkflows/taxonomy_profiling'
+include { ASSEMBLY_PROFILE }            from './../subworkflows/assembly_profile'
 include { ASSEMBLY_QC }                 from './../subworkflows/assembly_qc'
 include { PLASMIDS }                    from './../subworkflows/plasmids'
 include { ANNOTATE }                    from './../subworkflows/annotate'
@@ -250,7 +251,20 @@ workflow GABI {
         COVERAGE.out.report,
         COVERAGE.out.bam_stats
     )
-    
+
+    /*
+    Taxonomically profile the assembly to check composition
+    */
+    ASSEMBLY_PROFILE(
+        ch_assemblies_clean.map { m,a ->
+            m.single_end = true
+            tuple(m, a)
+        },
+        kraken2_db
+    )
+    //ch_versions = ch_versions.mix(ASSEMBLY_PROFILE.out.versions)
+    ch_report = ch_report.mix(ASSEMBLY_PROFILE.out.report)
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Identify and analyse plasmids from draft assemblies
