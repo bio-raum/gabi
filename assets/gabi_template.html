@@ -121,7 +121,7 @@ The summary table with all key metrics per sample
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
-        <th colspan=1 scope="col"><div class="tooltip">CheckM (%)<span class="tooltiptext">Contamination check of the full assembly using neural networks</span></div></th>
+        <th colspan=2 scope="col"><div class="tooltip">Assembly Composition<span class="tooltiptext">Contamination check of the full assembly by checking taxonomic signature of all contigs</span></div></th>
     </tr>
     <tr class="row">
         <th scope="subcol-inactive"></th>
@@ -150,7 +150,8 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
         <th scope="subcol">ILM</th>
         <th scope="subcol">ONT</th>
-        <th scope="subcol"></th>
+        <th scope="subcol"><div class="tooltip">Contam %<span class="tooltiptext">CheckM2 prediction of contamination</span></div></th>
+        <th scope="subcol"><div class="tooltip">Majority Genus %<span class="tooltiptext">Fraction of assembly assigned to the majority genus</span></div></th>
     </tr>
 <!--
 Our data structure is a list of dictionaries; where each dictionary holds
@@ -198,9 +199,10 @@ all the information for one sample
         <td scope={{row.taxon_count_illumina_status}}>{{row.taxon_count_illumina}}</td>
         <td scope={{row.taxon_count_nanopore_status}}>{{row.taxon_count_nanopore}}</td>
         <td scope={{row.checkm_status}}>{{row.checkm}}</td>
+        <td scope={{row.taxonkit_genus_status}}>{{row.taxonkit_genus}}</td>
     </tr>
     <tr class="row-hidden">
-        <th colspan="23">{{row.messages}}</th>
+        <th colspan="27">{{row.messages}}</th>
     </tr>
 {% endfor %}
 </table>

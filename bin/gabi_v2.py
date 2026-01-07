@@ -179,6 +179,13 @@ def main(yaml, template, output, version, call, wd):
             checkm = jdata["checkm"]["Contamination"]
             checkm_status = check_status("checkm_contamination", qc)
 
+            #####################
+            # Taxonkit results
+            #####################
+            taxonkit_genus = sorted(jdata["taxonkit"]["genus"], key=lambda d: d['fraction'], reverse=True)
+            taxonkit_genus_fraction = round(float(taxonkit_genus[0]["fraction"]) * 100, 2)
+            taxonkit_genus_status = check_status("taxonkit_genus_fraction", qc)
+
             ####################
             # Get samtools stats
             ####################
@@ -426,7 +433,9 @@ def main(yaml, template, output, version, call, wd):
                 "confindr_nanopore_status": contaminated["nanopore"]["confindr_status"],
                 "quast": quast,
                 "checkm": checkm,
-                "checkm_status": checkm_status
+                "checkm_status": checkm_status,
+                "taxonkit_genus": taxonkit_genus_fraction,
+                "taxonkit_genus_status": taxonkit_genus_status
             }
 
         data["summary"].append(rtable)

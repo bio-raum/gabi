@@ -42,6 +42,7 @@ def parse_checkm(lines):
             value = int(value)
         elif re.match(r"^[0-9]*\.[0-9]*$", value):
             value = float(value)
+
         data[h] = value
 
     return data
@@ -184,6 +185,56 @@ def parse_nanostat(lines):
     return data
 
 
+def parse_taxonkit(lines):
+    data = {}
+    species_data = {}
+    genus_data = {}
+    sum = 0
+    for line in lines:
+
+        elements = line.split("\t")
+        basepairs = int(elements[2])
+
+        if len(elements) < 4:
+            continue
+
+        contig, this_id, this_length, taxstring = elements
+
+        sum += basepairs
+
+        taxdata = {}
+        for e in taxstring.split("|"):
+            level, t = e.split("__")
+            taxdata[level] = t
+
+        if "s" in taxdata:
+            species = taxdata["s"]
+            if species in species_data:
+                species_data[species] += basepairs
+            else:
+                species_data[species] = basepairs
+
+        if "g" in taxdata:
+            genus = taxdata["g"]
+            if genus in genus_data:
+                genus_data[genus] += basepairs
+            else:
+                genus_data[genus] = basepairs
+
+        
+    data["genus"] = []
+    for genus, length in genus_data.items():
+        data["genus"].append({"genus": genus, "basepairs": length, "fraction": round((length / sum), 2)})
+
+    data["species"] = []
+    for species, length in species_data.items():
+        data["species"].append({"species": species, "basepairs": length, "fraction": round((length / sum), 2) })
+
+    data["length"] = sum
+
+    return data
+
+
 def parse_yaml(lines):
 
     data = {}
@@ -241,7 +292,8 @@ def main(sample, taxon, yaml_file, output):
         "amr": {},
         "assembly": [],
         "checkm": {},
-        "software": versions
+        "software": versions,
+        "taxonkit": {}
     }
 
     for file in files:
@@ -326,6 +378,8 @@ def main(sample, taxon, yaml_file, output):
             matrix["variants"] = parse_bcftools(lines)
         elif re.search("checkm2_report.tsv", file):
             matrix["checkm"] = parse_checkm(lines)
+        elif re.search("taxonkit.txt", file):
+            matrix["taxonkit"] = parse_taxonkit(lines)
         elif re.search(r".*short_summary.*json", file):
             busco = parse_json(lines)
             dataset = busco["dataset"]
