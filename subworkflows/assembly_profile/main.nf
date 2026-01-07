@@ -1,5 +1,4 @@
 include { KRAKEN2_KRAKEN2 as KRAKEN2_KRAKEN2_ASSEMBLY }     from './../../modules/kraken2/kraken2'
-include { BRACKEN_BRACKEN as BRACKEN_BRACKEN_ASSEMBLY }     from './../../modules/bracken/bracken'
 include { CHECKM2_PREDICT }                                 from './../../modules/checkm2/predict'
 include { TAXONKIT_LINEAGE }                                from './../../modules/taxonkit/lineage'
 include { TAXONKIT_REFORMAT }                               from './../../modules/taxonkit/reformat'
@@ -42,14 +41,6 @@ workflow ASSEMBLY_PROFILE {
     )
     ch_reports =  ch_reports.mix(HELPER_FORMAT_TAXONKIT.out.txt)
 
-    // Bracken deconvoluted estimates
-    BRACKEN_BRACKEN_ASSEMBLY(
-        KRAKEN2_KRAKEN2_ASSEMBLY.out.report,
-        kraken2_db
-    )
-    ch_versions = ch_versions.mix(BRACKEN_BRACKEN_ASSEMBLY.out.versions)
-    ch_reports = ch_reports.mix(BRACKEN_BRACKEN_ASSEMBLY.out.reports)
-
     CHECKM2_PREDICT(
         assembly,
         checkm_db
@@ -59,7 +50,6 @@ workflow ASSEMBLY_PROFILE {
 
     emit:
     report = ch_reports
-    report_txt = BRACKEN_BRACKEN_ASSEMBLY.out.txt
     versions = ch_versions
 }
 

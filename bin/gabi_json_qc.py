@@ -211,32 +211,13 @@ def main(input, refs, output):
         else:
             qc_calls[status["missing"]].append(f"read_hit2_genus_fraction_{platform}")
 
-    # Assembly taxonomic composition
-    genus_stats = bracken_stats(data["assembly"])
-
-    abundances = sorted(genus_stats.items(), key=lambda x: x[1], reverse=True)
-
-    first_hit = abundances[0]
-    first_hit_status = check("contig_hit1_genus_fraction", this_refs, first_hit[1])
-    qc_calls[first_hit_status].append("contig_genus_species_fraction")
-    if first_hit_status == status["fail"]:
-        qc_calls["messages"].append("Bracken: Assembly composition abundance of dominant species below threshold - possible contamination issue.")
-
-    # Assembly checkM
+       # Assembly checkM
     checkm_stats = data["checkm"]
     checkm_status = check("checkm_contamination", this_refs, checkm_stats["Contamination"])
     qc_calls[checkm_status].append("checkm_contamination")
 
     if checkm_status == status["fail"]:
         qc_calls["messages"].append(("CheckM: Assembly contains predicted contamination above threshold."))
-        
-    # If there is a second genus detected
-    if len(abundances) > 1:
-        second_hit = abundances[1]
-        second_hit_status = check("contig_hit1_genus_fraction", this_refs, second_hit[1])
-        qc_calls[second_hit_status].append(f"contig_hit1_genus_fraction{platform}")
-    else:
-        qc_calls[status["missing"]].append("contig_hit1_genus_fraction")
 
     # Taxonkit assembly QC
     taxonkit_genus = sorted(data["taxonkit"]["genus"], key=lambda d: d['fraction'], reverse=True)
