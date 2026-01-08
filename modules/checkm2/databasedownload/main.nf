@@ -41,6 +41,7 @@ process CHECKM2_DATABASEDOWNLOAD {
     # So it's necessary to download the database manually
     aria2c \
         ${args} \
+        --all-proxy=\$HTTPS_PROXY \
         --checksum ${checksum} \
         https://zenodo.org/records/${zenodo_id}/files/checkm2_database.tar.gz
 
