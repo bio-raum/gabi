@@ -1,4 +1,5 @@
 process STAGE_FILE {
+    
     label 'short_serial'
 
     conda "${moduleDir}/environment.yml"

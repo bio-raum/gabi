@@ -16,7 +16,7 @@ process KRAKEN2_KRAKEN2 {
     output:
     tuple val(meta), path('*.classified{.,_}*')     , optional:true, emit: classified_reads_fastq
     tuple val(meta), path('*.unclassified{.,_}*')   , optional:true, emit: unclassified_reads_fastq
-    tuple val(meta), path('*classifiedreads.txt')   , optional:true, emit: classified_reads_assignment
+    tuple val(meta), path('*classified.txt')        , optional:true, emit: classified
     tuple val(meta), path('*report.txt')                           , emit: report
     path 'versions.yml'                                            , emit: versions
 
@@ -32,7 +32,7 @@ process KRAKEN2_KRAKEN2 {
     def unclassified = meta.single_end ? "${prefix}.unclassified.fastq" : "${prefix}.unclassified#.fastq"
     def classified_option = save_output_fastqs ? "--classified-out ${classified}" : ''
     def unclassified_option = save_output_fastqs ? "--unclassified-out ${unclassified}" : ''
-    def readclassification_option = save_reads_assignment ? "--output ${prefix}.kraken2.classifiedreads.txt" : ''
+    def readclassification_option = save_reads_assignment ? "--output ${prefix}.kraken2.classified.txt" : ''
     def compress_reads_command = save_output_fastqs ? "pigz -p $task.cpus *.fastq" : ''
 
     """

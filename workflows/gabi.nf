@@ -70,7 +70,8 @@ workflow GABI {
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
     homopolish_db   = params.reference_base ? file(params.references['homopolish_db'].db, checkIfExists:true) : []
-    checkm_db       = params.reference_base ? file(params.references['checkmdb'].db, checkIfExists: true)      : []
+    checkm_db       = params.reference_base ? file(params.references['checkmdb'].db, checkIfExists: true)     : []
+    taxdb           = params.reference_base ? file(params.references['taxdb'].db, checkIfExists:true)         : []
 
     // Sourmash DB choice - either the full thing or a smaller "nr" one to speed up searches at the cost of some precision
     if (params.fast_ref) {
@@ -262,7 +263,8 @@ workflow GABI {
             tuple(m, a)
         },
         kraken2_db,
-        checkm_db
+        checkm_db,
+        taxdb
     )
     ch_versions = ch_versions.mix(ASSEMBLY_PROFILE.out.versions)
     ch_report = ch_report.mix(ASSEMBLY_PROFILE.out.report)

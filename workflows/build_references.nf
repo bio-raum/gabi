@@ -8,6 +8,7 @@ include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/h
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
 include { GUNZIP as GUNZIP_HOMOPOLISH_DB }                  from './../modules/gunzip'
 include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
+include { UNTAR as UNTAR_TAXDUMP }                          from './../modules/untar'
 include { CHECKM2_DATABASEDOWNLOAD }                        from './../modules/checkm2/databasedownload'
 
 
@@ -18,10 +19,17 @@ workflow BUILD_REFERENCES {
     confindr_db_url     = Channel.fromPath(params.references['confindr'].url)
     sourmash_db_url     = params.references['sourmashdb'].url
     sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
+    taxdb_url           = params.references['taxdb'].url
     homopolish_db       = Channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
     ch_busco_lineage    = Channel.from(['bacteria_odb10'])
     host_genome         = Channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
 
+    /* 
+    Decompress taxdump
+    */
+    UNTAR_TAXDUMP(
+        taxdb_url
+    )
 
     /*
     Download the checkM database
