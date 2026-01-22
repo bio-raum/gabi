@@ -211,7 +211,7 @@ def main(input, refs, output):
         else:
             qc_calls[status["missing"]].append(f"read_hit2_genus_fraction_{platform}")
 
-       # Assembly checkM
+    # Assembly checkM
     checkm_stats = data["checkm"]
     checkm_status = check("checkm_contamination", this_refs, checkm_stats["Contamination"])
     qc_calls[checkm_status].append("checkm_contamination")
