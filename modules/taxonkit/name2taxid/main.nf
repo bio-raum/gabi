@@ -39,9 +39,9 @@ process TAXONKIT_NAME2TAXID {
 
     stub:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     """
-    touch ${prefix}.tsv
+    touch ${prefix}.tsv $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

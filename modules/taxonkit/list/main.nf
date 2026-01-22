@@ -1,5 +1,5 @@
 process TAXONKIT_LIST {
-    tag "${meta.id}"
+    tag "${meta.sample_id}"
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -20,7 +20,7 @@ process TAXONKIT_LIST {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}"
     assert (!taxid && taxidfile) || (taxid && !taxidfile)
     """
     taxonkit \\
@@ -37,15 +37,4 @@ process TAXONKIT_LIST {
     END_VERSIONS
     """
 
-    stub:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    """
-    touch ${prefix}.tsv
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        taxonkit: \$( taxonkit version | sed 's/.* v//' )
-    END_VERSIONS
-    """
 }

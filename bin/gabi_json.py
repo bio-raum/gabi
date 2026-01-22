@@ -221,14 +221,14 @@ def parse_taxonkit(lines):
             else:
                 genus_data[genus] = basepairs
 
-        
     data["genus"] = []
+
     for genus, length in genus_data.items():
         data["genus"].append({"genus": genus, "basepairs": length, "fraction": round((length / sum), 2)})
 
     data["species"] = []
     for species, length in species_data.items():
-        data["species"].append({"species": species, "basepairs": length, "fraction": round((length / sum), 2) })
+        data["species"].append({"species": species, "basepairs": length, "fraction": round((length / sum), 2)})
 
     data["length"] = sum
 
