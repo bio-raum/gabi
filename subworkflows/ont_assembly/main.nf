@@ -20,7 +20,7 @@ workflow ONT_ASSEMBLY {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     // Get long reads
     reads.map { m,s,o ->

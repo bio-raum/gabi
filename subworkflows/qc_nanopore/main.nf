@@ -19,8 +19,8 @@ workflow QC_NANOPORE {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
 
     if (!params.skip_porechop) {
         // Nanopore adapter trimming

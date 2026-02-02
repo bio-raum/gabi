@@ -8,7 +8,7 @@ workflow TAXONOMY_PROFILING {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     // Kraken2 raw estimates
     KRAKEN2_KRAKEN2(

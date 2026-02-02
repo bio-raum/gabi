@@ -19,11 +19,11 @@ workflow QC {
     main:
 
 
-    ch_versions         = Channel.from([])
-    multiqc_files       = Channel.from([])
-    ch_confindr_reports = Channel.from([])
-    ch_confindr_json    = Channel.from([])
-    ch_qc               = Channel.from([])
+    ch_versions         = channel.from([])
+    multiqc_files       = channel.from([])
+    ch_confindr_reports = channel.from([])
+    ch_confindr_json    = channel.from([])
+    ch_qc               = channel.from([])
 
     // Divide reads up into their sequencing technologies
     reads.branch { meta, fastq ->

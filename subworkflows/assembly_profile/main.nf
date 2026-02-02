@@ -13,8 +13,8 @@ workflow ASSEMBLY_PROFILE {
 
     main:
 
-    ch_versions = Channel.from([])
-    ch_reports = Channel.from([])
+    ch_versions = channel.from([])
+    ch_reports = channel.from([])
 
     // Kraken2 raw estimates
     KRAKEN2_KRAKEN2_ASSEMBLY(

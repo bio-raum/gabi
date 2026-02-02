@@ -29,7 +29,7 @@ workflow {
     log.info paramsSummaryLog(workflow)
 
 
-    multiqc_report = Channel.from([])
+    multiqc_report = channel.from([])
     if (!workflow.containerEngine) {
         log.warn "NEVER USE CONDA FOR PRODUCTION PURPOSES!"
     }

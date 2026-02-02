@@ -8,8 +8,8 @@ workflow ANNOTATE {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
 
     PROKKA(
         assembly,

@@ -8,7 +8,7 @@ workflow DOWNSAMPLE_READS {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     // Determine genome size from Kmers
     KMC(

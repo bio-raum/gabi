@@ -16,8 +16,8 @@ workflow QC_PACBIO {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
 
     // Merge Nanopore reads per sample
     reads.groupTuple().branch { meta, fastq ->
