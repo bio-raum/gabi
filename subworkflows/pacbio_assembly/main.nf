@@ -11,7 +11,7 @@ workflow PACBIO_ASSEMBLY {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     // FLYE long read assembler
     FLYE_PACBIO(

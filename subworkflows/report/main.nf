@@ -11,7 +11,7 @@ workflow REPORT {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     GABI_SUMMARY(
         reports,

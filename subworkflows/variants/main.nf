@@ -16,9 +16,9 @@ workflow VARIANTS {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
-    ch_variants = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
+    ch_variants = channel.from([])
 
     reads_with_assembly.branch { m,r,a ->
         nanopore: m.platform == "NANOPORE"

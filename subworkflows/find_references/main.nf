@@ -9,7 +9,7 @@ workflow FIND_REFERENCES {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     // sketch the assembly
     SOURMASH_SKETCH(

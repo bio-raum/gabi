@@ -11,8 +11,8 @@ workflow ASSEMBLY_QC {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
 
     /*
     Generate a circos plot against
@@ -26,7 +26,7 @@ workflow ASSEMBLY_QC {
     }.set { assembly_by_completeness }
 
    
-    if (!params.skip_circos) {
+    if (!params.skip_circos && !params.skip_optional) {
 
         assembly_by_completeness.fail.subscribe { m, s, r, g, k ->
             log.warn "${m.sample_id} - skipping circos plot, assembly or reference too fragmented!"

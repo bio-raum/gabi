@@ -41,15 +41,15 @@ workflow GABI {
 
     main:
 
-    ch_versions     = Channel.from([])
-    multiqc_files   = Channel.from([])
-    ch_assemblies   = Channel.from([])
-    ch_report       = Channel.from([])
-    ch_multiqc_illumina = Channel.from([])  
-    ch_multiqc_nanopore = Channel.from([])
-    ch_multiqc_pacbio   = Channel.from([])
+    ch_versions     = channel.from([])
+    multiqc_files   = channel.from([])
+    ch_assemblies   = channel.from([])
+    ch_report       = channel.from([])
+    ch_multiqc_illumina = channel.from([])  
+    ch_multiqc_nanopore = channel.from([])
+    ch_multiqc_pacbio   = channel.from([])
 
-    samplesheet = params.input ? Channel.fromPath(file(params.input, checkIfExists:true)) : Channel.value([])
+    samplesheet = params.input ? channel.fromPath(file(params.input, checkIfExists:true)) : channel.value([])
 
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
@@ -57,16 +57,16 @@ workflow GABI {
         System.exit(1)
     }
 
-    ch_multiqc_config = params.multiqc_config   ? Channel.fromPath(params.multiqc_config, checkIfExists: true).collect()    : []
-    ch_multiqc_logo   = params.multiqc_logo     ? Channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
+    ch_multiqc_config = params.multiqc_config   ? channel.fromPath(params.multiqc_config, checkIfExists: true).collect()    : []
+    ch_multiqc_logo   = params.multiqc_logo     ? channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
 
-    ch_report_template = params.template        ? Channel.fromPath(params.template, checkIfExists: true).collect()          : []
-    ch_report_refs     = params.report_refs     ? Channel.fromPath(params.report_refs, checkIfExists: true).collect()          : []
+    ch_report_template = params.template        ? channel.fromPath(params.template, checkIfExists: true).collect()          : []
+    ch_report_refs     = params.report_refs     ? channel.fromPath(params.report_refs, checkIfExists: true).collect()          : []
 
-    ch_prokka_proteins = params.prokka_proteins ? Channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
-    ch_prokka_prodigal = params.prokka_prodigal ? Channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
+    ch_prokka_proteins = params.prokka_proteins ? channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
+    ch_prokka_prodigal = params.prokka_prodigal ? channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
 
-    abricate_dbs    = Channel.from(params.abricate_dbs)
+    abricate_dbs    = channel.from(params.abricate_dbs)
     amrfinder_db    = params.reference_base ? file(params.references['amrfinderdb'].db, checkIfExists:true)   : []
     kraken2_db      = params.reference_base ? file(params.references['kraken2'].db, checkIfExists:true)       : []
     homopolish_db   = params.reference_base ? file(params.references['homopolish_db'].db, checkIfExists:true) : []
@@ -85,7 +85,7 @@ workflow GABI {
 
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
-    ch_bloom_filter = params.reference_base ? Channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
+    ch_bloom_filter = params.reference_base ? channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
 
     STAGE_SAMPLESHEET(samplesheet)
 

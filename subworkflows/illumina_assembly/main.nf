@@ -11,7 +11,7 @@ workflow ILLUMINA_ASSEMBLY {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     if (!params.unicycler) {
          /*

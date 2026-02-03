@@ -18,9 +18,9 @@ workflow AMR_PROFILING {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
-    ch_hamronization_input = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
+    ch_hamronization_input = channel.from([])
 
     assembly.branch { m, a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
@@ -40,7 +40,7 @@ workflow AMR_PROFILING {
         ch_amrfinderplus_db = AMRFINDERPLUS_UPDATE.out.db
         ch_versions = ch_versions.mix(AMRFINDERPLUS_UPDATE.out.versions)
     } else {
-        ch_amrfinderplus_db = Channel.from(db)
+        ch_amrfinderplus_db = channel.from(db)
     }
 
     AMRFINDERPLUS_RUN(

@@ -6,7 +6,7 @@ workflow MLST_TYPING {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     assembly.branch { m, a ->
         annotated: m.taxon != 'unknown'

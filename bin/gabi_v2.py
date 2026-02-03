@@ -302,8 +302,8 @@ def main(yaml, template, output, version, call, wd):
             busco_fragmented = round((int(busco["F"]) / busco_total), 2) * 100
             busco_missing = round((int(busco["M"]) / busco_total), 2) * 100
             busco_duplicated = round((int(busco["D"]) / busco_total), 2) * 100
-            busco["completeness"] = busco_completeness
-            busco["duplicated"] = busco_duplicated
+            busco["completeness"] = round(busco_completeness, 2)
+            busco["duplicated"] = round(busco_duplicated, 2)
             busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
             ##############
