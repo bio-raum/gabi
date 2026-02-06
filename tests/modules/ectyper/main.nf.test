@@ -1,0 +1,29 @@
+nextflow_process {
+
+    name "Test Process ECTYPER"
+    script "modules/ectyper/main.nf"
+    process "ECTYPER"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            process {
+                """
+                // define inputs of the process here. Example:
+                input[0] = Channel.of([ [sample_id:'Test'], file("${baseDir}/tests/assets/Ecoli.fasta") ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out.get(0)).match()
+        }
+
+    }
+
+}
