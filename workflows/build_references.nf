@@ -19,7 +19,7 @@ workflow BUILD_REFERENCES {
     confindr_db_url     = channel.fromPath(params.references['confindr'].url)
     sourmash_db_url     = params.references['sourmashdb'].url
     sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
-    taxdb_url           = channel.fromPath(file(params.references['taxdb'].url))map { f -> [ [sample_id: "taxdump"], f ]}
+    taxdb_url           = channel.fromPath(file(params.references['taxdb'].url)).map { f -> [ [sample_id: "taxdump"], f ]}
     homopolish_db       = channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
     ch_busco_lineage    = channel.from(['bacteria_odb10'])
     host_genome         = channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
