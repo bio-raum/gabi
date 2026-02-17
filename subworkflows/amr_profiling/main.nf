@@ -18,9 +18,9 @@ workflow AMR_PROFILING {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
-    ch_hamronization_input = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
+    ch_hamronization_input = channel.from([])
 
     assembly.branch { m, a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
@@ -40,11 +40,19 @@ workflow AMR_PROFILING {
         ch_amrfinderplus_db = AMRFINDERPLUS_UPDATE.out.db
         ch_versions = ch_versions.mix(AMRFINDERPLUS_UPDATE.out.versions)
     } else {
-        ch_amrfinderplus_db = Channel.from(db)
+        ch_amrfinderplus_db = channel.from(db)
     }
 
+    assembly.map { m,a ->
+        def organism = create_organism(m.taxon)
+        if (organism) {
+            m.organism = organism
+        }
+        tuple(m,a)
+    }.set  { assembly_with_organism }
+
     AMRFINDERPLUS_RUN(
-        assembly,
+        assembly_with_organism,
         ch_amrfinderplus_db.collect()
     )
     ch_versions = ch_versions.mix(AMRFINDERPLUS_RUN.out.versions)
@@ -107,4 +115,36 @@ workflow AMR_PROFILING {
     abricate_report = ABRICATE_RUN.out.report
     versions = ch_versions
     qc = multiqc_files
+}
+
+// Map taxon to AMRfinder compatible organism name, if any
+def create_organism(taxon) {
+
+    def taxa_for_join = [ "Acinetobacter baumannii", 
+    "Vibrio cholerae", "Klebsiella pneumoniae", "Burkholderia cepacia",
+    "Burkholderia pseudomallei", "Citrobacter freundii", "Clostridioides difficile",
+    "Enterobacter asburiae", "Enterobacter cloacae", "Enterococcus faecalis", 
+    "Enterococcus faecium", "Klebsiella oxytoca", "Neisseria gonorrhoeae", 
+    "Neisseria meningitidis", "Pseudomonas aeruginosa", "Serratia marcescens",
+    "Staphylococcus aureus", "Staphylococcus pseudintermedius", "Streptococcus agalactiae",
+    "Streptococcus pneumoniae", "Streptococcus pyogenes", "Vibrio parahaemolyticus",
+    "Vibrio vulnificus"
+    ]
+
+    def organism = null
+
+    if (taxon.contains("Escherichia")) {
+        organism = "Escherichia"
+    } else if (taxon.contains("Shigella")) {
+        organism = "Escherichia"
+    } else if (taxon.contains("Salmonella")) {
+        organism = "Salmonella"
+    } else if (taxon.contains("Campylobacter")) {
+        organism = "Campylobacter"
+    } else if (taxa_for_join.contains(taxon)) {
+        organism = taxon.split(" ").join("_")
+    }
+
+    return organism
+
 }

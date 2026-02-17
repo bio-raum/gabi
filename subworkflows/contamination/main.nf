@@ -9,8 +9,8 @@ workflow CONTAMINATION {
 
     main:
 
-    ch_versions = Channel.from([])
-    ch_qc       = Channel.from([])
+    ch_versions = channel.from([])
+    ch_qc       = channel.from([])
 
     /*
     Find potential contaminations with ConfindR

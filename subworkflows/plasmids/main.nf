@@ -6,7 +6,7 @@ workflow PLASMIDS {
 
     main:
 
-    ch_versions = Channel.from([])
+    ch_versions = channel.from([])
 
     MOBSUITE_RECON(
         ch_assemblies

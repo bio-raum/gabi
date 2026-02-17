@@ -1,0 +1,20 @@
+{
+    "Should run without failures": {
+        "content": [
+            [
+                [
+                    {
+                        "sample_id": "Ecoli",
+                        "taxon": "Escherichia"
+                    },
+                    "mobtyper_results.txt:md5,afd8af80677784749525fe7cd30755b7"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2026-02-03T12:28:50.520749311"
+    }
+}

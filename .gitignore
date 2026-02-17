@@ -1,0 +1,9 @@
+.nextflow*
+.vscode/*
+results/*
+work/*
+.nextflow/*
+tests/results
+.nf-test
+.nf-test.log
+.vscode/settings.json

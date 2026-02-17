@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow PLASMIDS"
+    script "subworkflows/plasmids/main.nf"
+    workflow "PLASMIDS"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of( [ [sample_id:'Ecoli', taxon: 'Escherichia'], file("${baseDir}/tests/assets/Ecoli.fasta")])
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out.get(0)).match()
+        }
+
+    }
+
+}

@@ -11,8 +11,8 @@ workflow ALIGN_SHORT_READS {
 
     main:
 
-    ch_bam = Channel.from([])
-    ch_versions = Channel.from([])
+    ch_bam = channel.from([])
+    ch_versions = channel.from([])
 
     // Index the assembly
     BWAMEM2_INDEX(

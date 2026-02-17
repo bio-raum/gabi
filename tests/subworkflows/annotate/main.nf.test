@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow ANNOTATE"
+    script "subworkflows/annotate/main.nf"
+    workflow "ANNOTATE"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of( [ [sample_id:'Ecoli', taxon: 'Escherichia coli'], file("${baseDir}/tests/assets/Ecoli.fasta")])
+                input[1] = Channel.empty()
+                input[2] = Channel.empty()
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            // we checksum the txt output
+            assert snapshot(workflow.out.get(10)).match()
+        }
+
+    }
+
+}

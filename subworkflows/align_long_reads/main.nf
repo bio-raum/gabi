@@ -7,8 +7,8 @@ workflow ALIGN_LONG_READS {
 
     main:
 
-    ch_versions = Channel.from([])
-    ch_bam      = Channel.from([])
+    ch_versions = channel.from([])
+    ch_bam      = channel.from([])
 
     // Align reads with minimap
     MINIMAP2_ALIGN(

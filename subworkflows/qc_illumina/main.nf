@@ -17,8 +17,8 @@ workflow QC_ILLUMINA {
 
     main:
 
-    ch_versions = Channel.from([])
-    multiqc_files = Channel.from([])
+    ch_versions = channel.from([])
+    multiqc_files = channel.from([])
 
     // Split trimmed reads by sample to find multi-lane data set
     reads.map {m, fastq ->

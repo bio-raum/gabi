@@ -23,9 +23,9 @@ workflow COVERAGE {
 
     main:
 
-    ch_bam      = Channel.from([])
-    ch_versions = Channel.from([])
-    ch_summary_by_platform = Channel.from([])
+    ch_bam      = channel.from([])
+    ch_versions = channel.from([])
+    ch_summary_by_platform = channel.from([])
 
     short_reads.mix(ont_reads).mix(pacbio_reads).map { m,r ->
         [ m.sample_id,m,r]
