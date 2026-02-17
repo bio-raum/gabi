@@ -136,7 +136,7 @@ def create_organism(taxon) {
     if (taxon.contains("Escherichia")) {
         organism = "Escherichia"
     } else if (taxon.contains("Shigella")) {
-        organism = "Salmonella"
+        organism = "Escherichia"
     } else if (taxon.contains("Salmonella")) {
         organism = "Salmonella"
     } else if (taxon.contains("Campylobacter")) {
