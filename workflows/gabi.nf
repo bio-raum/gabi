@@ -35,7 +35,7 @@ include { VARIANTS }                    from './../subworkflows/variants'
 include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembly'
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
-include { ABRICATE_RUN }                from '../modules/abricate/run/main.nf'
+include { ABRICATE_RUN }                from './../modules/abricate/run/main.nf'
 
 workflow GABI {
 
@@ -91,10 +91,18 @@ workflow GABI {
 
     INPUT_CHECK(samplesheet)
 
+    // Check if the pre-assembled genomes are correctly named
+    INPUT_CHECK.out.assemblies.branch { m, a ->
+        valid: a.getBaseName() == m.sample_id
+        invalid: a.getBaseName() != m.sample_id
+    }.set { assembly_by_status }
+    
+    ch_assemblies = ch_assemblies.mix(assembly_by_status.valid)
+
     // If we pass existing assemblies instead of raw reads:
-    // rename to sample_id
+    // rename to sample_id if not already the case
     RENAME_EXTERNAL_CTG(
-        INPUT_CHECK.out.assemblies,
+        assembly_by_status.invalid,
         'fasta'
     )
     ch_assemblies = ch_assemblies.mix(RENAME_EXTERNAL_CTG.out)

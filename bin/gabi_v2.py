@@ -247,12 +247,15 @@ def main(yaml, template, output, version, call, wd):
             # Get serotype(s)
             #################
 
+            serotype_data = {}
             if "serotype" in jdata:
                 serotypes = jdata["serotype"]
                 for stool, sresults in serotypes.items():
+                    pathotype = "NA"
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
+                        pathotype = sresults["Pathotype"]
                     elif (stool == "stecfinder"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
@@ -273,6 +276,7 @@ def main(yaml, template, output, version, call, wd):
                         pathogenes = "mecA" if sresults["mecA"] else ""
                     stool_name = f"{stool} ({taxon})"
                     pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
+                    serotype_data[stool_name] = {"serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
@@ -307,10 +311,31 @@ def main(yaml, template, output, version, call, wd):
             busco_data_all.append({"Complete": busco_completeness, "Missing": busco_missing, "Fragmented": busco_fragmented, "Duplicated": busco_duplicated})
 
             ##############
+            # Amrfinder
+            ##############
+
+            amrfinder_data = []
+            if "amrfinder" in jdata["amr"]:
+                adata = jdata["amr"]["amrfinder"]
+                for amr_entry in adata:
+                    amrfinder_data.append(
+                        {
+                            "gene_symbol": amr_entry["Gene symbol"],
+                            "amr_class": amr_entry["Class"],
+                            "amr_subclass": amr_entry["Subclass"],
+                            "element_type": amr_entry["Element type"],
+                            "element_subtype": amr_entry["Element subtype"],
+                            "sequence_name": amr_entry["Sequence name"]
+                        }
+                    )
+                amrfinder_data = sorted(amrfinder_data, key=lambda x: x['gene_symbol'])
+
+            ##############
             # MLST types
             ##############
 
             mlst = jdata["mlst"]
+            mlst_data = mlst[0]
 
             for mentry in mlst:
                 sequence_type = mentry["sequence_type"]
@@ -435,7 +460,10 @@ def main(yaml, template, output, version, call, wd):
                 "checkm": checkm,
                 "checkm_status": checkm_status,
                 "taxonkit_genus": taxonkit_genus_fraction,
-                "taxonkit_genus_status": taxonkit_genus_status
+                "taxonkit_genus_status": taxonkit_genus_status,
+                "mlst": mlst_data,
+                "amrfinder": amrfinder_data,
+                "serotypes": serotype_data
             }
 
         data["summary"].append(rtable)
