@@ -252,19 +252,20 @@ def main(yaml, template, output, version, call, wd):
                 serotypes = jdata["serotype"]
                 for stool, sresults in serotypes.items():
                     pathotype = "NA"
+                    pathogenes = ""
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
                         pathotype = sresults["Pathotype"]
-                    elif (stool == "stecfinder"):
-                        serotype = sresults["Serotype"]
-                        pathogenes = sresults["stx type"]
+                    # elif (stool == "stecfinder"):
+                    #    serotype = sresults["Serotype"]
+                    #    pathogenes = sresults["stx type"]
                     elif (stool == "seqsero2"):
                         serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})</a>"
                         pathogenes = ""
-                    elif (stool == "sistr"):
-                        serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['serovar']} ({sresults['serogroup']})</a>"
-                        pathogenes = ""
+                    # elif (stool == "sistr"):
+                    #    serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['serovar']} ({sresults['serogroup']})</a>"
+                    #    pathogenes = ""
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
@@ -276,7 +277,7 @@ def main(yaml, template, output, version, call, wd):
                         pathogenes = "mecA" if sresults["mecA"] else ""
                     stool_name = f"{stool} ({taxon})"
                     pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
-                    serotype_data[stool_name] = {"serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
+                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
@@ -463,7 +464,7 @@ def main(yaml, template, output, version, call, wd):
                 "taxonkit_genus_status": taxonkit_genus_status,
                 "mlst": mlst_data,
                 "amrfinder": amrfinder_data,
-                "serotypes": serotype_data
+                "serotype": serotype_data
             }
 
         data["summary"].append(rtable)

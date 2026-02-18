@@ -30,7 +30,7 @@
     tr th[scope="col"] {background-color: #505050; color: #fff; padding-left: 5px;}
     tr th[scope="subcol"] {background-color: #888686; color: #fff; padding-left: 5px;}
     tr th[scope="subcol-inactive"] {background-color: #6e6e6e; color: #fff;}
-    tr td[scope="even"] {background-color: #bebdbd; 9color: #505050; padding-left: 5px;}
+    tr td[scope="even"] {background-color: #eeeeee; color: #505050; border-left: 2px solid rgb(255, 255, 255); padding-left: 5px;}
     tr td[scope="uneven"] {background-color: #d9d8d8; color: #505050; padding-left: 5px;}
     .versions { font-size: 9px; }
     .versions td { padding: 0px; }
@@ -365,43 +365,37 @@ Sequence characterization
     <th colspan=1 scope="col" class="grey">Sample</th>
     <th colspan=2 scope="col"><div class="tooltip">MLST<span class="tooltiptext">Multi-locus sequence type</span></div></th>
     <th colspan=1 scope="col"><div class="tooltip">AMR<span class="tooltiptext">AMRFinderPlus</span></div></th>
-     {% for stool,stypes in serotypes.items() %}
-        <th colspan="3" scope="col">{{stool}}</th>
-     {% endfor %}
+    <th colspan=4 scope="col"><div class="tooltip">Serotype<span class="tooltiptext">Serotype result</span></div></th>
 </tr>
 <tr>
-     <th scope="subcol-inactive"></th>
-     <th scope="subcol">Schema</th>
-     <th scope="subcol">Type</th>
-     <th scope="subcol"></th>
-     {% for stool,stypes in serotypes.items() %}
-        <th scope="subcol">Serotype</th>
-        <th scope="subcol">Genes</th>
-        <th scope="subcol">Pathotype</th>
-     {% endfor %}
+    <th scope="subcol-inactive"></th>
+    <th scope="subcol">Schema</th>
+    <th scope="subcol">Type</th>
+    <th scope="subcol"></th>
+    <th scope="subcol">Tool</th>
+    <th scope="subcol">Serotype</th>
+    <th scope="subcol">Patho-Genes</th>
+    <th scope="subcol">Pathotype</th>
 </tr>
 {% for row in summary %}
     <tr class="row-sample">
         <td scope="sample-id">{{row.sample}}</td>
-        <td style="border-left: 1px solid #929292;">{{row.mlst.scheme}}</td>
-        <td >{{row.mlst.sequence_type}}</td>
-        <td style="border-left: 1px solid #929292;">
+        <td scope="even" style="border-left: 1px solid #929292;">{{row.mlst.scheme}}</td>
+        <td scope="even">{{row.mlst.sequence_type}}</td>
+        <td scope="even" style="border-left: 1px solid #929292;">
             {{row.amrfinder|length}} Entries
         </td>
-        {% for stool,stypes in serotypes.items() %}
-            {% if stool in row.serotypes %}
-                {% set sero_data = row.serotypes[stool] %}
-                <td style="border-left: 1px solid #929292;">{{sero_data.serotype}}</td>
-                <td >{{','.join(sero_data.genes)}}</td>
-                <td >{{sero_data.pathotype}}</td>
-            {% else %}
-                <td style="border-left: 1px solid #929292;"></td>
-                <td></td>
-                <td></td>
-            {% endif %}
-
-        {% endfor %}
-
+        {% if "tool" in row.serotype %}
+            <td scope="even" style="border-left: 1px solid #929292;">{{row.serotype.tool}}</td>
+            <td scope="even">{{row.serotype.serotype}}</td>
+            <td scope="even">{{','.join(row.serotype.genes)}}</td>
+            <td scope="even">{{row.pathotype}}</td>
+        {% else %}
+            <td scope="even" style="border-left: 1px solid #929292;"></td>
+            <td scope="even"></td>
+            <td scope="even"></td>
+            <td scope="even"></td>
+        {% endif %}
     </tr>
     <tr class="row-hidden">
         <th colspan=1>Gene</th>
