@@ -388,11 +388,20 @@ Sequence characterization
         <td style="border-left: 1px solid #929292;">
             {{row.amrfinder|length}} Entries
         </td>
-        {% for serotool,sero_data in row.serotypes.items() %}
-            <td style="border-left: 1px solid #929292;">{{sero_data.serotype}}</td>
-            <td >{{','.join(sero_data.genes)}}</td>
-            <td >{{sero_data.pathotype}}</td>
+        {% for stool,stypes in serotypes.items() %}
+            {% if stool in row.serotypes %}
+                {% set sero_data = row.serotypes[stool] %}
+                <td style="border-left: 1px solid #929292;">{{sero_data.serotype}}</td>
+                <td >{{','.join(sero_data.genes)}}</td>
+                <td >{{sero_data.pathotype}}</td>
+            {% else %}
+                <td style="border-left: 1px solid #929292;"></td>
+                <td></td>
+                <td></td>
+            {% endif %}
+
         {% endfor %}
+
     </tr>
     <tr class="row-hidden">
         <th colspan=1>Gene</th>
