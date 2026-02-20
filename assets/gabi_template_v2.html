@@ -32,9 +32,9 @@
     tr th[scope="subcol-inactive"] {background-color: #6e6e6e; color: #fff;}
     tr td[scope="even"] {background-color: #eeeeee; color: #505050; border-left: 2px solid rgb(255, 255, 255); padding-left: 5px;}
     tr td[scope="uneven"] {background-color: #d9d8d8; color: #505050; padding-left: 5px;}
-    tr td[scope="col_amr"] {background-color: #e2ffd7; color: #505050; padding-left: 5px;}
+    tr td[scope="col_amr"] {background-color: #fbffd7; color: #505050; padding-left: 5px;}
     tr td[scope="col_mlst"] {background-color: hsl(213, 100%, 91%); color: #505050; padding-left: 5px;}
-    tr td[scope="col_sero"] {background-color: #fae1ed; color: #505050; padding-left: 5px;}
+    tr td[scope="col_sero"] {background-color: #f9e1fa; color: #505050; padding-left: 5px;}
     .versions { font-size: 9px; }
     .versions td { padding: 0px; }
     .infotext { color:#6e6e6e; font-size: 10px ;}
@@ -369,7 +369,7 @@ Sequence characterization
     <th colspan=1 scope="col" class="uneven">Species</th>
     <th colspan=2 scope="col"><div class="tooltip">MLST<span class="tooltiptext">Multi-locus sequence type</span></div></th>
     <th colspan=2 scope="col"><div class="tooltip">AMR<span class="tooltiptext">AMRFinderPlus</span></div></th>
-    <th colspan=4 scope="col"><div class="tooltip">Serotype<span class="tooltiptext">Serotype result</span></div></th>
+    <th colspan=5 scope="col"><div class="tooltip">Serotype<span class="tooltiptext">Serotype result</span></div></th>
 </tr>
 <tr>
     <th scope="subcol-inactive"></th>
@@ -381,11 +381,12 @@ Sequence characterization
     <th scope="subcol">Tool</th>
     <th scope="subcol">Serotype</th>
     <th scope="subcol">Patho-Genes</th>
-    <th scope="subcol">Pathotype</th>
+    <th scope="subcol">Type</th>
+    <th scope="subcol">Information</th>
 </tr>
 {% for row in summary %}
     <tr class="row-sample">
-        <td scope="sample-id">{{row.sample}}</td>
+        <td scope={{row.status}}>{{row.sample}}</td>
         <td scope="missing">{{row.taxon}}</td>
         <td scope="col_mlst" style="border-left: 2px solid #6e6d6d;">{{row.mlst.scheme}}</td>
         <td scope="col_mlst">{{row.mlst.sequence_type}}</td>
@@ -398,8 +399,10 @@ Sequence characterization
             <td scope="col_sero">{{row.serotype.serotype}}</td>
             <td scope="col_sero">{{','.join(row.serotype.genes)}}</td>
             <td scope="col_sero">{{row.serotype.pathotype}}</td>
+            <td scope="col_sero">{{row.serotype.comment}}</td>
         {% else %}
             <td scope="even" style="border-left: 2px solid #6e6d6d;"></td>
+            <td scope="even"></td>
             <td scope="even"></td>
             <td scope="even"></td>
             <td scope="even"></td>

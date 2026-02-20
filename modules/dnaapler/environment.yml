@@ -2,6 +2,6 @@ name: dnaapler
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::dnaapler=1.1.0

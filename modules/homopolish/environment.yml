@@ -2,6 +2,6 @@ name: homopolish
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::homopolish=0.4.1

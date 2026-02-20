@@ -2,6 +2,6 @@ name: mash_screen
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::mash=2.3

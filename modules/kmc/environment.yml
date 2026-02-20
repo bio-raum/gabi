@@ -2,6 +2,6 @@ name: kmc
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::kmc=3.2.4

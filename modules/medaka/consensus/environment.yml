@@ -2,6 +2,6 @@ name: medaka_consensus
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::medaka=2.1.0

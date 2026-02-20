@@ -5,6 +5,9 @@ include { SISTR }       from './../../modules/sistr'
 include { STECFINDER }  from './../../modules/stecfinder'
 include { SCCMEC }      from './../../modules/sccmec'
 include { BTYPER3 }     from './../../modules/btyper3'
+include { KAPTIVE as KAPTIVE_KLEBSIELLA } from './../../modules/kaptive'
+include { KAPTIVE as KAPTIVE_ACINETOBACTER } from './../../modules/kaptive'
+
 
 
 workflow SEROTYPING {
@@ -22,6 +25,8 @@ workflow SEROTYPING {
         listeria: m.taxon ==~ /^Listeria.*/
         staphylococcus: m.taxon ==~ /^Staphylococcus.*/
         bacillus: m.taxon ==~ /^Bacillus.*/
+        klebsiella: m.taxon ==~ /^Klebsiella.*/
+        acinetobacter: m.taxon ==~ /^Acinetobacter bau.*/
     }.set { assembly_by_taxon }
 
     /* ~~~~~~~~~~~~~
@@ -51,6 +56,24 @@ workflow SEROTYPING {
     ch_versions = ch_versions.mix(STECFINDER.out.versions)
     ch_reports = ch_reports.mix(STECFINDER.out.tsv)
     
+    /*
+    Run Kaptive for Klebsiella species
+    */
+    KAPTIVE_KLEBSIELLA(
+        assembly_by_taxon.klebsiella
+    )
+    ch_versions = ch_versions.mix(KAPTIVE_KLEBSIELLA.out.versions)
+    ch_reports = ch_reports.mix(KAPTIVE_KLEBSIELLA.out.json)
+
+    /* 
+    Run Kaptive for Acinetobacter baumannii species
+    */
+    KAPTIVE_ACINETOBACTER(
+        assembly_by_taxon.acinetobacter
+    )
+    ch_versions = ch_versions.mix(KAPTIVE_ACINETOBACTER.out.versions)
+    ch_reports = ch_reports.mix(KAPTIVE_ACINETOBACTER.out.json)
+
     /*
     Run SeqSero2 - Serotyping for Salmonella
     */

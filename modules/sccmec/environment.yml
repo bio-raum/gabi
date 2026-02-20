@@ -2,6 +2,6 @@ name: sccmec
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::sccmec=1.2.0

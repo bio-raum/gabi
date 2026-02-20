@@ -1,7 +1,6 @@
-name: ectyper
+name: kaptive
 channels:
   - conda-forge
   - bioconda
-  
 dependencies:
-  - bioconda::ectyper=1.0.0
+  - bioconda::kaptive=3.1.0

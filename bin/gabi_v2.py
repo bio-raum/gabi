@@ -252,23 +252,28 @@ def main(yaml, template, output, version, call, wd):
                 serotypes = jdata["serotype"]
                 for stool, sresults in serotypes.items():
                     # we skip these tools
-                    if (stool in ["stecfinder", "sistr"]):
+                    if (stool in ["stecfinder", "seqsero2"]):
                         continue
                     pathotype = ""
                     pathogenes = ""
+                    comment = ""
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
                         pathotype = sresults["Pathotype"]
+                        comment = sresults["StxSubtypes"]
                     elif (stool == "stecfinder"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
                     elif (stool == "seqsero2"):
-                        serotype = sresults['Predicted antigenic profile']
+                        serotype = sresults['serogroup']
                         pathogenes = ""
                     elif (stool == "sistr"):
                         serotype = sresults['serogroup']
                         pathogenes = ""
+                        pathotype = sresults["serovar"]
+                    elif (stool == "kaptive"):
+                        serotype = sresults["best_match"]
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
@@ -280,7 +285,7 @@ def main(yaml, template, output, version, call, wd):
                         pathogenes = "" if sresults["mecA"] == "-" else "mecA"
                     stool_name = f"{stool} ({taxon})"
                     pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
-                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
+                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype, "comment": comment}
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
