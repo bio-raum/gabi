@@ -386,7 +386,7 @@ Sequence characterization
 </tr>
 {% for row in summary %}
     <tr class="row-sample">
-        <td scope="sample-id">{{row.sample}}</td>
+        <td scope={{row.status}}>{{row.sample}}</td>
         <td scope="missing">{{row.taxon}}</td>
         <td scope="col_mlst" style="border-left: 2px solid #6e6d6d;">{{row.mlst.scheme}}</td>
         <td scope="col_mlst">{{row.mlst.sequence_type}}</td>
