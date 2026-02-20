@@ -2,6 +2,6 @@ name: mummer2circos
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::mummer2circos=1.4.2

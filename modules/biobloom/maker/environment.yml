@@ -2,6 +2,6 @@ name: biobloom-maker
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::biobloomtools=2.3.5

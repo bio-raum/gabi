@@ -2,6 +2,6 @@ name: confindr
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::confindr=0.7.4

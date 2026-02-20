@@ -2,6 +2,6 @@ name: ectyper
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::ectyper=2.0.0

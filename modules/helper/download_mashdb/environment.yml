@@ -2,7 +2,7 @@ name: confindr_install
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::gnu-wget=1.18
 

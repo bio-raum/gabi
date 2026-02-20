@@ -2,7 +2,7 @@ name: sourmash_sketch
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - conda-forge::sourmash-minimal=4.8.4
   - bioconda::sourmash=4.8.4

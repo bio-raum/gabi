@@ -2,6 +2,6 @@ name: dragonflye
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::dragonflye=1.2.1

@@ -2,6 +2,6 @@ name: sourmash_index
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 dependencies:
   - bioconda::sourmash=4.8.4

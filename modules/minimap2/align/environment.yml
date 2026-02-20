@@ -3,7 +3,7 @@ name: minimap2_align
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  
 
 dependencies:
   - bioconda::htslib=1.20

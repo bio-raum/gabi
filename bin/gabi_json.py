@@ -340,6 +340,10 @@ def main(sample, taxon, yaml_file, output):
         elif re.search(".stecfinder.tsv", file):
             stecfinder = parse_tabular(lines[0:2])
             matrix["serotype"]["stecfinder"] = stecfinder[0]
+        elif re.search(".kaptive.json", file):
+            kaptive = parse_json(lines)
+            kaptive.pop('expected_genes_outside_locus', None)
+            matrix["serotype"]["kaptive"] = kaptive
         elif re.search("ILLUMINA.mosdepth.summary.txt", file):
             mosdepth = [d for d in parse_tabular(lines) if d['chrom'] == "total"]
             matrix["mosdepth"]["illumina"] = mosdepth[0]

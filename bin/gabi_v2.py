@@ -272,6 +272,8 @@ def main(yaml, template, output, version, call, wd):
                         serotype = sresults['serogroup']
                         pathogenes = ""
                         pathotype = sresults["serovar"]
+                    elif (stool == "kaptive"):
+                        serotype = sresults["best_match"]
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
