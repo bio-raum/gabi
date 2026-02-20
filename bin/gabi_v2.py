@@ -256,10 +256,12 @@ def main(yaml, template, output, version, call, wd):
                         continue
                     pathotype = ""
                     pathogenes = ""
+                    comment = ""
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
                         pathotype = sresults["Pathotype"]
+                        comment = sresults["StxSubtypes"]
                     elif (stool == "stecfinder"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
@@ -281,7 +283,7 @@ def main(yaml, template, output, version, call, wd):
                         pathogenes = "" if sresults["mecA"] == "-" else "mecA"
                     stool_name = f"{stool} ({taxon})"
                     pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
-                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
+                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype, "comment": comment}
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
