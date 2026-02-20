@@ -9,6 +9,8 @@ include { HAMRONIZATION_SUMMARIZE }         from './../../modules/hamronization/
 include { HAMRONIZATION_SUMMARIZE as HAMRONIZATION_SUMMARIZE_HTML } from './../../modules/hamronization/summarize'
 include { ABRICATE_RUN }                    from './../../modules/abricate/run'
 include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_VIRULENCE } from './../../modules/abricate/run'
+include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_SERO } from './../../modules/abricate/run'
+
 
 workflow AMR_PROFILING {
     take:
@@ -20,6 +22,7 @@ workflow AMR_PROFILING {
 
     ch_versions = channel.from([])
     multiqc_files = channel.from([])
+    ch_abricate_reports = channel.from([])
     ch_hamronization_input = channel.from([])
 
     assembly.branch { m, a ->
@@ -75,6 +78,7 @@ workflow AMR_PROFILING {
         assembly_with_db
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN.out.versions)
+    ch_abricate_reports = ch_abricate_reports.mix(ABRICATE_RUN.out.report)
 
     /*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Taxon-specific abricate analyses
@@ -84,6 +88,14 @@ workflow AMR_PROFILING {
         assembly_by_taxon.ecoli.map { m,a -> [ m, a, 'ecoli_vf']}
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.versions)
+    ch_abricate_reports = ch_abricate_reports.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.report)
+
+    // E. coli - here we use a specific database!
+    ABRICATE_RUN_ECOLI_SERO(
+        assembly_by_taxon.ecoli.map { m,a -> [ m, a, 'ecoh']}
+    )
+    ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_SERO.out.versions)
+    ch_abricate_reports = ch_abricate_reports.mix(ABRICATE_RUN_ECOLI_SERO.out.report)
 
     // Join basic Abricate results
     HAMRONIZATION_ABRICATE(
@@ -112,7 +124,7 @@ workflow AMR_PROFILING {
     emit:
     report = HAMRONIZATION_SUMMARIZE.out.json
     amrfinder_report = AMRFINDERPLUS_RUN.out.report
-    abricate_report = ABRICATE_RUN.out.report
+    abricate_report = ch_abricate_reports
     versions = ch_versions
     qc = multiqc_files
 }

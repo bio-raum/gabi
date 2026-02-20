@@ -369,7 +369,13 @@ def main(sample, taxon, yaml_file, output):
         elif re.search("mobtyper_results.txt", file):
             matrix["plasmids"] = parse_tabular(lines)
         elif re.search("abricate", file):
-            matrix["amr"]["abricate"] = parse_tabular(lines)
+            results = parse_tabular(lines)
+            if not results:
+                continue
+            abricate_db = results[0]["DATABASE"]
+            if ("abricate" not in matrix["amr"]):
+                matrix["amr"]["abricate"] = {}
+            matrix["amr"]["abricate"][abricate_db] = results
         elif re.search("btyper3.tsv", file):
             matrix["serotype"]["btyper3"] = parse_tabular(lines)[0]
         elif re.search("sccmec", file):

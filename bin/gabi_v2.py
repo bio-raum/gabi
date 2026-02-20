@@ -252,7 +252,7 @@ def main(yaml, template, output, version, call, wd):
                 serotypes = jdata["serotype"]
                 for stool, sresults in serotypes.items():
                     # we skip these tools
-                    if (stool in ["stecfinder", "sistr"]):
+                    if (stool in ["stecfinder", "seqsero2"]):
                         continue
                     pathotype = ""
                     pathogenes = ""
@@ -264,11 +264,12 @@ def main(yaml, template, output, version, call, wd):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
                     elif (stool == "seqsero2"):
-                        serotype = sresults['Predicted antigenic profile']
+                        serotype = sresults['serogroup']
                         pathogenes = ""
                     elif (stool == "sistr"):
                         serotype = sresults['serogroup']
                         pathogenes = ""
+                        pathotype = sresults["serovar"]
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
                         pathogenes = ""
