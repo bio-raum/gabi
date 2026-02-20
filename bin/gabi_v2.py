@@ -251,7 +251,11 @@ def main(yaml, template, output, version, call, wd):
             if "serotype" in jdata:
                 serotypes = jdata["serotype"]
                 for stool, sresults in serotypes.items():
-                    pathotype = "NA"
+                    # we skip these tools
+                    if (stool in ["stecfinder", "sistr"]):
+                        continue
+                    pathotype = ""
+                    pathogenes = ""
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
@@ -260,10 +264,10 @@ def main(yaml, template, output, version, call, wd):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["stx type"]
                     elif (stool == "seqsero2"):
-                        serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['Predicted serotype']} ({sresults['Predicted antigenic profile']})</a>"
+                        serotype = sresults['Predicted antigenic profile']
                         pathogenes = ""
                     elif (stool == "sistr"):
-                        serotype = f"<a href=https://www.cdc.gov/salmonella/reportspubs/salmonella-atlas/serotype-reports.html target=_new>{sresults['serovar']} ({sresults['serogroup']})</a>"
+                        serotype = sresults['serogroup']
                         pathogenes = ""
                     elif (stool == "lissero"):
                         serotype = sresults["SEROTYPE"]
@@ -273,10 +277,10 @@ def main(yaml, template, output, version, call, wd):
                         pathogenes = sresults["Bt(genes)"]
                     elif (stool == "sccmec"):
                         serotype = sresults["subtype"]
-                        pathogenes = "mecA" if sresults["mecA"] else ""
+                        pathogenes = "" if sresults["mecA"] == "-" else "mecA"
                     stool_name = f"{stool} ({taxon})"
                     pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
-                    serotype_data[stool_name] = {"serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
+                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype}
                     if (stool_name in serotypes_all):
                         serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
                     else:
@@ -315,6 +319,7 @@ def main(yaml, template, output, version, call, wd):
             ##############
 
             amrfinder_data = []
+            amr_classes = []
             if "amrfinder" in jdata["amr"]:
                 adata = jdata["amr"]["amrfinder"]
                 for amr_entry in adata:
@@ -328,7 +333,13 @@ def main(yaml, template, output, version, call, wd):
                             "sequence_name": amr_entry["Sequence name"]
                         }
                     )
+                    if (amr_entry["Element type"] == "AMR"):
+                        if (amr_entry["Class"] not in amr_classes):
+                            amr_classes.append(amr_entry["Class"])
+
                 amrfinder_data = sorted(amrfinder_data, key=lambda x: x['gene_symbol'])
+            # Count unique AMR classes found
+            amr_counts = len(amr_classes)
 
             ##############
             # MLST types
@@ -463,7 +474,8 @@ def main(yaml, template, output, version, call, wd):
                 "taxonkit_genus_status": taxonkit_genus_status,
                 "mlst": mlst_data,
                 "amrfinder": amrfinder_data,
-                "serotypes": serotype_data
+                "amrcount": amr_counts,
+                "serotype": serotype_data
             }
 
         data["summary"].append(rtable)
