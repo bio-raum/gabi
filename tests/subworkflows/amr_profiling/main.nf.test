@@ -10,8 +10,8 @@ nextflow_workflow {
             params {
                 // define parameters here. Example:
                 // outdir = "tests/results"
-                reference_base = "/work_syn/shared/references"
-                reference_version = "1.1"
+                //reference_base = "/work_syn/shared/references"
+                //reference_version = "1.1"
             }
             workflow {
                 """

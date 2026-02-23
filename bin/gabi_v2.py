@@ -260,7 +260,7 @@ def main(yaml, template, output, version, call, wd):
                     if (stool == "ectyper"):
                         serotype = sresults["Serotype"]
                         pathogenes = sresults["PathotypeGenes"]
-                        pathotype = sresults["Pathotype"]
+                        pathotype = "" if sresults["Pathotype"] == "ND" else sresults["Pathotype"]
                         comment = sresults["StxSubtypes"]
                     elif (stool == "stecfinder"):
                         serotype = sresults["Serotype"]
@@ -494,21 +494,21 @@ def main(yaml, template, output, version, call, wd):
         if "ILLUMINA" in bracken_data_all:
             kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
+            h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
         if "NANOPORE" in bracken_data_all:
             print("Creating Bracken ONT graph")
             kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
+            h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
         if "PACBIO" in bracken_data_all:
             print("Creating Bracken Pacbio graph")
             kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples)
             plot_labels = {"index": "Samples", "value": "Percentage"}
-            h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
+            h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_PACBIO"] = fig.to_html(full_html=False)
 
@@ -530,7 +530,7 @@ def main(yaml, template, output, version, call, wd):
         # Draw the busco stats graph
         bdata = pd.DataFrame(data=busco_data_all, index=samples)
         plot_labels = {"index": "Samples", "value": "Percentage"}
-        h = (len(samples) * 35) if len(samples) > 10 else (200 + len(samples) * 50)
+        h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
         print(h)
         fig = px.bar(bdata, orientation='h', labels=plot_labels, height=h)
         data["Busco"] = fig.to_html(full_html=False)
