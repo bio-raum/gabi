@@ -20,7 +20,7 @@
 
 ### Why won't the pipeline combine short reads with HiFi reads?!
 
-:   Please see the available assembly modes [here](usage.md#choosing-an-assembly-method). HiFi reads will almost always be sufficient and possibly superior for assembly than a hybrid approach - which is why we do not support it in GABI.
+:   Please see the available assembly modes [here](../user_doc/usage.md). HiFi reads will almost always be sufficient and possibly superior for assembly than a hybrid approach - which is why we do not support it in GABI.
     
     If you disagree, please let us know, preferably with some tangible examples where this assumption was shown to be incorrect. 
 

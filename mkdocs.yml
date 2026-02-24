@@ -23,7 +23,7 @@ nav:
     - Software: about/software.md
     - License: about/license.md
     - Legal notes: about/legal.md
-    - Validation: help/validation.md
+    - Validation: about/validation.md
 
 theme:
   name: material

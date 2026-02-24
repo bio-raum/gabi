@@ -12,18 +12,6 @@ If you are really impatient, check out our [quickstart](docs/quickstart.md) guid
 
 ![schema](images/GABI_Schema_v11.png)
 
-## Documentation 
-
-1. [What happens in this pipeline?](docs/pipeline.md)
-2. [Installation and configuration](docs/installation.md)
-3. [Running the pipeline](docs/usage.md)
-4. [Output](docs/output.md)
-5. [Software](docs/software.md)
-5. [Troubleshooting](docs/troubleshooting.md)
-6. [Developer guide](docs/developer.md)
-7. [FAQs](docs/faq.md)
-8. [Validation](docs/validation.md)
-
 ## Developer team
 
 GABI is developed and supported by the following people and organizations:

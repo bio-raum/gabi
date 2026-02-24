@@ -255,7 +255,7 @@ These options are only meant for users who have a specific reason to touch them.
 
 :   By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:
 
-    - Remove highly fragmented assemblies (see [--max_contigs](#--max_contigs))
+    - Remove highly fragmented assemblies
     - Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)
 
 `--skip_amr` [ default = false ]
