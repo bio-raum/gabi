@@ -7,7 +7,7 @@ repo_url: https://github.com/bio-raum/gabi
 nav:
   - Home:
     - Welcome: index.md
-    - Contibuting: about/contributing.md
+    - Contributing: about/contributing.md
     - Release notes: about/changelog.md
   - User Guide:
     - Quickstart: user_doc/quickstart.md
