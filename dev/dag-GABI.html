@@ -1,0 +1,241 @@
+
+  <html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <style>
+      :root {
+        --mm-font-family: var(--vscode-font-family, sans-serif);
+        --mm-container-square-fill: var(--vscode-sideBarTitle-background, #BABCBD22);
+        --mm-container-square-stroke: var(--vscode-tab-lastPinnedBorder, #DDDEDE);
+        --mm-container-title: var(--vscode-sideBarTitle-foreground, #160F26);
+        --mm-node-text: var(--vscode-tab-activeForeground, #160F26);
+        --mm-node-fill: var(--vscode-textCodeBlock-background, #B6ECE2);
+        --mm-node-fill-hover: var(--vscode-textBlockQuote-background, #86E0CE);
+        --mm-node-border: var(--vscode-checkbox-selectBorder, #065647);
+        --mm-connector-lines: var(--vscode-tab-unfocusedActiveModifiedBorder, #545555);
+      }
+      .mermaid {
+        text-align: center;
+      }
+      .mermaid .nodeLabel, .mermaid .label {
+        font-family: var(--mm-font-family) !important;
+      }
+      .mermaid .nodeLabel {
+        font-family: var(--mm-font-family) !important;
+      }
+      .mermaid .cluster-label .nodeLabel {
+        font-weight: 600;
+        font-size: 18px;
+      }
+      /* Workflow / take / emit rectangles */
+      .mermaid .cluster rect {
+        fill: var(--mm-container-square-fill) !important;
+        stroke: var(--mm-container-square-stroke) !important;
+        stroke-width: 2px !important;
+      }
+      .mermaid .cluster span {
+        color: var(--mm-container-title) !important;
+      }
+      /* All node rectangles */
+      .mermaid .node rect {
+        fill: var(--mm-node-fill) !important;
+        stroke: var(--mm-node-border) !important;
+        stroke-width: 3px !important;
+        transition: fill .15s ease !important;
+      }
+      .mermaid a .node:hover rect {
+        fill: var(--mm-node-fill-hover) !important;
+      }
+      .mermaid .nodeLabel {
+        fill: var(--mm-node-text) !important;
+        color: var(--mm-node-text) !important;
+      }
+      /* Connector lines */
+      .mermaid .flowchart-link {
+        stroke: var(--mm-connector-lines) !important;
+      }
+      .mermaid .marker {
+        fill: var(--mm-connector-lines) !important;
+        stroke: var(--mm-connector-lines) !important;
+      }
+
+      /* VSCode action buttons */
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+      }
+      /* https://github.com/microsoft/vscode-extension-samples/blob/5ddd30fc052e03bbec52e5d84627eaa543fb0de8/webview-view-sample/media/vscode.css#L47 */
+      button {
+        display: block;
+        border: none;
+        padding: 6px 8px;
+        margin: 0 10px;
+        outline: 1px solid transparent;
+        outline-offset: 2px !important;
+        color: var(--vscode-button-foreground);
+        background: var(--vscode-button-background);
+      }
+
+      button:hover {
+        cursor: pointer;
+        background: var(--vscode-button-hoverBackground);
+      }
+
+      button:focus {
+        outline-color: var(--vscode-focusBorder);
+      }
+
+      button.secondary {
+        color: var(--vscode-button-secondaryForeground);
+        background: var(--vscode-button-secondaryBackground);
+      }
+
+      button.secondary:hover {
+        background: var(--vscode-button-secondaryHoverBackground);
+      }
+    </style>
+  </head>
+    <body>
+      
+  <pre class="mermaid">
+    %%{
+      init: {
+        'theme': 'base',
+        'themeVariables': {
+          'primaryColor': '#B6ECE2',
+          'primaryTextColor': '#160F26',
+          'primaryBorderColor': '#065647',
+          'lineColor': '#545555',
+          'clusterBkg': '#BABCBD22',
+          'clusterBorder': '#DDDEDE',
+          'fontFamily': 'arial'
+        }
+      }
+    }%%
+    flowchart TB
+    subgraph GABI
+    v25([STAGE_SAMPLESHEET])
+    v26([INPUT_CHECK])
+    v27([RENAME_EXTERNAL_CTG])
+    v29([QC])
+    v39([GROUP_READS])
+    v46([TAXONOMY_PROFILING])
+    v52([ILLUMINA_ASSEMBLY])
+    v55([ONT_ASSEMBLY])
+    v58([PACBIO_ASSEMBLY])
+    v66([COVERAGE])
+    v72([PLASMIDS])
+    v75([RENAME_PLASMID_CTG])
+    v77([VARIANTS])
+    v82([FIND_REFERENCES])
+    v87([SEROTYPING])
+    v90([MLST_TYPING])
+    v93([ANNOTATE])
+    v96([AMR_PROFILING])
+    v99([ASSEMBLY_QC])
+    v105([CUSTOM_DUMPSOFTWAREVERSIONS])
+    v107([REPORT])
+    v109([MULTIQC])
+    v110([MULTIQC_ILLUMINA])
+    v111([MULTIQC_NANOPORE])
+    v112([MULTIQC_PACBIO])
+    subgraph emit
+    v113["qc"]
+    end
+    v26 --> v27
+    v26 --> v29
+    v29 --> v39
+    v29 --> v46
+    v39 --> v52
+    v39 --> v55
+    v39 --> v58
+    v52 --> v66
+    v55 --> v66
+    v58 --> v66
+    v27 --> v66
+    v29 --> v66
+    v52 --> v72
+    v55 --> v72
+    v58 --> v72
+    v27 --> v72
+    v72 --> v75
+    v75 --> v77
+    v29 --> v77
+    v75 --> v82
+    v82 --> v87
+    v52 --> v87
+    v55 --> v87
+    v58 --> v87
+    v27 --> v87
+    v82 --> v90
+    v52 --> v90
+    v55 --> v90
+    v58 --> v90
+    v27 --> v90
+    v82 --> v93
+    v52 --> v93
+    v55 --> v93
+    v58 --> v93
+    v27 --> v93
+    v82 --> v96
+    v52 --> v96
+    v55 --> v96
+    v58 --> v96
+    v27 --> v96
+    v82 --> v99
+    v52 --> v99
+    v55 --> v99
+    v58 --> v99
+    v27 --> v99
+    v96 --> v105
+    v66 --> v105
+    v99 --> v105
+    v72 --> v105
+    v77 --> v105
+    v46 --> v105
+    v82 --> v105
+    v52 --> v105
+    v87 --> v105
+    v55 --> v105
+    v90 --> v105
+    v58 --> v105
+    v93 --> v105
+    v29 --> v105
+    v96 --> v107
+    v82 --> v107
+    v66 --> v107
+    v99 --> v107
+    v87 --> v107
+    v72 --> v107
+    v105 --> v107
+    v90 --> v107
+    v29 --> v107
+    v77 --> v107
+    v46 --> v107
+    v99 --> v109
+    v105 --> v109
+    v29 --> v109
+    v93 --> v109
+    v66 --> v110
+    v29 --> v110
+    v77 --> v110
+    v46 --> v110
+    v66 --> v111
+    v29 --> v111
+    v77 --> v111
+    v46 --> v111
+    v66 --> v112
+    v29 --> v112
+    v46 --> v112
+    v109 --> v113
+    end
+    classDef default stroke-width:3px
+  </pre>
+  
+      <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+      </script>
+    </body>
+  </html>
