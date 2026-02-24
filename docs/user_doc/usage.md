@@ -95,43 +95,43 @@ This pipeline expects a CSV-formatted sample sheet to properly pull various meta
 
 === "Reads"
 
-If you want to assemble genomes "from scratch", you can pass raw reads:
+    If you want to assemble genomes "from scratch", you can pass raw reads:
 
-```TSV
-sample  platform    fq1 fq2
-S100    ILLUMINA    /home/marc/projects/gaba/data/S100_R1.fastq.gz  /home/marc/projects/gaba/data/S100_R2.fastq.gz
-```
-
-!!! note Single-end sequences
-
-    To provide Single-end sequencing data, simply leave the `fq2` field empty.
-
-!!! note Platform
-
-    GABI distinguishes three sequencing platforms - ILLUMINA, NANPORE and PACBIO.
-
-If the pipeline sees more than one set of reads for a given sample ID (i.e. from multi-lane sequencing runs or multiple platforms), it will combine them automatically at the appropriate time.
-
-!!! tip Automated sample sheet generation
-
-    If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of FooDMe2:
-
-    ```bash
-    nextflow run bio-raum/samplesheet -profile myprofile --input /path/to/folder --platform
+    ```TSV
+    sample  platform    fq1 fq2
+    S100    ILLUMINA    /home/marc/projects/gaba/data/S100_R1.fastq.gz  /home/marc/projects/gaba/data/S100_R2.fastq.gz
     ```
 
-    The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.
+    !!! note Single-end sequences
+
+        To provide Single-end sequencing data, simply leave the `fq2` field empty.
+
+    !!! note Platform
+
+        GABI distinguishes three sequencing platforms - ILLUMINA, NANPORE and PACBIO.
+
+    If the pipeline sees more than one set of reads for a given sample ID (i.e. from multi-lane sequencing runs or multiple platforms), it will combine them automatically at the appropriate time.
+
+    !!! tip Automated sample sheet generation
+
+        If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of FooDMe2:
+
+        ```bash
+        nextflow run bio-raum/samplesheet -profile myprofile --input /path/to/folder --platform
+        ```
+
+        The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.
 
 === "Assembly"
 
-You can also run GABI on pre-assembled genomes, using only those parts of the pipeline that characterize assemblies. Obviously, you will be missing many of the QC measures that rely on raw reads in one form or another. 
+    You can also run GABI on pre-assembled genomes, using only those parts of the pipeline that characterize assemblies. Obviously, you will be missing many of the QC measures that rely on raw reads in one form or another. 
 
-The required samplesheet then looks as follows:
+    The required samplesheet then looks as follows:
 
-```TSV
-sample  assembly
-S100    /path/to/S100.fasta
-```
+    ```TSV
+    sample  assembly
+    S100    /path/to/S100.fasta
+    ```
 
 `--reference_base` [ default = null ]
 
