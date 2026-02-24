@@ -52,8 +52,8 @@ GABI generates a range of results, but at its core it will perform a judgement c
 
  Pipeline version | Sample status | Accuracy |
 |------------------|--------| ----------- |
-| 1.0.1            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.0.1.tsv) | 0.97 |
-| 1.2.0            | [TSV](../assets/benchmark/gabi_vs_aquamis_1.2.0.tsv) | 0.97 |
+| 1.0.1            | [TSV](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_vs_aquamis_1.0.1.tsv) | 0.97 |
+| 1.2.0            | [TSV](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_vs_aquamis_1.2.0.tsv) | 0.97 |
 
 All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an approach that will count bases in overlapping reads [twice](https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs) - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.
 
@@ -83,8 +83,8 @@ GABIs ability to detect contaminations from sequence data has been validated for
 | 1.0.1, 1.2.0            | Salmonella enterica | 0.5 | 1.0 | 1.0
 | 1.0.1, 1.2.0            | Salmonella enterica | 5 | 1.0 | 1.0
 
-[Data - 1.0.1](../assets/benchmark/gabi_contamination_1.0.1.tsv), 
-[Data - 1.2.0](../assets/benchmark/gabi_contamination_1.2.0.tsv)
+[Data - 1.0.1](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_contamination_1.0.1.tsv), 
+[Data - 1.2.0](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_contamination_1.2.0.tsv)
 
 These results suggest that intraspecies contaminants are robustly detectable at a genetic distance of 0.5% or higher. 
 

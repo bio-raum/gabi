@@ -1,6 +1,6 @@
 # Pipeline structure
 
-A DAG schema is included with this [code base][dag-GABI.html]
+A DAG schema is included with this [code base][../dag-GABI.html]
 
 Some of the key things that happen inside GABI:
 - Perform quality control of the read data, and merge libraries across lanes
