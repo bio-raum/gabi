@@ -6,9 +6,9 @@
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 [![run with apptainer](https://img.shields.io/badge/apptainer-run?logo=apptainer&logoColor=3EB049&label=run%20with&labelColor=000000)](https://apptainer.org/)
 
-**G**enomic **A**nalysis of **B**acterial **I**solates, or GABI for short, is a bioinformatic workflow to assemble bacterial genomes, annotate genes, detect antimicrobial resistance genes, perform serotyping for select taxa as well assign MLS types. GABI supports both (Illumina) short reads and ONT/Pacbio long reads. Hybrid assembly approaches are supported for ONT/Illumina data sets and require for different read types to carry the same sample ID for grouping. Please see our [documentation](docs/usage.md) for detailed information.  
+**G**enomic **A**nalysis of **B**acterial **I**solates, or GABI for short, is a bioinformatic workflow to assemble bacterial genomes, annotate genes, detect antimicrobial resistance genes, perform serotyping for select taxa as well assign MLS types. GABI supports both (Illumina) short reads and ONT/Pacbio long reads. Hybrid assembly approaches are supported for ONT/Illumina data sets and require for different read types to carry the same sample ID for grouping. Please see our [documentation](https://bio-raum.github.io/gabi/latest/user_doc/usage/) for detailed information.  
 
-If you are really impatient, check out our [quickstart](docs/quickstart.md) guide. 
+If you are really impatient, check out our [quickstart](https://bio-raum.github.io/gabi/latest/user_doc/quickstart/) guide. 
 
 ![schema](images/GABI_Schema_v11.png)
 

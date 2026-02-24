@@ -1,6 +1,6 @@
 # GABI
 
-GABI (Genomic Analysis of Bacterial Isolates) is a Nextflow pipeline for the quality control, assembly and characterization
+GABI (Genomic Analysis of Bacterial Isolates) is a [Nextflow](https://nextflow.io/) pipeline for the quality control, assembly and characterization
 of bacterial isolates from short or long "next generation" sequencing reads.
 
 It is designed to be easily installed and used, and work on a wide range of configuration.
@@ -22,7 +22,7 @@ you use GABI in your research.
 
 ## Acknowledgements
 
-Thw GABI team gratefully acknowledges the use of design principles and code snippets from the [nf-co.re](https://nf-co.re/) project, whose fundamental contributions to the Nextflow community has greatly influenced our work on FooDMe2. 
+The GABI team gratefully acknowledges the use of design principles and code snippets from the [nf-co.re](https://nf-co.re/) project, whose fundamental contributions to the Nextflow community has greatly influenced our work on GABI. 
 
 In addition, GABI uses concepts and references developed for similar pipelines, specifically [AQUAMIS](https://gitlab.com/bfr_bioinformatics/AQUAMIS) and [BakCharak](https://gitlab.com/bfr_bioinformatics/bakcharak).
 

@@ -4,7 +4,7 @@
 
 ### The pipeline did not close my assembly, even though I have used both Nanopore and Illumina reads. 
 
-:   Many reasons can contribute to incomplete assemblies - from the starting material being of poor quality, insufficient sequencing depth, biases in your read data (i.e. loss of certain genomic regions during DNA extraction/preparation) or accidental mix-ups in sample assignment  of a subset of your reads. 
+:   Many reasons can contribute to incomplete assemblies - from the starting material being of poor quality, insufficient sequencing depth, biases in your read data (i.e. loss of certain genomic regions during DNA extraction/preparation) or accidental mix-ups in sample assignment of a subset of your reads. 
 
     You can check results from ConfindR to see if all your reads are from the same strain and were not accidentally mixed up or in fact contaminated. 
     

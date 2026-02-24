@@ -44,6 +44,9 @@ Version 1.1.4, [github](https://github.com/pha4ge/hAMRonization)
 **Homopolish**
 Version 0.4.1, [doi](https://doi.org/10.1186/s13059-021-02282-6) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/33789731/) | [github](https://github.com/ythuang0522/homopolish)
 
+**Kaptive**
+Version 3.1.0, [doi](https://doi.org/10.1099/mgen.0.001428) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/40553506/) | [github](https://github.com/klebgenomics/Kaptive)
+
 **Lissero**
 Version 0.4.9, [github](https://github.com/MDU-PHL/LisSero)
 

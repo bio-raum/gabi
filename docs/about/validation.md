@@ -28,7 +28,7 @@ Expected result:
 |------------------|--------|
 | 1.0.1            | `e25cdf2cfc1e833ada0b29c9e5d6ad52` |
 
-This approach will not cover the entirety of the analysis, but includes the "primary" result (i.e. the assembly). See the next option for why this may be preferrable. 
+This approach will not cover the entirety of the analysis, but includes the "primary" result (i.e. the assembly). See the next option for when this can  nevertheless be preferrable. 
 
 
 ## md5sum of the final JSON
@@ -36,7 +36,7 @@ This approach will not cover the entirety of the analysis, but includes the "pri
 md5sum results/samples/SAMEA2707761/SAMEA2707761.qc.json
 ```
 
-This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
+This check is comprehensive and recommended, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.
 
 ## Additional caveats
 
@@ -55,7 +55,7 @@ GABI generates a range of results, but at its core it will perform a judgement c
 | 1.0.1            | [TSV](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_vs_aquamis_1.0.1.tsv) | 0.97 |
 | 1.2.0            | [TSV](https://github.com/bio-raum/gabi/blob/main/assets/benchmark/gabi_vs_aquamis_1.2.0.tsv) | 0.97 |
 
-All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an approach that will count bases in overlapping reads [twice](https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs) - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.
+All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an (invalid) approach that will count bases in overlapping reads [twice](https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs) - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.
 
 ### Against a contamination benchmark (Pightling et al, 2019)
 

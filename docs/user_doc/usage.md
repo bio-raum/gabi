@@ -49,7 +49,7 @@ If you are running this pipeline in a production setting, you will want to lock 
 nextflow run bio-raum/gabi -profile myprofile -r 1.0.0 <other options here>
 ```
 
-The `-r` option specifies a github [release tag](https://github.com/bio-raum/FooDMe2/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
+The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
 
 If you are feeling adventurous, you can also provide a specific commit hash, for example: `-r 575faea`.
 
@@ -114,7 +114,7 @@ This pipeline expects a CSV-formatted sample sheet to properly pull various meta
 
     !!! tip Automated sample sheet generation
 
-        If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of FooDMe2:
+        If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of GABI:
 
         ```bash
         nextflow run bio-raum/samplesheet -profile myprofile --input /path/to/folder --platform
