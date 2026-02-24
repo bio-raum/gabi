@@ -1440,11 +1440,9 @@
 <h3 id="basic-options">Basic options</h3>
 <p><code>--input samples.tsv</code> [default = null]</p>
 <p>This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Reads</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Reads</label><label for="__tabbed_2_2">Assembly</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block"></div>
-</div>
-</div>
+<div class="tabbed-block">
 <p>If you want to assemble genomes "from scratch", you can pass raw reads:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sample  platform    fq1 fq2
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>S100    ILLUMINA    /home/marc/projects/gaba/data/S100_R1.fastq.gz  /home/marc/projects/gaba/data/S100_R2.fastq.gz
@@ -1465,16 +1463,16 @@
 </span></code></pre></div>
 <p>The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Assembly</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block"></div>
 </div>
-</div>
+<div class="tabbed-block">
 <p>You can also run GABI on pre-assembled genomes, using only those parts of the pipeline that characterize assemblies. Obviously, you will be missing many of the QC measures that rely on raw reads in one form or another. </p>
 <p>The required samplesheet then looks as follows:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sample  assembly
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>S100    /path/to/S100.fasta
 </span></code></pre></div>
+</div>
+</div>
+</div>
 <dl>
 <dt><code>--reference_base</code> [ default = null ]</dt>
 <dd>
