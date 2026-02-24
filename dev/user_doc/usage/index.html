@@ -1415,7 +1415,7 @@
 <p>If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the <code>-r</code> argument:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>myprofile<span class="w"> </span>-r<span class="w"> </span><span class="m">1</span>.0.0<span class="w"> </span>&lt;other<span class="w"> </span>options<span class="w"> </span>here&gt;
 </span></code></pre></div>
-<p>The <code>-r</code> option specifies a github <a href="https://github.com/bio-raum/FooDMe2/releases">release tag</a> or branch, so could also point to <code>main</code> for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be <a href="../installation/">installed</a> separately.</p>
+<p>The <code>-r</code> option specifies a github <a href="https://github.com/bio-raum/gabi/releases">release tag</a> or branch, so could also point to <code>main</code> for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be <a href="../installation/">installed</a> separately.</p>
 <p>If you are feeling adventurous, you can also provide a specific commit hash, for example: <code>-r 575faea</code>.</p>
 <h2 id="updating-to-a-new-release">Updating to a new release</h2>
 <p>To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):</p>
@@ -1458,7 +1458,7 @@
 <p>If the pipeline sees more than one set of reads for a given sample ID (i.e. from multi-lane sequencing runs or multiple platforms), it will combine them automatically at the appropriate time.</p>
 <div class="admonition tip automated sample sheet generation">
 <p class="admonition-title">Tip</p>
-<p>If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of FooDMe2:</p>
+<p>If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of GABI:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/samplesheet<span class="w"> </span>-profile<span class="w"> </span>myprofile<span class="w"> </span>--input<span class="w"> </span>/path/to/folder<span class="w"> </span>--platform
 </span></code></pre></div>
 <p>The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.</p>

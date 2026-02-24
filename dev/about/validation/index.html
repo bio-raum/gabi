@@ -1093,11 +1093,11 @@ Expected result:
 | Pipeline version | md5sum |
 |------------------|--------|
 | 1.0.1            | <code>e25cdf2cfc1e833ada0b29c9e5d6ad52</code> |</p>
-<p>This approach will not cover the entirety of the analysis, but includes the "primary" result (i.e. the assembly). See the next option for why this may be preferrable. </p>
+<p>This approach will not cover the entirety of the analysis, but includes the "primary" result (i.e. the assembly). See the next option for when this can  nevertheless be preferrable. </p>
 <h2 id="md5sum-of-the-final-json">md5sum of the final JSON</h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>md5sum<span class="w"> </span>results/samples/SAMEA2707761/SAMEA2707761.qc.json
 </span></code></pre></div>
-<p>This check is comprehensive and preferable, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.</p>
+<p>This check is comprehensive and recommended, but includes some caveats. Specifically, the final JSON includes, in addition to the various outputs, information about the executing user, the current date/time as well as the version of Nextflow used. If for some reason these are not identical between runs and systems, the md5sums will obviously not match. You can either remove that information from the JSON, or use the above mentioned assembly-level check.</p>
 <h2 id="additional-caveats">Additional caveats</h2>
 <p>Perfect reproducibility requires for all the relevant building blocks of the analysis to be "fix", i.e. identical. This is easily achieved using software containers (e.g. Apptainer, Singularity, Docker). It is however not guaranteed for Conda, where many packages have "loose" dependencies and can thus yield slightly different environments depending on Conda version and time of installation. If you find that when using Conda your md5sums do not match between your two systems, consider testing with a Container framework to make sure Conda isn't the culprit.</p>
 <h2 id="validation-of-the-workflow">Validation of the workflow</h2>
@@ -1125,7 +1125,7 @@ Expected result:
 </tr>
 </tbody>
 </table>
-<p>All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an approach that will count bases in overlapping reads <a href="https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs">twice</a> - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.</p>
+<p>All 18 differences are related to the underlying algorithm for coverage calculation, where Aquamis uses an (invalid) approach that will count bases in overlapping reads <a href="https://bioinformatics.stackexchange.com/questions/5427/double-counting-coverage-of-overlapped-read-pairs">twice</a> - which lifts the samples in question above the coverage thresholds and flags them as pass instead of fail.</p>
 <h3 id="against-a-contamination-benchmark-pightling-et-al-2019">Against a contamination benchmark (Pightling et al, 2019)</h3>
 <p>GABIs ability to detect contaminations from sequence data has been validated for use with <i>Campylobacter</i>, <i>Escherichia coli</i>, <i>Listeria monoctogenes</i> and <i>Salmonella enterica</i> using data from a benchmark published in <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1914-x">Genome Biology</a>, extended with <a href="https://zenodo.org/records/4601406">data</a> published by the authors of AQUAMIS. </p>
 <h4 id="intraspecies-contamination-cgmlst-confindr">Intraspecies contamination (cgMLST, ConfindR)</h4>
