@@ -67,7 +67,7 @@ workflow AMR_PROFILING {
         AMRFINDERPLUS_RUN.out.db_version
     )
     ch_hamronization_input = ch_hamronization_input.mix(HAMRONIZATION_AMRFINDERPLUS.out.json)
-    ch_versions = HAMRONIZATION_AMRFINDERPLUS.out.versions
+    ch_versions = ch_versions.mix(HAMRONIZATION_AMRFINDERPLUS.out.versions)
 
     /*
     Run Abricate and make JSON report
