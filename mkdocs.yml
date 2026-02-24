@@ -18,7 +18,7 @@ nav:
     - Output: user_doc/output.md
   - Help:
     - FAQ: help/faq.md
-    - Troobleshooting: help/troubleshooting.md
+    - Troubleshooting: help/troubleshooting.md
   - About:
     - Software: about/software.md
     - License: about/license.md
