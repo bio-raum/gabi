@@ -1,0 +1,111 @@
+site_name: GABI Documentation
+site_url: https://bio-raum.github.io/gabi
+site_description: Genomic Analysis of Bacterial Isolates
+site_author: Marc Höppner
+repo_url: https://github.com/bio-raum/gabi
+
+nav:
+  - Home:
+    - Welcome: index.md
+    - Contibuting: about/contributing.md
+    - Release notes: about/changelog.md
+  - User Guide:
+    - Quickstart: user_doc/quickstart.md
+    - Requirements: user_doc/requirements.md
+    - Installation: user_doc/installation.md
+    - Usage: user_doc/usage.md
+    - Pipeline: user_doc/pipeline.md
+    - Output: user_doc/output.md
+  - Help:
+    - faq: help/faq.md
+    - Troobleshooting: help/troubleshooting.md
+  - About:
+    - Software: about/software.md
+    - License: about/license.md
+    - Legal notes: about/legal.md
+    - Validation: help/validation.md
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: img/pipelinelogo.png
+  favicon: img/favicon.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep orange
+      toggle:
+        icon: material/eye
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: deep orange
+      toggle:
+        icon: material/eye-outline
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    annotation: material/help-circle
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.path
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+strict: true
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+plugins:
+  - search
+
+extra:
+  version:
+    provider: mike
+    default: latest
+    alias: true
+
+extra_javascript:
+  - javascripts/sh-annotations.js
+
+markdown_extensions:
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      toc_depth: 3
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+copyright:
+  Copyrigth &copy; GNU-GPL - 2025-2026 Marc Höppner
