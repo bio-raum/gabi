@@ -1,8 +1,0 @@
-name: sourmash_sketch
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - conda-forge::sourmash-minimal=4.8.4
-  - bioconda::sourmash=4.8.4

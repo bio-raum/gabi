@@ -1,7 +1,0 @@
-name: mummer2circos
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::mummer2circos=1.4.2

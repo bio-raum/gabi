@@ -1,7 +1,0 @@
-name: biobloom-maker
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::biobloomtools=2.3.5

@@ -1,7 +1,0 @@
-name: homopolish
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::homopolish=0.4.1

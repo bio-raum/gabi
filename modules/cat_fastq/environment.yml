@@ -1,7 +1,0 @@
-name: cat_fastq
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::conda-forge::sed=4.7

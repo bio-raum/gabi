@@ -1,8 +1,0 @@
-name: bcftools_stats
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::bcftools=1.21
-  - bioconda::htslib=1.21

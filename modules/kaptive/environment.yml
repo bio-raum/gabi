@@ -1,6 +1,0 @@
-name: kaptive
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - bioconda::kaptive=3.1.0

@@ -1,6 +1,0 @@
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::ncbi-amrfinderplus=3.11.18

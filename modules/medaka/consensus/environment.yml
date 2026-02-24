@@ -1,7 +1,0 @@
-name: medaka_consensus
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::medaka=2.1.0

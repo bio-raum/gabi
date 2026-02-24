@@ -1,6 +1,0 @@
-name: format_taxonkit
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - conda-forge::sed=4.7

@@ -1,7 +1,0 @@
-name: shovill
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::shovill=1.1.0

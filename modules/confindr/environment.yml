@@ -1,7 +1,0 @@
-name: confindr
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::confindr=0.7.4

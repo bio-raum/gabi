@@ -1,7 +1,0 @@
-name: hamronization_abricate
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::hamronization=1.1.4

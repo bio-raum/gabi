@@ -1,7 +1,0 @@
-name: sccmec
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::sccmec=1.2.0

@@ -1,7 +1,0 @@
-name: hamronization_summarize
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::hamronization=1.1.9

@@ -1,7 +1,0 @@
-name: ectyper
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::ectyper=1.0.0

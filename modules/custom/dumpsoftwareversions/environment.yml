@@ -1,7 +1,0 @@
-name: dumpsoftwareversions
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::multiqc=1.19

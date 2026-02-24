@@ -1,8 +1,0 @@
-name: confindr_install
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::gnu-wget=1.18
-

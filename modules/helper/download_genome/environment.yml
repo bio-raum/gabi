@@ -1,7 +1,0 @@
-name: download_genome
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - conda-forge::ncbi-datasets-cli=16.22.1

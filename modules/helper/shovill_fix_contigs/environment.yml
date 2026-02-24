@@ -1,7 +1,0 @@
-name: fix_shovill_contigs
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::biopython.convert=1.3.3

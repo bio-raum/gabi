@@ -1,7 +1,0 @@
-name: racon
-channels:
-  - conda-forge
-  - bioconda
-  
-dependencies:
-  - bioconda::racon=1.4.20
