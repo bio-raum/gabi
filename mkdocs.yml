@@ -17,7 +17,7 @@ nav:
     - Pipeline: user_doc/pipeline.md
     - Output: user_doc/output.md
   - Help:
-    - faq: help/faq.md
+    - FAQ: help/faq.md
     - Troobleshooting: help/troubleshooting.md
   - About:
     - Software: about/software.md

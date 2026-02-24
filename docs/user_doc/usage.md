@@ -91,9 +91,9 @@ Note: HiFi data cannot be combined with any of the other technologies! (mostly b
 
 `--input samples.tsv` [default = null]
 
-:   This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
+This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
 
-    === "Reads"
+=== "Reads"
 
     If you want to assemble genomes "from scratch", you can pass raw reads:
 
@@ -122,7 +122,7 @@ Note: HiFi data cannot be combined with any of the other technologies! (mostly b
 
         The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.
 
-    === "Assembly"
+=== "Assembly"
 
     You can also run GABI on pre-assembled genomes, using only those parts of the pipeline that characterize assemblies. Obviously, you will be missing many of the QC measures that rely on raw reads in one form or another. 
 
