@@ -12,7 +12,7 @@ For the example below, we will assume you use Appainer, although other container
 
 ## Pipeline references
 
-FooDMe2 requires locally stored, formatted databases. The pipeline has a [built-in](installation.md#installing-the-references) option to install these. 
+GABI requires locally stored, formatted databases. The pipeline has a [built-in](installation.md#installing-the-references) option to install these. 
 
 ``` bash
 nextflow run bio-raum/gabi \ # (1)!

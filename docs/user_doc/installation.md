@@ -26,11 +26,11 @@ You can choose one of the following options:
 
 [Podman](https://podman.io/docs/installation)
 
-It is also possible to run FooDMe2 with the Conda/Mamba package manager, but this is **strongly** discouraged in production. For a discussion, see [here](https://pubmed.ncbi.nlm.nih.gov/29953862/).
+It is also possible to run GABI with the Conda/Mamba package manager, but this is **strongly** discouraged in production. For a discussion, see [here](https://pubmed.ncbi.nlm.nih.gov/29953862/).
 
 [Conda/Mamba](https://github.com/conda-forge/miniforge)
 
-The pipeline comes with simple pre-set profiles for all of these as described below; if you plan to use this pipeline regularly, consider adding your own custom profile to our [central repository](https://github.com/bio-raum/nf-configs) to better leverage your available resources. Advantages of using custom profile include:
+The pipeline comes with simple pre-set profiles for all of these as described below; if you plan to use this pipeline regularly, consider adding your own custom profile to our [central repository](https://github.com/bio-raum/nf-configs) to better leverage your available resources. Advantages of using a custom profile include:
 
 - possibility to cache environements and containers
 - control ressources usage

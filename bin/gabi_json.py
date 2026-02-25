@@ -265,10 +265,29 @@ def parse_bcftools(lines):
     return data
 
 
+def delete_keys_from_dict(dict_del, lst_keys):
+    for k in lst_keys:
+        try:
+            del dict_del[k]
+        except KeyError:
+            pass
+    for v in dict_del.values():
+        if isinstance(v, dict):
+            delete_keys_from_dict(v, lst_keys)
+
+    return dict_del
+
+
 def main(sample, taxon, yaml_file, output):
 
     files = [os.path.abspath(f) for f in glob.glob("*/*")]
     date = datetime.today().strftime('%Y-%m-%d')
+
+    remove_keys = [
+        "content_curves",
+        "quality_curves",
+        "kmer_count"
+    ]
 
     with open(yaml_file, "r") as f:
         yaml_lines = [line.rstrip() for line in f]
@@ -315,7 +334,8 @@ def main(sample, taxon, yaml_file, output):
             matrix["nanostat"] = parse_nanostat(lines)
         elif re.search(".fastp.json", file):
             fastp = parse_json(lines)
-            matrix["fastp"] = fastp
+            fastp_clean = delete_keys_from_dict(fastp, remove_keys)
+            matrix["fastp"] = fastp_clean
         elif re.search(".*mlst.json", file):
             mlst = parse_json(lines)
             matrix["mlst"].append(mlst[0])
