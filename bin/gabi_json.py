@@ -283,7 +283,7 @@ def main(sample, taxon, yaml_file, output):
     files = [os.path.abspath(f) for f in glob.glob("*/*")]
     date = datetime.today().strftime('%Y-%m-%d')
 
-    remove_keys = [ 
+    remove_keys = [
         "content_curves",
         "quality_curves",
         "kmer_count"
