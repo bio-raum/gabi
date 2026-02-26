@@ -786,7 +786,18 @@
   <a href="#html" class="md-nav__link">
     <span class="md-ellipsis">
       
-        "HTML"
+        HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON
       
     </span>
   </a>
@@ -817,23 +828,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Data structure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#json-result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JSON result
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1199,7 +1193,18 @@
   <a href="#html" class="md-nav__link">
     <span class="md-ellipsis">
       
-        "HTML"
+        HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON
       
     </span>
   </a>
@@ -1230,23 +1235,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Data structure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#json-result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JSON result
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1300,7 +1288,7 @@
 
 <h1 id="outputs">Outputs</h1>
 <h2 id="reports">Reports</h2>
-<h3 id="html">"HTML"</h3>
+<h3 id="html">HTML</h3>
 <p><code>reports/name_of_pipeline_run.html</code>: A graphical summary of all samples in this analysis run. Some of the information you can gather from this include</p>
 <ul>
 <li>Does the assembly size match known/published values for this species?</li>
@@ -1312,46 +1300,37 @@
 <li>How complete is the gene space coverage and are there many duplicate BUSCO hits?</li>
 </ul>
 <p>You should come up with reasonable threshold for these parameters, based on your experience with your data. GABI will provide an interpretation for you, but it is advisable to think about the specific details. </p>
-<p>=== "Summary"</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Summary</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <p><img alt="summary" src="../../img/gabi_summary.png" /></p>
 <p>Here, each sample is represented by one row, with the sample ID (as provided in the sample sheet), the overall status, best-guess taxon, followed by metrics about the assembly, the read coverage of the assembly as well as basic read metrics and finally results from contamination-related checks. Please note that contamination checks are going to work best on Illumina data, since the basic principle depends in one way or the other on read variants. Nanopore data may occasionally yield incorrect inferences and is deliberately paramterized to suppress noisy results (which may well be true contaminations at low levels). </p>
 <p>You can click on any of the rows in the summary to get additional information, if available. </p>
-<p>=== "Busco"</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Busco</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <p>BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain (many) duplicated BUSCOs. </p>
 <p><img alt="busco" src="../../img/gabi_busco.png" /></p>
-<p>=== "Bracken"</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Bracken</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <p>Complementary to ConfindR, Kraken (combined with Bracken) can be used to check if the sample consists of more than one species. A low level of abundance is typically no reason for concern and more likely the result of low complexity sequence motifs. </p>
 <p><img alt="bracken" src="../../img/gabi_bracken.png" /></p>
-<p>=== "Characterization"</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Characterization</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <p>Assemblies may be used to bioinforamtically characterize the isolate, for example to determine the MLST type, Serotype or presence of antimicrobial resistance genes (AMR). GABI summarizes this information in a concise table. </p>
 <p><img alt="characterization" src="../../img/gabi_characterization.png" /></p>
-<h3 id="technology-specific-qc">Technology-specific QC</h3>
-<p>GABI generates additional MultiQC reports for each sequencing technology (stored under <code>reports/</code>). These can be used to get a few more details, for example for the ConfindR results or the technology-specific sequence coverage of the final assembly.</p>
-<h2 id="data-structure">Data structure</h2>
-<p>For each sample, a folder is created with results from various tools, as follows:</p>
-<ul>
-<li>amr - Predictions of antimicrobial resistance genes</li>
-<li>abricate - Results from Abricate</li>
-<li>amrfinderplus - Results from AMFfinderPlus</li>
-<li>annotation - Gene model predictions</li>
-<li>prokka - Prokka annotations</li>
-<li>assembly - The genome assembly and related information</li>
-<li>busco - Busco analysis of gene space coverage</li>
-<li>quast - Quast assembly metrics</li>
-<li>flye/dragonflye/shovill - the assembler output(s)</li>
-<li>mlst - MLST typing results</li>
-<li>plasmids - Identification of plasmids from the assembly</li>
-<li>qc - Basic read QC</li>
-<li>fastqc - Quality metrics of reads</li>
-<li>confindr_results - ConfindR contamination check</li>
-<li>serotyping</li>
-<li>Results per serotyping tool (if any)</li>
-<li>taxonomy - Taxonomic profiling using raw reads</li>
-<li>kraken2 - Results from Kraken2/Bracken</li>
-<li>sample.qc.json - The main results in JSON format, with QC vote for individual parameters and the overall sample ("call")</li>
-</ul>
-<h3 id="json-result">JSON result</h3>
-<p>All results (per sample) are summarized in a JSON file, which roughly mirrors the organizational hierarchy of the folder structure described above. </p>
+<h3 id="json">JSON</h3>
+<p>All results (per sample) are summarized in a JSON file (<code>results/sample/MySample/MySample.qc.json</code>), which roughly mirrors the organizational hierarchy of the folder structure described below. </p>
 <p>In addition , it contains a section with the overall QC vote and a list of parameters and the QC category (pass, warn, fail, missing) they were assigned to. </p>
 <div class="language-JSON highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w"> </span><span class="nt">&quot;qc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">        </span><span class="nt">&quot;fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
@@ -1382,6 +1361,31 @@
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">        </span><span class="nt">&quot;call&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span><span class="p">}</span>
 </span></code></pre></div>
+<h3 id="technology-specific-qc">Technology-specific QC</h3>
+<p>GABI generates additional MultiQC reports for each sequencing technology (stored under <code>reports/</code>). These can be used to get a few more details, for example for the ConfindR results or the technology-specific sequence coverage of the final assembly.</p>
+<h2 id="data-structure">Data structure</h2>
+<p>For each sample, a folder is created with results from various tools, as follows:</p>
+<ul>
+<li>amr - Predictions of antimicrobial resistance genes</li>
+<li>abricate - Results from Abricate</li>
+<li>amrfinderplus - Results from AMFfinderPlus</li>
+<li>annotation - Gene model predictions</li>
+<li>prokka - Prokka annotations</li>
+<li>assembly - The genome assembly and related information</li>
+<li>busco - Busco analysis of gene space coverage</li>
+<li>quast - Quast assembly metrics</li>
+<li>flye/dragonflye/shovill - the assembler output(s)</li>
+<li>mlst - MLST typing results</li>
+<li>plasmids - Identification of plasmids from the assembly</li>
+<li>qc - Basic read QC</li>
+<li>fastqc - Quality metrics of reads</li>
+<li>confindr_results - ConfindR contamination check</li>
+<li>serotyping</li>
+<li>Results per serotyping tool (if any)</li>
+<li>taxonomy - Taxonomic profiling using raw reads</li>
+<li>kraken2 - Results from Kraken2/Bracken</li>
+<li>sample.qc.json - The main results in JSON format, with QC vote for individual parameters and the overall sample ("call")</li>
+</ul>
 <h2 id="run-metrics">Run metrics</h2>
 <p>The folder <code>pipeline_metrics</code> contains the pipeline run metrics</p>
 <ul>
