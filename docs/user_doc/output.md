@@ -2,7 +2,7 @@
 
 ## Reports 
 
-### "HTML"
+### HTML
 
 `reports/name_of_pipeline_run.html`: A graphical summary of all samples in this analysis run. Some of the information you can gather from this include
 
@@ -16,7 +16,7 @@
 
 You should come up with reasonable threshold for these parameters, based on your experience with your data. GABI will provide an interpretation for you, but it is advisable to think about the specific details. 
 
-  === "Summary"
+=== "Summary"
 
   ![summary](../img/gabi_summary.png)
 
@@ -24,55 +24,27 @@ You should come up with reasonable threshold for these parameters, based on your
 
   You can click on any of the rows in the summary to get additional information, if available. 
 
-  === "Busco"
+=== "Busco"
 
   BUSCO identifies the presence of expected conserved bacterial genes - a good assembly should be near-complete and not contain (many) duplicated BUSCOs. 
 
   ![busco](../img/gabi_busco.png)
 
-  === "Bracken"
+=== "Bracken"
 
   Complementary to ConfindR, Kraken (combined with Bracken) can be used to check if the sample consists of more than one species. A low level of abundance is typically no reason for concern and more likely the result of low complexity sequence motifs. 
 
   ![bracken](../img/gabi_bracken.png)
 
-  === "Characterization"
+=== "Characterization"
 
   Assemblies may be used to bioinforamtically characterize the isolate, for example to determine the MLST type, Serotype or presence of antimicrobial resistance genes (AMR). GABI summarizes this information in a concise table. 
 
   ![characterization](../img/gabi_characterization.png)
 
-### Technology-specific QC
+### JSON 
 
-GABI generates additional MultiQC reports for each sequencing technology (stored under `reports/`). These can be used to get a few more details, for example for the ConfindR results or the technology-specific sequence coverage of the final assembly.
-
-## Data structure
-
-For each sample, a folder is created with results from various tools, as follows:
-
-- amr - Predictions of antimicrobial resistance genes
-  - abricate - Results from Abricate
-  - amrfinderplus - Results from AMFfinderPlus
-- annotation - Gene model predictions
-  - prokka - Prokka annotations
-- assembly - The genome assembly and related information
-  - busco - Busco analysis of gene space coverage
-  - quast - Quast assembly metrics
-  - flye/dragonflye/shovill - the assembler output(s)
-- mlst - MLST typing results
-- plasmids - Identification of plasmids from the assembly
-- qc - Basic read QC
-  - fastqc - Quality metrics of reads
-  - confindr_results - ConfindR contamination check
-- serotyping
-  - Results per serotyping tool (if any)
-- taxonomy - Taxonomic profiling using raw reads
-  - kraken2 - Results from Kraken2/Bracken
-- sample.qc.json - The main results in JSON format, with QC vote for individual parameters and the overall sample ("call")
-
-### JSON result
-
-All results (per sample) are summarized in a JSON file, which roughly mirrors the organizational hierarchy of the folder structure described above. 
+All results (per sample) are summarized in a JSON file (`results/sample/MySample/MySample.qc.json`), which roughly mirrors the organizational hierarchy of the folder structure described below. 
 
 In addition , it contains a section with the overall QC vote and a list of parameters and the QC category (pass, warn, fail, missing) they were assigned to. 
 
@@ -106,6 +78,34 @@ In addition , it contains a section with the overall QC vote and a list of param
         "call": "warn"
     }
 ```
+
+### Technology-specific QC
+
+GABI generates additional MultiQC reports for each sequencing technology (stored under `reports/`). These can be used to get a few more details, for example for the ConfindR results or the technology-specific sequence coverage of the final assembly.
+
+## Data structure
+
+For each sample, a folder is created with results from various tools, as follows:
+
+- amr - Predictions of antimicrobial resistance genes
+  - abricate - Results from Abricate
+  - amrfinderplus - Results from AMFfinderPlus
+- annotation - Gene model predictions
+  - prokka - Prokka annotations
+- assembly - The genome assembly and related information
+  - busco - Busco analysis of gene space coverage
+  - quast - Quast assembly metrics
+  - flye/dragonflye/shovill - the assembler output(s)
+- mlst - MLST typing results
+- plasmids - Identification of plasmids from the assembly
+- qc - Basic read QC
+  - fastqc - Quality metrics of reads
+  - confindr_results - ConfindR contamination check
+- serotyping
+  - Results per serotyping tool (if any)
+- taxonomy - Taxonomic profiling using raw reads
+  - kraken2 - Results from Kraken2/Bracken
+- sample.qc.json - The main results in JSON format, with QC vote for individual parameters and the overall sample ("call")
 
 ## Run metrics
 

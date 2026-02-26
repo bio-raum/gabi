@@ -5,8 +5,6 @@ of bacterial isolates from short or long "next generation" sequencing reads.
 
 It is designed to be easily installed and used, and work on a wide range of configuration.
 
-*The full documentation is available from the [homepage](https://bio-raum.github.io/gabi)*
-
 ## Highlights
 
 - ready-to-use reports

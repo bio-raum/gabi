@@ -170,10 +170,6 @@ This possibility is however limited to defining nextflow execution parameters an
       cacheDir = "$HOME/nextflow_envs_cache"
     }
 
-    conda {
-      enabled = false
-      cacheDir = "$HOME/nextflow_envs_cache"
-    }
     ```
 
 See the [nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for more informations on local configuration.

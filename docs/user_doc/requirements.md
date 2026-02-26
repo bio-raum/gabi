@@ -6,7 +6,7 @@ Below are some general guidelines to ensure that your data can be successfully a
 
 GABI is a comparatively light-weight pipeline and runs on a wide range of hardware, including your "average" laptop. At the same time, it is also capable of taking advantage of high-performance compute clusters, or "the cloud". 
 
-At minimum, you will need 4 CPU cores, 16 GB of Ram and ~20.GB of disk space for the reference databases. In addition, the pipeline requires storage space for the intermediate files and the final results - which will depend on the size of your input data. 
+At minimum, you will need 4 CPU cores, 16-32 GB of Ram and ~20.GB of disk space for the reference databases. In addition, the pipeline requires storage space for the intermediate files and the final results - which will depend on the size of your input data. 
 
 While Nextflow, and consequently GABI, are technically compatible with Windows (through [WSL](https://learn.microsoft.com/en-us/windows/wsl/about)) and OSX, it is going to be easiest to run it on a Linux system. For more details, please see our [installation](installation.md) instructions. 
 

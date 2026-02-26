@@ -28,7 +28,30 @@
 
 :   No. The HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). 
 
-## Crashes and performance
+## Crashes
+
+### I am behind a proxy and the pipeline fails
+
+:   If you are running the pipeline behind a proxy in combination with a container manager (Apptainer, Docker, etc), you may notice pipeline failures with an error message concerning hosts being unreachable. This is because the tools running inside the container do not know about your local proxy settings.
+
+First, make sure that your proxy settings are correctly configured and stored in the default environment variable:
+
+```bash
+echo $HTTPS_PROXY
+```
+
+This should return your proxy information. If not, you can set this variable yourself from the command line - else ask to your local IT admin. 
+
+Next, you will want to configure nextflow to forward these settings to the container environments using a local or site-specific config file. This is done by adding the `envWhitelist` argument:
+
+```Nextflow
+
+apptainer {
+    enabled = true
+    cacheDir = "$HOME/nextflow_envs_cache"
+    envWhitelist = "HTTP_PROXY,HTTPS_PROXY"
+}
+```
 
 ### The pipeline fails because a Conda/Mamba environment could not be solved
 
@@ -44,18 +67,6 @@
 
     It is also possible that you have not set a memory limit for your compute environment via a site-specifig [config file](https://github.com/bio-raum/nf-configs/) - in which case GABI will use the built-in default (64GB Ram); this perhaps exceed the limits of your system.  
 
-### Why is the pipeline so slow?
-
-:   We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data. 
-
-    Otherwise, if you run this pipeline without a site-specific config file, the pipeline will not know where to cache the various containers or conda environments. In such cases, it will install/download these dependencies into the respective work directory of your pipeline run, every time you run the pipeline. And yes, that can be slow - especially when using Conda. Consider adding your own config file to make use of the caching functionality.
-
-## Sourmash `search` is very slow
-
-:   We use sourmash to identify the best matching reference genome for each assembly. This database is currently over 10GB in size and highly contigious assemblies can produce very long run times (30mins+). 
-
-    If you do not care about the best reference genome, but are happy to just find a closely related one so GABI knows which species this is, use the `--fast_ref` option. 
-
 ### My ONT assembly crashes with an obscure error
 
 :   Please check if the option `--onthq` is set to `true`. It's possible that this setting is not appropriate for your data, which can lead the assembler to exit on an empty Fasta file halfway through the assembly process; you can disable this option by setting `--onthq false` and resume the pipeline (`-resume`).
@@ -69,3 +80,19 @@
     ```
 
     This is most likely happening because you passed the `reference_base` option from a custom config file via the "-c" argument. There is currently a [known bug](https://github.com/nextflow-io/nextflow/issues/2662) in Nextflow which prevents the correct passing of parameters from a custom config file to the workflow. Please use the command line argument `--reference_base` instead or consider contributing a site-specific [config file](https://github.com/bio-raum/nf-configs). 
+
+## Performance
+
+### Why is the pipeline so slow?
+
+:   We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data. 
+
+    Otherwise, if you run this pipeline without a site-specific config file, the pipeline will not know where to cache the various containers or conda environments. In such cases, it will install/download these dependencies into the respective work directory of your pipeline run, every time you run the pipeline. And yes, that can be slow - especially when using Conda. Consider adding your own config file to make use of the caching functionality.
+
+### Sourmash `search` is very slow
+
+:   We use sourmash to identify the best matching reference genome for each assembly. This database is currently over 10GB in size and highly contigious assemblies can produce very long run times (30mins+). 
+
+    If you do not care about the best reference genome, but are happy to just find a closely related one so GABI knows which species this is, use the `--fast_ref` option. 
+
+
