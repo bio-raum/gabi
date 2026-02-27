@@ -826,6 +826,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pacbio-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pacbio options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#expert-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1333,6 +1344,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pacbio-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pacbio options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#expert-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1537,6 +1559,13 @@
 <dd>
 <p>Skip the removal of adapters from reads using <a href="https://github.com/bonsai-team/Porechop_ABI">Porechop_abi</a>. </p>
 <p>Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. </p>
+</dd>
+</dl>
+<h3 id="pacbio-options">Pacbio options</h3>
+<dl>
+<dt><code>--pacbio_hifi</code> [ default = false]</dt>
+<dd>
+<p>Reads are in HiFi format (high-fidelity); this input format is strongly recommended over CLR (sub) reads to reduce processing time and increase quality of the resulting assembly. </p>
 </dd>
 </dl>
 <h3 id="expert-options">Expert options</h3>
