@@ -144,6 +144,7 @@ workflow GABI {
     ch_short_reads_only = GROUP_READS.out.illumina_only
     ch_ont_reads_only   = GROUP_READS.out.ont_only
     ch_pb_reads_only    = GROUP_READS.out.pacbio_only
+    ch_pb_hybrid_reads  = GROUP_READS.out.pacbio_hybrid
     ch_dragonflye       = GROUP_READS.out.dragonflye
 
     /*
@@ -194,7 +195,7 @@ workflow GABI {
     Flye
     */
     PACBIO_ASSEMBLY(
-        ch_pb_reads_only
+        ch_pb_hybrid_reads
     )
     ch_versions     = ch_versions.mix(PACBIO_ASSEMBLY.out.versions)
     ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)

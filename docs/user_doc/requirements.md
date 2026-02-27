@@ -12,7 +12,7 @@ While Nextflow, and consequently GABI, are technically compatible with Windows (
 
 ## Sequencing depth
 
-GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this range to ensure that your data does not trigger a warning or fail. 
+GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this range (ideally > 40X) to ensure that your data does not trigger a warning or fail. 
 
 ## Contamination
 
@@ -20,8 +20,17 @@ GABI is very sensitive towards read contamination and will fail samples if it de
 
 ## Nanopore Reads
 
-GABI supports processing of Nanopore (ONT) reads. However, some restrictions apply.
+GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 
 * Reads should be generated with the R10 chemistry; we did not test nor recommend R9 reads for use with GABI.
-* Reads should be of high quality (ideally Q20, generated with SUP basecalling); although the internally applied thresholds for filtering are user-configureable should your data be of lesser quality. 
-* Reads must be adapter-trimmed (sequencing adapters, that is) - and, if applicable, demultiplexed. GABI does not perform these processing steps. 
+* Reads must be adapter-trimmed (sequencing adapters, that is) - and, if applicable, demultiplexed. GABI does not perform these processing steps.
+* Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
+* If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  
+
+## Pacbio Reads
+
+GABI supports processing of Pacbio reads. Some recommendations include:
+
+* If at all possible, reads should be provided as HiFi (specify `--pacbio_hifi`) for the best performance and results
+* GABI performs only rudimentary polishing of Pacbio assemblies as the best strategy is difficult to nail down(RS vs Sequel, HiFi vs subreads). Results overall should be good when using HiFi reads. 
+* GABI does not perform any kind of trimming and demultiplexing of the data (use [Lima](https://lima.how/))

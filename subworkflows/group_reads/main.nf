@@ -12,25 +12,49 @@ workflow GROUP_READS {
 
     ch_short_reads_for_cross                    = illumina.map { m, r -> [m.sample_id, m, r] }
     ch_ont_reads_for_cross                      = ont.map { m, r -> [m.sample_id, m, r] }
+    ch_pb_reads_for_cross                       = pacbio.map { m, r -> [m.sample_id, m, r] }
 
     ch_short_reads_cross_grouped                = ch_short_reads_for_cross.groupTuple()
     ch_ont_reads_cross_grouped                  = ch_ont_reads_for_cross.groupTuple()
+    ch_pb_reads_cross_grouped                   = ch_pb_reads_for_cross.groupTuple()
+
+    // Get the PB only samples
+    ch_pb_reads_cross_grouped_joined            = ch_pb_reads_cross_grouped.join(ch_short_reads_cross_grouped, remainder: true)
+    ch_pb_reads_cross_grouped_joined_filtered   = ch_pb_reads_cross_grouped_joined.filter { !(it.last()) }
+    ch_pb_reads_only                            = ch_pb_reads_cross_grouped_joined_filtered.transpose().map { [ it[1], it[2]] }
 
     // Get the ONT only samples
     ch_ont_reads_cross_grouped_joined           = ch_ont_reads_cross_grouped.join(ch_short_reads_cross_grouped, remainder: true)
-
     ch_ont_reads_cross_grouped_joined_filtered  = ch_ont_reads_cross_grouped_joined.filter { !(it.last()) }
     ch_ont_reads_only                           = ch_ont_reads_cross_grouped_joined_filtered.transpose().map { [ it[1], it[2]] }
 
+    // Combine short reads with PC reads based on sample id
+    ch_pb_reads_cross_grouped_joined            = ch_short_reads_cross_grouped.join(ch_pb_reads_cross_grouped, remainder: true)
+
+    // Channel were no matching PB reads are available
+    ch_pb_reads_cross_grouped_joined_filtered      = ch_pb_reads_cross_grouped_joined.filter { !(it.last()) }
+
+    // Channel with pacbio reads and optional illumina reads for polishing
+    // [ meta, [ illumina], pacbio ]
+
+    ch_reads_with_pacbio                        = ch_pb_reads_cross_grouped_joined.filter { it.last() }
+    ch_reads_with_pacbio_no_short               = ch_reads_with_pacbio.filter { !it[1] }
+    ch_reads_with_pacbio.filter { it[1] }.transpose().map { [ it[3], it[2], it[4] ] }.map { m, i, n ->
+        def newMeta = [:]
+        newMeta.sample_id = m.sample_id
+        newMeta.platform = 'ILLUMINA_AND_PACBIO'
+        tuple(newMeta, i, n)
+    }.set { ch_reads_with_pacbio_and_short }
+
     // Combine short reads with ONT reads based on sample id
-    ch_reads_cross_grouped_joined               = ch_short_reads_cross_grouped.join(ch_ont_reads_cross_grouped, remainder: true)
+    ch_ont_reads_cross_grouped_joined               = ch_short_reads_cross_grouped.join(ch_ont_reads_cross_grouped, remainder: true)
 
     // Channel where no matching ONT reads are available
-    ch_reads_cross_grouped_joined_filtered      = ch_reads_cross_grouped_joined.filter { !(it.last()) }
+    ch_ont_reads_cross_grouped_joined_filtered      = ch_ont_reads_cross_grouped_joined.filter { !(it.last()) }
 
     // Channel with nanopore reads and optional illumina reads for polishing
     // [ meta, [ illumina], nanopore ]
-    ch_reads_with_nanopore                      = ch_reads_cross_grouped_joined.filter { it.last() }
+    ch_reads_with_nanopore                      = ch_ont_reads_cross_grouped_joined.filter { it.last() }
     ch_reads_with_nanopore_no_short             = ch_reads_with_nanopore.filter { !it[1] }
     ch_reads_with_nanopore.filter { it[1] }.transpose().map { [ it[3], it[2], it[4] ] }.map { m, i, n ->
         def newMeta = [:]
@@ -45,7 +69,7 @@ workflow GROUP_READS {
     ch_dragonflye                               = ch_dragonflye.mix(ch_reads_with_nanopore_no_short.transpose().map { [ it[2], [], it[3]] })
 
     // Samples for which we only have short reads
-    ch_short_reads_only                         = ch_reads_cross_grouped_joined_filtered.transpose().map { [ it[1], it[2]] }
+    ch_short_reads_only                         = ch_ont_reads_cross_grouped_joined_filtered.mix(ch_pb_reads_cross_grouped_joined_filtered).transpose().map { [ it[1], it[2]] }
 
     // Samples with short-reads and matched nanopore reads
     // from [ sample_id, meta1, [illumina_reads ], meta2, [ ont_reads ]]
@@ -55,5 +79,7 @@ workflow GROUP_READS {
     ont_only        = ch_ont_reads_only
     hybrid_reads    = ch_reads_with_nanopore_and_short
     dragonflye      = ch_dragonflye
-    pacbio_only     = pacbio
+    pacbio_only     = ch_pb_reads_only
+    pacbio_hybrid   = ch_reads_with_pacbio_no_short.transpose().map { [ it[2], [], it[3]] }.mix(ch_reads_with_pacbio_and_short)
+    
 }

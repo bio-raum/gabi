@@ -59,6 +59,7 @@ def main(yaml, template, output, version, call, wd):
     data["summary"] = []
 
     samples = []
+    samples_by_technology = {"NANOPORE": [], "ILLUMINA": [], "PACBIO": []}
 
     bracken_data_all = {}
     serotypes_all = {}
@@ -153,6 +154,7 @@ def main(yaml, template, output, version, call, wd):
                 for platform, bracken in jdata["bracken"].items():
 
                     tcount = 0
+                    samples_by_technology[platform] = sample
 
                     # Rather than defining it at the beginning, we check if we need this platform in the results
                     # This avoids having to filter all platforms that werent in this analysis
@@ -492,21 +494,21 @@ def main(yaml, template, output, version, call, wd):
     # Bracken abundances
     if "bracken" in jdata:
         if "ILLUMINA" in bracken_data_all:
-            kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples)
+            kdata = pd.DataFrame(data=bracken_data_all["ILLUMINA"], index=samples_by_technology["ILLUMINA"])
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_ILLUMINA"] = fig.to_html(full_html=False)
         if "NANOPORE" in bracken_data_all:
             print("Creating Bracken ONT graph")
-            kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples)
+            kdata = pd.DataFrame(data=bracken_data_all["NANOPORE"], index=samples_by_technology["NANOPORE"])
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)
             data["Bracken_NANOPORE"] = fig.to_html(full_html=False)
         if "PACBIO" in bracken_data_all:
             print("Creating Bracken Pacbio graph")
-            kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples)
+            kdata = pd.DataFrame(data=bracken_data_all["PACBIO"], index=samples_by_technology["PACBIO"])
             plot_labels = {"index": "Samples", "value": "Percentage"}
             h = (len(samples) * 25) if len(samples) > 10 else (200 + len(samples) * 50)
             fig = px.bar(kdata, orientation='h', labels=plot_labels, height=h)

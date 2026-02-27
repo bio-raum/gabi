@@ -18,15 +18,9 @@
 
 ## Pacbio
 
-### Why won't the pipeline combine short reads with HiFi reads?!
+### Can I use Pacbio subreads (CLR) with GABI?
 
-:   Please see the available assembly modes [here](../user_doc/usage.md). HiFi reads will almost always be sufficient and possibly superior for assembly than a hybrid approach - which is why we do not support it in GABI.
-    
-    If you disagree, please let us know, preferably with some tangible examples where this assumption was shown to be incorrect. 
-
-### Can I use Pacbio subreads with GABI?
-
-:   No. The HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). 
+:   Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. 
 
 ## Crashes
 
@@ -34,24 +28,24 @@
 
 :   If you are running the pipeline behind a proxy in combination with a container manager (Apptainer, Docker, etc), you may notice pipeline failures with an error message concerning hosts being unreachable. This is because the tools running inside the container do not know about your local proxy settings.
 
-First, make sure that your proxy settings are correctly configured and stored in the default environment variable:
+    First, make sure that your proxy settings are correctly configured and stored in the default environment variable:
 
-```bash
-echo $HTTPS_PROXY
-```
+    ```bash
+    echo $HTTPS_PROXY
+    ```
 
-This should return your proxy information. If not, you can set this variable yourself from the command line - else ask to your local IT admin. 
+    This should return your proxy information. If not, you can set this variable yourself from the command line - else ask to your local IT admin. 
 
-Next, you will want to configure nextflow to forward these settings to the container environments using a local or site-specific config file. This is done by adding the `envWhitelist` argument:
+    Next, you will want to configure nextflow to forward these settings to the container environments using a local or site-specific config file. This is done by adding the `envWhitelist` argument:
 
-```Nextflow
+    ```Nextflow
 
-apptainer {
-    enabled = true
-    cacheDir = "$HOME/nextflow_envs_cache"
-    envWhitelist = "HTTP_PROXY,HTTPS_PROXY"
-}
-```
+    apptainer {
+        enabled = true
+        cacheDir = "$HOME/nextflow_envs_cache"
+        envWhitelist = "HTTP_PROXY,HTTPS_PROXY"
+    }
+    ```
 
 ### The pipeline fails because a Conda/Mamba environment could not be solved
 
