@@ -26,7 +26,6 @@ GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  
 
-
 ## IonTorrent Reads
 
 GABI was neither designed nor tested to work with IonTorrent single-end reads. We simply do not see enough interest in this technology within our community. In principle, it should be possible to process Torrent data as if it were single-end Illumina data. However, proceed at your own risk as some tools may not appropriately deal with the torrent-specific error profiles. If you would like to see IonTorrent support for GABI, please open an issue on [github](https://github.com/bio-raum/gabi/issues). 
