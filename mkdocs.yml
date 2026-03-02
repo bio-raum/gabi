@@ -19,6 +19,7 @@ nav:
   - Help:
     - FAQ: help/faq.md
     - Troubleshooting: help/troubleshooting.md
+    - Contamination: help/contamination.md
   - About:
     - Software: about/software.md
     - License: about/license.md

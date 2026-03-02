@@ -205,6 +205,12 @@ Some options specific to assembling ONT reads.
 
     Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. 
 
+### Pacbio options
+
+`--pacbio_hifi` [ default = false]
+
+:   Reads are in HiFi format (high-fidelity); this input format is strongly recommended over CLR (sub) reads to reduce processing time and increase quality of the resulting assembly. 
+
 ### Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 

@@ -138,7 +138,7 @@
         },
         "ont_min_length": {
           "type": "integer",
-          "default": 5000,
+          "default": 1000,
           "description": "Minimum length of ONT reads to keep"
         },
         "ont_min_q": {
@@ -159,6 +159,18 @@
           "type": "boolean",
           "default": true,
           "description": "Do not perform adapter trimming with Porechop"
+        }
+      }
+    },
+    "pacbio_options": {
+      "title": "Pacbio options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "pacbio_hifi": {
+          "type": "boolean",
+          "description": "Reads are in HiFi format"
         }
       }
     },
@@ -238,7 +250,9 @@
         },
         "arg_amrfinderplus_plus": {
           "type": "boolean",
-          "hidden": true
+          "hidden": true,
+          "default": true,
+          "description": "Predict additional gene classes"
         },
         "arg_amrfinderplus_name": {
           "type": "boolean",
@@ -251,17 +265,17 @@
         },
         "arg_abricate_minid": {
           "type": "integer",
-          "default": 80,
+          "default": 90,
           "description": "Minimum id required by abricate"
         },
         "arg_abricate_mincov": {
           "type": "integer",
-          "default": 80,
+          "default": 90,
           "description": "Minimum coverage required by abricate"
         },
         "abricate_dbs": {
           "type": "string",
-          "default": "['vfdb']",
+          "default": "['resfinder']",
           "hidden": true
         },
         "prokka_proteins": {
@@ -296,6 +310,9 @@
     },
     {
       "$ref": "#/$defs/nanopore_options"
+    },
+    {
+      "$ref": "#/$defs/pacbio_options"
     },
     {
       "$ref": "#/$defs/optional_steps"

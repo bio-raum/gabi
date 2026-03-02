@@ -22,7 +22,7 @@ body:
     attributes:
       label: "Nextflow version"
       description: Please the version of Nextflow used
-      placeholder: 24.04.4
+      placeholder: 24.10.5
     validations:
       required: true
   - type: input
