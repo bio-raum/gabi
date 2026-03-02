@@ -26,9 +26,6 @@ GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  
 
-## Pacbio Reads
-
-At this point, GABI only supports Pacbio HiFi reads. This has been the standard output of PacBio sequencers for some time and helps to improve assembly quality and speed. If you still have legacy sub-read data, please see if you can convert them to CCS/HiFI reads with the appropriate [tool](https://ccs.how/).
 
 ## IonTorrent Reads
 
