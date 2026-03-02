@@ -703,17 +703,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pacbio-reads" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pacbio Reads
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#iontorrent-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -725,7 +714,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pacbio-reads_1" class="md-nav__link">
+  <a href="#pacbio-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
         Pacbio Reads
@@ -1216,17 +1205,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pacbio-reads" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pacbio Reads
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#iontorrent-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1238,7 +1216,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pacbio-reads_1" class="md-nav__link">
+  <a href="#pacbio-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
         Pacbio Reads
@@ -1291,11 +1269,9 @@
 <li>Basecalling should be performed with a recent version of <a href="https://github.com/nanoporetech/dorado">Dorado</a> and a SUP (super-accurate) model</li>
 <li>If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  </li>
 </ul>
-<h2 id="pacbio-reads">Pacbio Reads</h2>
-<p>At this point, GABI only supports Pacbio HiFi reads. This has been the standard output of PacBio sequencers for some time and helps to improve assembly quality and speed. If you still have legacy sub-read data, please see if you can convert them to CCS/HiFI reads with the appropriate <a href="https://ccs.how/">tool</a>.</p>
 <h2 id="iontorrent-reads">IonTorrent Reads</h2>
 <p>GABI was neither designed nor tested to work with IonTorrent single-end reads. We simply do not see enough interest in this technology within our community. In principle, it should be possible to process Torrent data as if it were single-end Illumina data. However, proceed at your own risk as some tools may not appropriately deal with the torrent-specific error profiles. If you would like to see IonTorrent support for GABI, please open an issue on <a href="https://github.com/bio-raum/gabi/issues">github</a>. </p>
-<h2 id="pacbio-reads_1">Pacbio Reads</h2>
+<h2 id="pacbio-reads">Pacbio Reads</h2>
 <p>GABI supports processing of Pacbio reads. Some recommendations include:</p>
 <ul>
 <li>If at all possible, reads should be provided as HiFi (specify <code>--pacbio_hifi</code>) for the best performance and results</li>
