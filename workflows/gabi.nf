@@ -136,9 +136,7 @@ workflow GABI {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
     GROUP_READS(
-        ch_illumina_trimmed,
-        ch_ont_trimmed,
-        ch_pacbio_trimmed
+        ch_illumina_trimmed.mix(ch_ont_trimmed, ch_pacbio_trimmed)
     )
     ch_hybrid_reads     = GROUP_READS.out.hybrid_reads
     ch_short_reads_only = GROUP_READS.out.illumina_only
@@ -174,6 +172,7 @@ workflow GABI {
     /*
     Illumina short-reads only
     */
+
     ILLUMINA_ASSEMBLY(
         ch_short_reads_only
     )

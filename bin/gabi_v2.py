@@ -143,18 +143,25 @@ def main(yaml, template, output, version, call, wd):
                 "NANOPORE": {
                     "count": "-",
                     "status": "missing"
+                },
+                "PACBIO": {
+                    "count": "-",
+                    "status": "missing"
                 }
             }
 
             taxon_count["ILLUMINA"]["status"] = check_status("read_hit1_genus_fraction_ILLUMINA", qc)
             taxon_count["NANOPORE"]["status"] = status["missing"]
+            taxon_count["PACBIO"]["status"] = status["missing"]
 
             if "bracken" in jdata:
 
                 for platform, bracken in jdata["bracken"].items():
 
                     tcount = 0
-                    samples_by_technology[platform] = sample
+
+                    # Collect sample names by sequencing technologies; bracken always runs so we capture them here.
+                    samples_by_technology[platform].append(sample)
 
                     # Rather than defining it at the beginning, we check if we need this platform in the results
                     # This avoids having to filter all platforms that werent in this analysis
@@ -446,6 +453,8 @@ def main(yaml, template, output, version, call, wd):
                 "taxon_count_illumina_status": taxon_count["ILLUMINA"]["status"],
                 "taxon_count_nanopore": taxon_count["NANOPORE"]["count"],
                 "taxon_count_nanopore_status": taxon_count["NANOPORE"]["status"],
+                "taxon_count_pacbio": taxon_count["PACBIO"]["count"],
+                "taxon_count_pacbio_status": taxon_count["PACBIO"]["status"],
                 "coverage": coverage,
                 "coverage_status": coverage_status,
                 "coverage_illumina": coverage_illumina,

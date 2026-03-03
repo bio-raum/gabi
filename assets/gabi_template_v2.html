@@ -120,11 +120,11 @@ The summary table with all key metrics per sample
         <th scope="col"><div class="tooltip">Best-guess taxon<span class="tooltiptext">The highest scoring taxon using kmer matching (S/MASH)</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Reference genome<span class="tooltiptext">The highest matching hit in RefSeq to this assembly</span></div></th>
         <th colspan=6 scope="col"><div class="tooltip">Assembly<span class="tooltiptext">Information about this assembly</span></div></th>
-        <th colspan=4 scope="col"><div class="tooltip">Mean coverage (X)<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - bigger is better</span></div></th>
-        <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
+        <th colspan=4 scope="col"><div class="tooltip">Raw mean coverage (X)<span class="tooltiptext">Mean coverage of reads mapped back to the assembly - before downsampling</span></div></th>
+        <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more, after downsampling</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
-        <th colspan=2 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
+        <th colspan=3 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Assembly Composition<span class="tooltiptext">Contamination check of the full assembly by checking taxonomic signature of all contigs</span></div></th>
     </tr>
     <tr class="row">
@@ -154,6 +154,7 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
         <th scope="subcol">ILM</th>
         <th scope="subcol">ONT</th>
+        <th scope="subcol">PB</th>
         <th scope="subcol"><div class="tooltip">Contam %<span class="tooltiptext">CheckM2 prediction of contamination</span></div></th>
         <th scope="subcol"><div class="tooltip">Majority Genus %<span class="tooltiptext">Fraction of assembly assigned to the majority genus</span></div></th>
     </tr>
@@ -202,6 +203,7 @@ all the information for one sample
         <td scope={{row.confindr_nanopore_status}}>{{row.contamination_nanopore}}</td>
         <td scope={{row.taxon_count_illumina_status}}>{{row.taxon_count_illumina}}</td>
         <td scope={{row.taxon_count_nanopore_status}}>{{row.taxon_count_nanopore}}</td>
+        <td scope={{row.taxon_count_pacbio_status}}>{{row.taxon_count_pacbio}}</td>
         <td scope={{row.checkm_status}}>{{row.checkm}}</td>
         <td scope={{row.taxonkit_genus_status}}>{{row.taxonkit_genus}}</td>
     </tr>
@@ -210,6 +212,87 @@ all the information for one sample
     </tr>
 {% endfor %}
 </table>
+<p></p>
+<a href="#navigation">top</a>
+
+<!--
+Sequence characterization
+-->
+
+<div id="character"></div>
+<h2>Assembly characterization</h2>
+
+<div class="infotest">
+    MLST, serotyping and AMR genes
+</div>
+
+<p></p>
+
+<table>
+<tr>
+    <th colspan=1 scope="col" class="grey">Sample</th>
+    <th colspan=1 scope="col" class="uneven">Species</th>
+    <th colspan=2 scope="col"><div class="tooltip">MLST<span class="tooltiptext">Multi-locus sequence type</span></div></th>
+    <th colspan=2 scope="col"><div class="tooltip">AMR<span class="tooltiptext">AMRFinderPlus</span></div></th>
+    <th colspan=5 scope="col"><div class="tooltip">Serotype<span class="tooltiptext">Serotype result</span></div></th>
+</tr>
+<tr>
+    <th scope="subcol-inactive"></th>
+    <th scope="subcol-inactive"></th>
+    <th scope="subcol">Schema</th>
+    <th scope="subcol">Type</th>
+    <th scope="subcol">Hits</th>
+    <th scope="subcol">AMR classes</th>
+    <th scope="subcol">Tool</th>
+    <th scope="subcol">Serotype</th>
+    <th scope="subcol">Patho-Genes</th>
+    <th scope="subcol">Type</th>
+    <th scope="subcol">Information</th>
+</tr>
+{% for row in summary %}
+    <tr class="row-sample">
+        <td scope={{row.status}}>{{row.sample}}</td>
+        <td scope="missing">{{row.taxon}}</td>
+        <td scope="col_mlst" style="border-left: 2px solid #6e6d6d;">{{row.mlst.scheme}}</td>
+        <td scope="col_mlst">{{row.mlst.sequence_type}}</td>
+        <td scope="col_amr" style="border-left: 2px solid #6e6d6d;">
+            {{row.amrfinder|length}} Entries
+        </td>
+        <td scope="col_amr">{{row.amrcount}}</td>
+        {% if "tool" in row.serotype %}
+            <td scope="col_sero" style="border-left: 2px solid #6e6d6d;">{{row.serotype.tool}}</td>
+            <td scope="col_sero">{{row.serotype.serotype}}</td>
+            <td scope="col_sero">{{','.join(row.serotype.genes)}}</td>
+            <td scope="col_sero">{{row.serotype.pathotype}}</td>
+            <td scope="col_sero">{{row.serotype.comment}}</td>
+        {% else %}
+            <td scope="even" style="border-left: 2px solid #6e6d6d;"></td>
+            <td scope="even"></td>
+            <td scope="even"></td>
+            <td scope="even"></td>
+            <td scope="even"></td>
+        {% endif %}
+    </tr>
+    <tr class="row-hidden">
+        <th colspan=1>Gene</th>
+        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/class-subclass target="_new">Class</a></th>
+        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/class-subclass target="_new">Subclass</a></th>
+        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/Interpreting-results#element-type-and-subtype target="_new">Type</a></th>
+        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/Interpreting-results#element-type-and-subtype target="_new">Subtype</a></th>
+    </tr>
+     {% for entry in row.amrfinder %}
+        <tr class="row-hidden">
+            <td><div class="tooltip"><a href=https://www.ncbi.nlm.nih.gov/pathogens/isolates/#AMR_genotypes:{{entry.gene_symbol}}* target="_new">{{entry.gene_symbol}}</a><span class="tooltiptext">{{entry.sequence_name}}</span></div></td>
+            <td>{{entry.amr_class}}</td>
+            <td>{{entry.amr_subclass}}</td>
+            <td>{{entry.element_type}}</td>
+            <td>{{entry.element_subtype}}</td>
+        </tr>
+    {% endfor %}
+{% endfor %}
+
+</table>
+
 <p></p>
 <a href="#navigation">top</a>
 
@@ -335,7 +418,7 @@ Check if Bracken Nanopore data is present, then render the relevant section
 <!--
 Check if Bracken Pacbio data is present, then render the relevant section 
 -->
-{% if Bracken_Pacbio %}
+{% if Bracken_PACBIO %}
     <div id="bracken_pacbio"></div>
     <h2>Bracken - taxonomic composition (Pacbio)</h2>
 
@@ -345,91 +428,10 @@ Check if Bracken Pacbio data is present, then render the relevant section
         abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
     </div>
 
-    {{ Bracken_Pacbio}}
+    {{ Bracken_PACBIO}}
 
     <a href="#navigation">top</a>
 {% endif %}
-
-<!--
-Sequence characterization
--->
-
-<div id="character"></div>
-<h2>Assembly characterization</h2>
-
-<div class="infotest">
-    MLST, serotyping and AMR genes
-</div>
-
-<p></p>
-
-<table>
-<tr>
-    <th colspan=1 scope="col" class="grey">Sample</th>
-    <th colspan=1 scope="col" class="uneven">Species</th>
-    <th colspan=2 scope="col"><div class="tooltip">MLST<span class="tooltiptext">Multi-locus sequence type</span></div></th>
-    <th colspan=2 scope="col"><div class="tooltip">AMR<span class="tooltiptext">AMRFinderPlus</span></div></th>
-    <th colspan=5 scope="col"><div class="tooltip">Serotype<span class="tooltiptext">Serotype result</span></div></th>
-</tr>
-<tr>
-    <th scope="subcol-inactive"></th>
-    <th scope="subcol-inactive"></th>
-    <th scope="subcol">Schema</th>
-    <th scope="subcol">Type</th>
-    <th scope="subcol">Hits</th>
-    <th scope="subcol">AMR classes</th>
-    <th scope="subcol">Tool</th>
-    <th scope="subcol">Serotype</th>
-    <th scope="subcol">Patho-Genes</th>
-    <th scope="subcol">Type</th>
-    <th scope="subcol">Information</th>
-</tr>
-{% for row in summary %}
-    <tr class="row-sample">
-        <td scope={{row.status}}>{{row.sample}}</td>
-        <td scope="missing">{{row.taxon}}</td>
-        <td scope="col_mlst" style="border-left: 2px solid #6e6d6d;">{{row.mlst.scheme}}</td>
-        <td scope="col_mlst">{{row.mlst.sequence_type}}</td>
-        <td scope="col_amr" style="border-left: 2px solid #6e6d6d;">
-            {{row.amrfinder|length}} Entries
-        </td>
-        <td scope="col_amr">{{row.amrcount}}</td>
-        {% if "tool" in row.serotype %}
-            <td scope="col_sero" style="border-left: 2px solid #6e6d6d;">{{row.serotype.tool}}</td>
-            <td scope="col_sero">{{row.serotype.serotype}}</td>
-            <td scope="col_sero">{{','.join(row.serotype.genes)}}</td>
-            <td scope="col_sero">{{row.serotype.pathotype}}</td>
-            <td scope="col_sero">{{row.serotype.comment}}</td>
-        {% else %}
-            <td scope="even" style="border-left: 2px solid #6e6d6d;"></td>
-            <td scope="even"></td>
-            <td scope="even"></td>
-            <td scope="even"></td>
-            <td scope="even"></td>
-        {% endif %}
-    </tr>
-    <tr class="row-hidden">
-        <th colspan=1>Gene</th>
-        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/class-subclass target="_new">Class</a></th>
-        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/class-subclass target="_new">Subclass</a></th>
-        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/Interpreting-results#element-type-and-subtype target="_new">Type</a></th>
-        <th colspan=1><a href=https://github.com/ncbi/amr/wiki/Interpreting-results#element-type-and-subtype target="_new">Subtype</a></th>
-    </tr>
-     {% for entry in row.amrfinder %}
-        <tr class="row-hidden">
-            <td><div class="tooltip"><a href=https://www.ncbi.nlm.nih.gov/pathogens/isolates/#AMR_genotypes:{{entry.gene_symbol}}* target="_new">{{entry.gene_symbol}}</a><span class="tooltiptext">{{entry.sequence_name}}</span></div></td>
-            <td>{{entry.amr_class}}</td>
-            <td>{{entry.amr_subclass}}</td>
-            <td>{{entry.element_type}}</td>
-            <td>{{entry.element_subtype}}</td>
-        </tr>
-    {% endfor %}
-{% endfor %}
-
-</table>
-
-<p></p>
-<a href="#navigation">top</a>
 
 <!-- 
 Information on used software packages

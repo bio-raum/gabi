@@ -74,6 +74,7 @@ workflow AMR_PROFILING {
     */
 
     assembly_with_db = assembly.combine(abricate_dbs)
+    
     ABRICATE_RUN(
         assembly_with_db
     )
