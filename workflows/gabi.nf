@@ -174,6 +174,7 @@ workflow GABI {
     /*
     Illumina short-reads only
     */
+
     ILLUMINA_ASSEMBLY(
         ch_short_reads_only
     )

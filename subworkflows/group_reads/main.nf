@@ -75,7 +75,7 @@ workflow GROUP_READS {
     // from [ sample_id, meta1, [illumina_reads ], meta2, [ ont_reads ]]
 
     emit:
-    illumina_only   = ch_short_reads_only
+    illumina_only   = ch_short_reads_only.unique()
     ont_only        = ch_ont_reads_only
     hybrid_reads    = ch_reads_with_nanopore_and_short
     dragonflye      = ch_dragonflye

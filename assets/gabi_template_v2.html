@@ -124,7 +124,7 @@ The summary table with all key metrics per sample
         <th colspan=4 scope="col"><div class="tooltip">Coverage 40X (%)<span class="tooltiptext">Percentage of assembly covered at 40X or more</span></div></th>
         <th colspan=3 scope="col"><div class="tooltip">Read quality<span class="tooltiptext">Quality metrics of reads after trimming</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">ConfindR<span class="tooltiptext">Indicators of contamination from sequence variation</span></div></th>
-        <th colspan=2 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
+        <th colspan=3 scope="col"><div class="tooltip">Taxa<span class="tooltiptext">Number of detected taxa with an abundance of > 5% in the reads</span></div></th>
         <th colspan=2 scope="col"><div class="tooltip">Assembly Composition<span class="tooltiptext">Contamination check of the full assembly by checking taxonomic signature of all contigs</span></div></th>
     </tr>
     <tr class="row">
@@ -154,6 +154,7 @@ The summary table with all key metrics per sample
         <th scope="subcol"><div class="tooltip">ONT<span class="tooltiptext">Contaminating SNPs in ONT reads; not 100% reliable.</span></div></th>
         <th scope="subcol">ILM</th>
         <th scope="subcol">ONT</th>
+        <th scope="subcol">PB</th>
         <th scope="subcol"><div class="tooltip">Contam %<span class="tooltiptext">CheckM2 prediction of contamination</span></div></th>
         <th scope="subcol"><div class="tooltip">Majority Genus %<span class="tooltiptext">Fraction of assembly assigned to the majority genus</span></div></th>
     </tr>
@@ -202,6 +203,7 @@ all the information for one sample
         <td scope={{row.confindr_nanopore_status}}>{{row.contamination_nanopore}}</td>
         <td scope={{row.taxon_count_illumina_status}}>{{row.taxon_count_illumina}}</td>
         <td scope={{row.taxon_count_nanopore_status}}>{{row.taxon_count_nanopore}}</td>
+        <td scope={{row.taxon_count_pacbio_status}}>{{row.taxon_count_pacbio}}</td>
         <td scope={{row.checkm_status}}>{{row.checkm}}</td>
         <td scope={{row.taxonkit_genus_status}}>{{row.taxonkit_genus}}</td>
     </tr>
@@ -335,7 +337,7 @@ Check if Bracken Nanopore data is present, then render the relevant section
 <!--
 Check if Bracken Pacbio data is present, then render the relevant section 
 -->
-{% if Bracken_Pacbio %}
+{% if Bracken_PACBIO %}
     <div id="bracken_pacbio"></div>
     <h2>Bracken - taxonomic composition (Pacbio)</h2>
 
@@ -345,7 +347,7 @@ Check if Bracken Pacbio data is present, then render the relevant section
         abundances due to a lack of sufficient DNA differences. Otherwise, identification of multiple taxa at higher proportions may indicate a contamination issue. 
     </div>
 
-    {{ Bracken_Pacbio}}
+    {{ Bracken_PACBIO}}
 
     <a href="#navigation">top</a>
 {% endif %}

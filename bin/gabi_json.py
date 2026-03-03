@@ -326,6 +326,8 @@ def main(sample, taxon, yaml_file, output):
             matrix["bracken"]["ILLUMINA"] = parse_bracken(lines)
         elif re.search(".NANOPORE.bracken.tsv", file):
             matrix["bracken"]["NANOPORE"] = parse_bracken(lines)
+        elif re.search(".PACBIO.bracken.tsv", file):
+            matrix["bracken"]["PACBIO"] = parse_bracken(lines)
         elif re.search(r"^.*ILLUMINA.*report_bracken.*", file):
             matrix["kraken"]["ILLUMINA"] = parse_kraken(lines)
         elif re.search(".*NANOPORE*.*report_bracken.*", file):
