@@ -1,2 +1,1 @@
-assets/*.html linguist-vendored
-assets/examples/*.html linguist-vendored
+*.html linguist-detectable=false
