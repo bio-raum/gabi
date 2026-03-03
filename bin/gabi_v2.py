@@ -154,7 +154,9 @@ def main(yaml, template, output, version, call, wd):
                 for platform, bracken in jdata["bracken"].items():
 
                     tcount = 0
-                    samples_by_technology[platform] = sample
+
+                    # Collect sample names by sequencing technologies; bracken always runs so we capture them here.
+                    samples_by_technology[platform].append(sample)
 
                     # Rather than defining it at the beginning, we check if we need this platform in the results
                     # This avoids having to filter all platforms that werent in this analysis
