@@ -1,6 +1,6 @@
-include { CONFINDR }        from './../../modules/confindr'
-include { CONFINDR2MQC }    from './../../modules/helper/confindr2mqc'
-include { CONFINDR2JSON }   from './../../modules/helper/confindr2json'
+include { CONFINDR_CONFINDR }       from './../../modules/confindr/confindr'
+include { CONFINDR2MQC }            from './../../modules/helper/confindr2mqc'
+include { CONFINDR2JSON }           from './../../modules/helper/confindr2json'
 
 workflow CONTAMINATION {
     take:
@@ -15,16 +15,16 @@ workflow CONTAMINATION {
     /*
     Find potential contaminations with ConfindR
     */
-    CONFINDR(
+    CONFINDR_CONFINDR(
         reads,
         confindr_db
     )
-    ch_versions = ch_versions.mix(CONFINDR.out.versions)
+    ch_versions = ch_versions.mix(CONFINDR_CONFINDR.out.versions)
 
     /*
     Check the contamination status and branch
     */
-    CONFINDR.out.report.map { m, r ->
+    CONFINDR_CONFINDR.out.report.map { m, r ->
         def status = parse_confindr_report(r)
         tuple(m, r, status )
     }.branch { m,r,s ->

@@ -1,4 +1,4 @@
-process CONFINDR {
+process CONFINDR_CONFINDR {
     tag "$meta.sample_id"
     label 'medium_parallel'
 

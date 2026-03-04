@@ -39,9 +39,18 @@ process CHECKM2_DATABASEDOWNLOAD {
     """
     # Automatic download is broken when using singularity/apptainer (https://github.com/chklovski/CheckM2/issues/73)
     # So it's necessary to download the database manually
+
+    PROXY_OPTIONS=""
+
+    if [ "\${HTTPS_PROXY:-}" = ""]; then 
+        PROXY_OPTIONS="---all-proxy=\$HTTPS_PROXY"
+    fi
+    
+    echo \$PROXY_OPTIONS
+
     aria2c \
         ${args} \
-        --all-proxy=\$HTTPS_PROXY \
+        \$PROXY_OPTIONS \
         --checksum ${checksum} \
         https://zenodo.org/records/${zenodo_id}/files/checkm2_database.tar.gz
 
