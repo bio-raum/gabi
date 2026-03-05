@@ -18,7 +18,6 @@ workflow BUILD_REFERENCES {
     main:
 
     kraken_db_url       = channel.fromPath(params.references['kraken2'].url)
-    confindr_db_url     = channel.fromPath(params.references['confindr'].url)
     sourmash_db_url     = params.references['sourmashdb'].url
     sourmash_nr_db_url  = params.references['sourmashdb_nr'].url
     taxdb_url           = channel.fromPath(file(params.references['taxdb'].url)).map { f -> [ [sample_id: "taxdump"], f ]}
@@ -45,7 +44,7 @@ workflow BUILD_REFERENCES {
         UNTAR_CONFINDR_SCHEMA.out.fasta
     )
 
-    /* 
+     /* 
     Decompress taxdump
     */
     UNTAR_TAXDUMP(
@@ -106,7 +105,7 @@ workflow BUILD_REFERENCES {
     KRAKEN2_DOWNLOAD(
         kraken_db_url
     )
-
+    
     workflow.onComplete = {
         log.info 'Installation complete - deleting staged files. '
         workDir.resolve("stage-${workflow.sessionId}").deleteDir()

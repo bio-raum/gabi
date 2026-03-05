@@ -11,6 +11,7 @@ process CONFINDR_INDEX {
 
     output:
     path(fasta)            , emit: fasta
+    path("*.fai")         , emit: fai
     path("*_kma*")         , emit: kma
 
     script:
@@ -18,6 +19,7 @@ process CONFINDR_INDEX {
 
     """
     kma index -i $fasta -o $kma
+    samtools faidx $fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

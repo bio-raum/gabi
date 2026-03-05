@@ -12,7 +12,7 @@ In addition to reference metrics for genome size and contig count, GABI employs 
 
 ## Inter-species contamination
 
-Inter-species contamination may occur when a pure culture gets contaminated with one or several unrelated pathogens. One potential scenario is a failure to isolate one clonal isolate at the start, or insufficient care during sample handling. 
+Inter-species contamination may occur when a pure culture gets contaminated with one or several unrelated bacteria. One potential scenario is a failure to isolate one clonal isolate at the start, or insufficient care during sample handling. 
 
 The consequences of inter-species contamination are typically more readily detectable, resulting in strong deviations from the expected assembly size and contig count, as well as affecting many other metrics such as GC content, gene count, etc. 
 

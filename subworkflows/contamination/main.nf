@@ -53,18 +53,18 @@ workflow CONTAMINATION {
 
     // Convert ConfindR report into JSON
     CONFINDR2JSON(
-        CONFINDR.out.report
+        CONFINDR_CONFINDR.out.report
     )
 
     // Combine confindR reports into Multiqc JSON
     CONFINDR2MQC(
-        CONFINDR.out.report.map { m, r -> r }.collect()
+        CONFINDR_CONFINDR.out.report.map { m, r -> r }.collect()
     )
     ch_qc = ch_qc.mix(CONFINDR2MQC.out.json)
 
     emit:
     reads           = ch_pass_reads
-    report          = CONFINDR.out.report
+    report          = CONFINDR_CONFINDR.out.report
     confindr_json   = CONFINDR2JSON.out.json
     versions        = ch_versions
     qc              = ch_qc

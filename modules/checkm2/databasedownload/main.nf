@@ -31,6 +31,9 @@ process CHECKM2_DATABASEDOWNLOAD {
 
     script:
     def args   = task.ext.args ?: ''
+    if( !args.contains('--user-agent') ) {
+        args = args ? "${args} --user-agent=\"Wget/1.21.4\"" : '--user-agent="Wget/1.21.4"'
+    }
     zenodo_id  = db_zenodo_id ?: 14897628  // Default to version 3 if no ID provided
     api_data   = downloadZenodoApiEntry(zenodo_id)
     db_version = api_data.metadata.version
@@ -42,12 +45,13 @@ process CHECKM2_DATABASEDOWNLOAD {
 
     PROXY_OPTIONS=""
 
-    if [ "\${HTTPS_PROXY:-}" = ""]; then 
-        PROXY_OPTIONS="---all-proxy=\$HTTPS_PROXY"
+    if [ -z "\${HTTPS_PROXY:-}" ]; then 
+        echo "No Proxy set"
+    else
+        echo "Proxy set"
+        PROXY_OPTIONS="--all-proxy=\$HTTPS_PROXY"
     fi
     
-    echo \$PROXY_OPTIONS
-
     aria2c \
         ${args} \
         \$PROXY_OPTIONS \

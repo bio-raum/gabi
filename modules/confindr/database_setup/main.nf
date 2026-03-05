@@ -9,7 +9,7 @@ process CONFINDR_DATABASE_SETUP {
         'quay.io/biocontainers/confindr:0.8.2--pyhdfd78af_0' }"
 
     output:
-    path('confindr_db'),   emit: db 
+    path('confindr'),   emit: db 
     path 'versions.yml',   emit: versions
 
     when:
@@ -21,7 +21,7 @@ process CONFINDR_DATABASE_SETUP {
     """
     confindr_database_setup \\
         -i \\
-        -o confindr_db \\
+        -o confindr \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
