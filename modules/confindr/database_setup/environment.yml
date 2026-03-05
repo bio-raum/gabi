@@ -1,0 +1,7 @@
+name: confindr_database_setup
+channels:
+  - conda-forge
+  - bioconda
+  
+dependencies:
+  - bioconda::confindr=0.8.2
