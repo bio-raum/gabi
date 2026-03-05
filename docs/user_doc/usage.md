@@ -187,7 +187,7 @@ Some options specific to assembling ONT reads.
 
     This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
 
-`--ont_min_length`  [ default = 1000 ]
+`--ont_min_length`  [ default = 500 ]
 
 :   Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
     

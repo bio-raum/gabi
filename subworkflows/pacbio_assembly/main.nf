@@ -9,7 +9,7 @@ include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
 workflow PACBIO_ASSEMBLY {
 
     take:
-    reads // [ meta, hifi_reads ]
+    reads // [ meta, illumina, pacbio ] where illumina reads are optional
 
     main:
 

@@ -74,7 +74,9 @@ def parse_quast(lines):
     data = {}
     for line in lines:
         key, value = line.split("\t")
-        if re.match(r"^[0-9]*$", value):
+        if (value == "0"):
+            value = "0"
+        elif re.match(r"^[0-9]*$", value):
             value = int(value)
         elif re.match(r"^[0-9]*\.[0-9]*$", value):
             value = float(value)
