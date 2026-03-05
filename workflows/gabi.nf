@@ -50,6 +50,7 @@ workflow GABI {
     ch_multiqc_pacbio   = channel.from([])
 
     samplesheet = params.input ? channel.fromPath(file(params.input, checkIfExists:true)) : channel.value([])
+    pipeline_info = Channel.fromPath(dumpParametersToJSON(params.outdir)).collect()
 
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
@@ -458,7 +459,8 @@ workflow GABI {
             ch_reports_grouped,
             ch_report_template,
             ch_report_refs,
-            CUSTOM_DUMPSOFTWAREVERSIONS.out.yml
+            CUSTOM_DUMPSOFTWAREVERSIONS.out.yml,
+            pipeline_info
         )
     }
 
@@ -501,4 +503,20 @@ workflow GABI {
     
     emit:
     qc = MULTIQC.out.report
+}
+
+// turn the summaryMap to a JSON file
+def dumpParametersToJSON(outdir) {
+    
+    params.version = workflow.manifest.version
+    params.pipeline = workflow.manifest.name
+
+    def filename  = "pipeline_settings.json"
+    def temp_pf   = new File(workflow.launchDir.toString(), ".${filename}")
+    def jsonStr   = groovy.json.JsonOutput.toJson(params)
+    temp_pf.text  = groovy.json.JsonOutput.prettyPrint(jsonStr)
+
+    nextflow.extension.FilesEx.copyTo(temp_pf.toPath(), "${outdir}/pipeline_info/pipeline_settings.json")
+    temp_pf.delete()
+    return file("${outdir}/pipeline_info/pipeline_settings.json")
 }

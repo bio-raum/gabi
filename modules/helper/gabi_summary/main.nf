@@ -9,6 +9,7 @@ process GABI_SUMMARY {
     input:
     tuple val(meta), path(reports, stageAs: '?/*')
     path(yaml)
+    path(settings_json)
 
     output:
     tuple val(meta), path('*.json') , emit: json
@@ -23,6 +24,7 @@ process GABI_SUMMARY {
     gabi_json.py --sample ${meta.sample_id} \
     --taxon '${meta.taxon}' \
     --yaml $yaml \\
+    --settings $settings_json \\
     $args \
     --output $result
 

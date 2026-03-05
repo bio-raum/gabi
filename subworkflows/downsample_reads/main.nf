@@ -44,7 +44,10 @@ def parse_genome_size(aFile) {
         if (line.contains("unique counted k-mers")) {
             def elements = line.trim().split(/\s+/)
             def raw = (elements[-1].toInteger()/1000000).round(1)
-            gsize = "${raw}Mb"
+            // Some contaminations may yield inflated genome size estimates, cap at 14MB or set to 6MB otherwise
+            if (raw < 14) {
+                gsize = "${raw}Mb"
+            }
         }
 
     }

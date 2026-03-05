@@ -8,6 +8,7 @@ workflow REPORT {
     template
     refs
     yml
+    settings_json
 
     main:
 
@@ -15,7 +16,8 @@ workflow REPORT {
 
     GABI_SUMMARY(
         reports,
-        yml.collect()
+        yml.collect(),
+        settings_json
     )
     ch_versions = ch_versions.mix(GABI_SUMMARY.out.versions)
 
