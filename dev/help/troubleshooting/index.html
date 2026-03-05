@@ -951,16 +951,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#crashes" class="md-nav__link">
+  <a href="#crashes-and-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Crashes
+        Crashes and errors
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Crashes">
+    <nav class="md-nav" aria-label="Crashes and errors">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-required-reference-directory-was-not-found-on-your-system-exiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The required reference directory was not found on your system, exiting!
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#i-am-behind-a-proxy-and-the-pipeline-fails" class="md-nav__link">
@@ -1368,16 +1379,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#crashes" class="md-nav__link">
+  <a href="#crashes-and-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Crashes
+        Crashes and errors
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Crashes">
+    <nav class="md-nav" aria-label="Crashes and errors">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-required-reference-directory-was-not-found-on-your-system-exiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The required reference directory was not found on your system, exiting!
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#i-am-behind-a-proxy-and-the-pipeline-fails" class="md-nav__link">
@@ -1526,7 +1548,9 @@
 <dl>
 <dd>Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available <a href="https://ccs.how/">tools</a>. Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. </dd>
 </dl>
-<h2 id="crashes">Crashes</h2>
+<h2 id="crashes-and-errors">Crashes and errors</h2>
+<h3 id="the-required-reference-directory-was-not-found-on-your-system-exiting">The required reference directory was not found on your system, exiting!</h3>
+<p>GABI uses versioned reference databases, which are linked to different versions of the pipeline. If you see this message, it means that you have not yet installed the matching references to the version of GABI you are trying to execute. Using the same release tag, please install the references as per our <a href="../../user_doc/installation/">instructions</a>.</p>
 <h3 id="i-am-behind-a-proxy-and-the-pipeline-fails">I am behind a proxy and the pipeline fails</h3>
 <dl>
 <dd>
