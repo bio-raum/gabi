@@ -6,6 +6,9 @@ include { DNAAPLER }                from '../../modules/dnaapler'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
+include { AUTOCYCLER_FULL }         from '../../modules/autocycler/full'
+
+include { AUTOCYCLER_WORKFLOW }     from './../autocycler_workflow'
 
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
@@ -33,15 +36,25 @@ workflow ONT_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // FLYE long read assembler
-    FLYE_ONT(
-        lreads
-    )
-    ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
+    if (params.autocycler) {
+        AUTOCYCLER_WORKFLOW(
+            lreads,
+            "ont_r10"
+        )
+        ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
+        ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
+    } else {
+        // FLYE long read assembler
+        FLYE_ONT(
+            lreads
+        )
+        ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
+        ch_long_read_assembly = FLYE_ONT.out.fasta
+    }
 
     // Re-polish initial consensus contigs with Medaka
     MEDAKA_CONSENSUS(
-        lreads.join(FLYE_ONT.out.fasta)
+        lreads.join(ch_long_read_assembly)
     )
     ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
 

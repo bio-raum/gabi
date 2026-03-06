@@ -5,6 +5,8 @@ include { DNAAPLER }                from '../../modules/dnaapler'
 include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
+include { AUTOCYCLER_FULL }         from '../../modules/autocycler/full'
+
 
 workflow PACBIO_ASSEMBLY {
 
@@ -24,16 +26,28 @@ workflow PACBIO_ASSEMBLY {
     
     reads.map { m,s,o ->
         tuple(m,s)
-    }.filter { it.last() }
+    }.filter { it -> it.last() }
     .set { sreads }
 
-    // FLYE long read assembler
-    FLYE_PACBIO(
-        lreads
-    )
-    ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
+    if (params.autocycler) {
+        read_type = params.pacbio_hifi ? "pacbio_hifi" : "pacbio_clr"
+        // Autocycler bash workflow
+        AUTOCYCLER_FULL(
+            lreads,
+            read_type
+        )
+        ch_versions = ch_versions.mix(AUTOCYCLER_FULL.out.versions)
+        ch_long_read_assembly = AUTOCYCLER_FULL.out.fasta
+    } else {
+        // FLYE long read assembler
+        FLYE_PACBIO(
+            lreads
+        )
+        ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
+        ch_long_read_assembly = FLYE_PACBIO.out.fasta
+    }
 
-    FLYE_PACBIO.out.fasta.map { m, a ->
+    ch_long_read_assembly.map { m, a ->
         tuple(m.sample_id, m, a)
     }.join(
         sreads.map {m,r ->
