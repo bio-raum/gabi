@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://bio-raum.github.io/gabi/dev/help/contamination/">
       
       
-        <link rel="prev" href="../troubleshooting/">
+        <link rel="prev" href="../faq/">
       
       
-        <link rel="next" href="../../about/software/">
+        <link rel="next" href="../assembly/">
       
       
         
@@ -821,34 +821,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Troubleshooting
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -965,6 +937,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assembly/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1260,6 +1288,8 @@
 <p>In addition to reference metrics for key assembly metrics, GABI performs taxonomic analysis of both raw reads as well as the final assembly to check whether the data indicates presence of more than one species. </p>
 <h3 id="raw-reads">Raw reads</h3>
 <p>Raw reads are analysed with Kraken2/Bracken to check for the presence of multiple species at an abundance of 5% or higher as an indicator for contamination. This metric is useful but not necessarily conclusive as e.g. highly abundant plasmids may trigger warnings when no actual contamination is present. </p>
+<h4 id="nanopore-data">Nanopore data</h4>
+<p>Nanopore data poses a particular challenge for the detection of contamination from SNP data since the read data is comparatively noisy. While GABI does try to perform such contamination checks on Nanopore data, the results are to be interpreted with a big grain of salt. Essentially, low levels of intra-species contaminations are unlikely to show up in Nanopore data since the (potentially) small number of genetic differences are drowned by the noise. To this end, we run ConfindR with rather stringent settings to prevent the noise from triggering warnings (a contaminating SNP must be supported by at least 5 reads, which would correspond to 10% when sequencing to a recommended depth of 50X; and only reads &gt;= Q20 are used). Unfortunately, this still isn't a guarantee for a totally robust inference, depending on read depth and quality. In fact, as hinted at earlier, this strategy  will obscure cases of true contamination when read coverage or levels of contamination are low and converesely trigger contamination warnings for no reason when coverage is really high.</p>
 <h3 id="assembly">Assembly</h3>
 <p>A more robust estimate of inter-species contamination may be found in the finished assembly. GABI checks each contig in the assembly using Kraken2 and computes the total number of nucleotides belonging to each identified best-hit species and genus. A contamination warning is trigger if more than 5% or the total assembly length is assigned to more than one species.  </p>
 <p>Additionally, GABI also runs <a href="https://github.com/chklovski/CheckM2">CheckM2</a>, a dedicated tool for the detection of contamination from assemblies using machine learning. </p>
