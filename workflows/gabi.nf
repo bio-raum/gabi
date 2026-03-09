@@ -62,7 +62,7 @@ workflow GABI {
     ch_multiqc_logo   = params.multiqc_logo     ? channel.fromPath(params.multiqc_logo, checkIfExists: true).collect()      : []
 
     ch_report_template = params.template        ? channel.fromPath(params.template, checkIfExists: true).collect()          : []
-    ch_report_refs     = params.report_refs     ? channel.fromPath(params.report_refs, checkIfExists: true).collect()          : []
+    ch_report_refs     = params.report_refs     ? channel.fromPath(params.report_refs, checkIfExists: true).collect()       : []
 
     ch_prokka_proteins = params.prokka_proteins ? channel.fromPath(params.prokka_proteins, checkIfExists: true).collect()   : []
     ch_prokka_prodigal = params.prokka_prodigal ? channel.fromPath(params.prokka_prodigal, checkIfExists:true).collect()    : []
@@ -195,7 +195,8 @@ workflow GABI {
     Flye
     */
     PACBIO_ASSEMBLY(
-        ch_pb_hybrid_reads
+        ch_pb_hybrid_reads,
+        homopolish_db
     )
     ch_versions     = ch_versions.mix(PACBIO_ASSEMBLY.out.versions)
     ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)

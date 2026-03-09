@@ -1,0 +1,47 @@
+# Assembly strategies and options
+
+## Long read assembly strategies
+
+GABI has two alternative strategies for long read assemblies - using either a single assembler step, or a multi-assembly pipeline and subsequent consensus finding. 
+
+| Strategy | Assembler(s) | Command line option |
+| -------- | ------------ | ------------------- |
+| Single assembler | Flye |  |
+| Multi-assembler | Canu, Flye, Metamdbg, Miniasm, Necat, Raven | --autocycler |
+
+To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Flye](https://github.com/mikolmogorov/Flye), [Metamdbg](https://github.com/GaetanBenoitDev/metaMDBG), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
+
+Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the best possible assembly. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. 
+
+## Assembly polishing
+
+Polishing is a process by which an initial assembly draft is re-evaluated and improved by using reference or raw read data. Depending on the sequencing technology, this may simply involve re-mapping the reads initially used for assembly to reconcile any dubious regions in the assembled sequence, or make use of complementary sequence data to fix errors that the assembled reads could not. A specific example would be the polishing of a long-read assembly with Illumina short reads to remove long-read specific issues such as homopolymer errors. 
+
+| Data types | Polishing strategies |
+| ---------- | -------------------- |
+| Short reads | Polypolish (inside Shovill) |
+| ONT | Medaka, Homopolish (optional) |
+| ONT + short reads | Medaka, Polypolish |
+| Pacbio | Homopolish (optional) |
+| Pacbio + short reads | Polypolish |
+
+## Technology-specific options
+Generally, GABI runs fine with all-default settings. However, depending on your long read data, some adjustments may be necessary:
+
+#### ONT data
+
+`--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers
+
+`--ont_min_q` Minimum quality ONT reads to keep
+
+`--ont_min_length` Minimum ONT read length to keep
+
+The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads during that process. 
+
+`--homopolish` Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to include such corrections.
+
+#### Pacbio data
+
+ `--pacbio_hifi` - use this option of your Pacbio data is from HiFi reads.
+
+ `--homopolish` - Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to use such corrections. For Pacbio data, homopolish will only run when using CLR reads - i.e. is mutually exclusive with `--pacbio_hifi`.

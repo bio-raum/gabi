@@ -8,6 +8,9 @@ Version 1.0.1, [github](https://github.com/tseemann/abricate)
 **AMRfinder Plus**
 Version 3.11.18, [doi](https://doi.org/10.1038/s41598-021-91456-0) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/34135355/) | [github](https://github.com/ncbi/amr)
 
+**Autocycler**
+Version  0.5.2, [doi](https://doi.org/10.1093/bioinformatics/btaf474) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/40875535/) | [github](https://github.com/rrwick/Autocycler)
+
 **Bracken**
 Version 2.9, [github](https://github.com/jenniferlu717/Bracken)
 

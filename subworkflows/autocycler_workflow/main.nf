@@ -14,7 +14,6 @@ workflow AUTOCYCLER_WORKFLOW {
 
     main:
     ch_versions = channel.from([])
-    tools = channel.from(["canu", "flye", "metamdbg", "miniasm", "necat", "nextdenovo","raven"])
 
     // Determine genome size from Kmers
     // Autocycler genome size check ist way too slow.
@@ -36,20 +35,27 @@ workflow AUTOCYCLER_WORKFLOW {
     )
     ch_versions = ch_versions.mix(AUTOCYCLER_SUBSAMPLE.out.versions)
 
+    // Subsample reads into 4 random subsets, and pass list index along for file naming
     AUTOCYCLER_SUBSAMPLE.out.reads.flatMap { m, g, chunks ->
         chunks.withIndex().collect {element, index -> [ m, file(element), g, index ]}
     }.set { ch_read_chunks_with_genome_size }
 
-    ch_reads_with_size_and_tool = ch_read_chunks_with_genome_size.combine(tools)
+    // Join reads with the proper list of assembly tools
+    ch_read_chunks_with_genome_size.map { m, r, g, i ->
+        def tools = tool_list(m)
+        tuple(m, r, g, i, tools)
+    }.flatMap { m, r, g, i, tools -> 
+        tools.collect { t -> [ m, r, g, i, t ]}
+    }.set { ch_reads_with_size_and_tool }
                 
+    // Performs the actual assembly with one of the requested tools for the read subsets
     AUTOCYCLER_HELPER(
         ch_reads_with_size_and_tool,
         read_type
     )
     ch_versions = ch_versions.mix(AUTOCYCLER_HELPER.out.versions)
 
-    AUTOCYCLER_HELPER.out.fasta.groupTuple().view()
-
+    // Perform consensus finding and produce the final assembly
     AUTOCYCLER_FINISH(
         AUTOCYCLER_HELPER.out.fasta.groupTuple()
     )
@@ -76,4 +82,22 @@ def parse_genome_size(aFile) {
     }
 
     return gsize
+}
+
+// Not all data types may be assembled with the same tools
+def tool_list(meta) {
+    def tools = []
+
+    if (meta.platform == "NANOPORE") {
+        tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+    } else if (meta.platform == "PACBIO") {
+        if (params.pacbio_hifi) {
+            tools = ["flye", "metamdbg", "miniasm", "raven"]
+        } else {
+            tools = ["flye", "metamdbg", "miniasm", "raven", "canu"]
+        }
+    } else {
+        log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
+    }
+    return tools
 }

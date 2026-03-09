@@ -1,13 +1,18 @@
+
+/*
+This module combines the final Autocycler steps into one
+This is for efficency purposes as all steps are quite short
+*/
 process AUTOCYCLER_FINISH {
     tag "$meta.sample_id"
 
     label 'short_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "varunshamanna/autocycler:v0.5.2"
+    container "mjfos2r/autocycler:0.5.2"
 
     input:
-    tuple val(meta), path(assemblies, stageAs: 'assemblies/?')
+    tuple val(meta), path(assemblies, stageAs: 'assemblies/*')
 
     output:
     tuple val(meta), path('*.assembly.fasta')   , emit: fasta
@@ -24,12 +29,12 @@ process AUTOCYCLER_FINISH {
     """
     shopt -s nullglob
     # Give circular contigs from Plassembler extra clustering weight
-    for f in assemblies/plassembler*.fasta; do
+    for f in assemblies/*plassembler*.fasta; do
         sed -i 's/circular=True/circular=True Autocycler_cluster_weight=3/' "\$f"
     done
 
     # Give contigs from Canu and Flye extra consensus weight
-    for f in assemblies/canu*.fasta assemblies/flye*.fasta; do
+    for f in assemblies/*canu*.fasta assemblies/*flye*.fasta; do
         sed -i 's/^>.*\$/& Autocycler_consensus_weight=2/' "\$f"
     done
     shopt -u nullglob

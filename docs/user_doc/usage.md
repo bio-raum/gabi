@@ -193,9 +193,9 @@ Some options specific to assembling ONT reads.
     
     If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
 
-`--skip_homopolish` [ default = false ]
+`--homopolish` [ default = false ]
 
-:   Skip polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). 
+:   Perform ONT polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). 
 
     Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.
 

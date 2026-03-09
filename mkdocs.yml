@@ -18,8 +18,9 @@ nav:
     - Output: user_doc/output.md
   - Help:
     - FAQ: help/faq.md
-    - Troubleshooting: help/troubleshooting.md
     - Contamination: help/contamination.md
+    - Assembly: help/assembly.md
+    - Troubleshooting: help/troubleshooting.md
   - About:
     - Software: about/software.md
     - License: about/license.md

@@ -4,7 +4,7 @@ process AUTOCYCLER_HELPER {
     label 'medium_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "varunshamanna/autocycler:v0.5.2"
+    container "mjfos2r/autocycler:0.5.2"
 
     input:
     tuple val(meta), path(reads), val(genome_size), val(idx), val(tool)
@@ -20,7 +20,7 @@ process AUTOCYCLER_HELPER {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.sample_id}.${idx}.${tool}"
+    def prefix = task.ext.prefix ?: "${meta.sample_id}_${idx}-${tool}"
     
     """
     autocycler helper \\

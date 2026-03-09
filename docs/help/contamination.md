@@ -22,6 +22,10 @@ In addition to reference metrics for key assembly metrics, GABI performs taxonom
 
 Raw reads are analysed with Kraken2/Bracken to check for the presence of multiple species at an abundance of 5% or higher as an indicator for contamination. This metric is useful but not necessarily conclusive as e.g. highly abundant plasmids may trigger warnings when no actual contamination is present. 
 
+#### Nanopore data
+
+Nanopore data poses a particular challenge for the detection of contamination from SNP data since the read data is comparatively noisy. While GABI does try to perform such contamination checks on Nanopore data, the results are to be interpreted with a big grain of salt. Essentially, low levels of intra-species contaminations are unlikely to show up in Nanopore data since the (potentially) small number of genetic differences are drowned by the noise. To this end, we run ConfindR with rather stringent settings to prevent the noise from triggering warnings (a contaminating SNP must be supported by at least 5 reads, which would correspond to 10% when sequencing to a recommended depth of 50X; and only reads >= Q20 are used). Unfortunately, this still isn't a guarantee for a totally robust inference, depending on read depth and quality. In fact, as hinted at earlier, this strategy  will obscure cases of true contamination when read coverage or levels of contamination are low and converesely trigger contamination warnings for no reason when coverage is really high.
+
 ### Assembly
 
 A more robust estimate of inter-species contamination may be found in the finished assembly. GABI checks each contig in the assembly using Kraken2 and computes the total number of nucleotides belonging to each identified best-hit species and genus. A contamination warning is trigger if more than 5% or the total assembly length is assigned to more than one species.  

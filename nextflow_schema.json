@@ -151,9 +151,9 @@
           "default": 1000,
           "description": "Minimum number of reads to remain after trimming"
         },
-        "skip_homopolish": {
+        "homopolish": {
           "type": "boolean",
-          "description": "Do not perform homopolishing"
+          "description": "Run homopolish on ONT assembly"
         },
         "skip_porechop": {
           "type": "boolean",

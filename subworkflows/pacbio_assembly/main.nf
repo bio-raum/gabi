@@ -1,17 +1,19 @@
-include { FLYE as FLYE_PACBIO }     from '../../modules/flye'
+include { FLYE as FLYE_PACBIO }             from '../../modules/flye'
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
-include { KMC }                     from '../../modules/kmc'
-include { DNAAPLER }                from '../../modules/dnaapler'
-include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
+include { KMC }                             from '../../modules/kmc'
+include { DNAAPLER }                        from '../../modules/dnaapler'
+include { POLYPOLISH_POLISH }               from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
-include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
-include { AUTOCYCLER_FULL }         from '../../modules/autocycler/full'
-
+include { HOMOPOLISH as HOMOPOLISH_PACBIO } from '../../modules/homopolish'
+include { BWAMEM2_MEM_POLYPOLISH }          from '../../modules/bwamem2/mem_polypolish'
+// include { AUTOCYCLER_WORKFLOW }          from '../../modules/autocycler/full'
+include { AUTOCYCLER_WORKFLOW }             from './../autocycler_workflow'
 
 workflow PACBIO_ASSEMBLY {
 
     take:
     reads // [ meta, illumina, pacbio ] where illumina reads are optional
+    homopolish_db
 
     main:
 
@@ -32,12 +34,12 @@ workflow PACBIO_ASSEMBLY {
     if (params.autocycler) {
         read_type = params.pacbio_hifi ? "pacbio_hifi" : "pacbio_clr"
         // Autocycler bash workflow
-        AUTOCYCLER_FULL(
+        AUTOCYCLER_WORKFLOW(
             lreads,
             read_type
         )
-        ch_versions = ch_versions.mix(AUTOCYCLER_FULL.out.versions)
-        ch_long_read_assembly = AUTOCYCLER_FULL.out.fasta
+        ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
+        ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
     } else {
         // FLYE long read assembler
         FLYE_PACBIO(
@@ -59,6 +61,20 @@ workflow PACBIO_ASSEMBLY {
         with: it.last()
         without: !it.last()
     }.set { assembly_with_short_reads }
+
+    // Run homopolish only on CLR reads
+    if (params.homopolish & !params.pacbio_hifi) {
+        HOMOPOLISH_PACBIO(
+            assembly_with_short_reads.without.map { m,a,r ->
+                tuple(m,a)
+            },
+            homopolish_db
+        )
+        ch_versions = ch_versions.mix(HOMOPOLISH_PACBIO.out.versions)
+        ch_homopolished = HOMOPOLISH_PACBIO.out.polished
+    } else {
+        ch_homopolished = ch_long_read_assembly
+    }
 
     // Create BWA index
     BWAMEM2_INDEX_POLYPOLISH(
@@ -88,7 +104,7 @@ workflow PACBIO_ASSEMBLY {
     )
     ch_versions = ch_versions.mix(POLYPOLISH_POLISH.out.versions)
 
-    ch_polished_assemblies = assembly_with_short_reads.without.map { m,a,s -> [m, a] }.mix(POLYPOLISH_POLISH.out.fasta)
+    ch_polished_assemblies = ch_homopolished.mix(POLYPOLISH_POLISH.out.fasta)
 
     // Consistently orient chromosomes
     DNAAPLER(

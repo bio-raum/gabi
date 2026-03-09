@@ -4,7 +4,7 @@ process AUTOCYCLER_SUBSAMPLE {
     label 'medium_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "varunshamanna/autocycler:v0.5.2"
+    container "mjfos2r/autocycler:0.5.2"
 
     input:
     tuple val(meta), path(reads), val(genome_size)
