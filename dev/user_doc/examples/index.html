@@ -795,10 +795,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pacbio and Illumina reads">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pre-assembled-genomes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -806,11 +805,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1303,10 +1297,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pacbio and Illumina reads">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pre-assembled-genomes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1314,11 +1307,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1492,7 +1480,7 @@
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 </span></code></pre></div>
-<h3 id="pre-assembled-genomes">Pre-assembled genomes</h3>
+<h2 id="pre-assembled-genomes">Pre-assembled genomes</h2>
 <p>GABI also accepts pre-assembled genomes - in which case only limited QC data can be generated of course. </p>
 <p>A samplesheet for pre-assembled genomes looks as follows:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sample  assembly
@@ -1510,12 +1498,13 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<p><code>BASH
-nextflow run bio-raum/gabi -profile my_profile \
--r 1.4.0 \
---input samples.tsv \
---skip_amr \
---run_name MyAssemblies</code></p>
+<p>Skip the optional AMR prediction steps</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>--skip_amr<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>--run_name<span class="w"> </span>MyAssemblies
+</span></code></pre></div>
 </div>
 </div>
 </div>
