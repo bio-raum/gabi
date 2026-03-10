@@ -795,6 +795,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Pacbio and Illumina reads">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-assembled-genomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-assembled genomes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1286,6 +1303,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Pacbio and Illumina reads">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-assembled-genomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-assembled genomes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1315,7 +1349,7 @@
 
 
 <h1 id="examples-running-gabi">Examples running GABI</h1>
-<p>Below are <em>some</em> examples of how you may wish to approach assembling your genomes. Below, we will assume that you use a site-specific config file named <code>my_profile</code>. See your <a href="../installation/">installation</a> for ways to configure the pipeline. </p>
+<p>Below are <em>some</em> examples of how you could approach assembly of your genomes. Below, we will assume that you use a site-specific config file named <code>my_profile</code>. See our <a href="../installation/">installation</a> for ways to configure the pipeline. </p>
 <h2 id="illumina-short-reads">Illumina short-reads</h2>
 <p>This is probably the most common approach used for obtaining genomic information from bacterial isolates. Typically, you will have one set of paired-end reads per sample - so your samplesheet would look as follows:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sample  platform    fq1 fq2
@@ -1343,7 +1377,7 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<p>Only assembly genomes and do not perform downstream characterization.</p>
+<p>Only assemble genomes and do not perform downstream characterization.</p>
 <div class="language-BASH highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
@@ -1354,7 +1388,7 @@
 </div>
 </div>
 <h2 id="ont-reads">ONT reads</h2>
-<p>Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, which can be largely compensated by added sequencing depth. </p>
+<p>Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. </p>
 <p>Nanopore data per sample is typically split across many read files - which you could either merge before running GABI or provide individually with the same sample ID. With Nanopore being a single-end technology, the <code>fq2</code> remains empty, of course. </p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sample  platform    fq1 fq2
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
@@ -1367,7 +1401,7 @@
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
 </span></code></pre></div>
 <p>With this samplesheet, you can run GABI:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">All default options</label><label for="__tabbed_2_2">Concensus assembly</label><label for="__tabbed_2_3">Concensus assembly with homopolish</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">All default options</label><label for="__tabbed_2_2">Consensus assembly</label><label for="__tabbed_2_3">Consensus assembly with homopolish</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Run GABI with all-defaults options. </p>
@@ -1458,6 +1492,33 @@
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 </span></code></pre></div>
+<h3 id="pre-assembled-genomes">Pre-assembled genomes</h3>
+<p>GABI also accepts pre-assembled genomes - in which case only limited QC data can be generated of course. </p>
+<p>A samplesheet for pre-assembled genomes looks as follows:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sample  assembly
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sampleA /path/to/sampleA.fasta
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>sampleB /path/to/sampleB.fasta
+</span></code></pre></div>
+<p>Then you can run GABI as usual:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">All default settings</label><label for="__tabbed_4_2">Skipping AMR predictions</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>--run_name<span class="w"> </span>MyAssemblies
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><code>BASH
+nextflow run bio-raum/gabi -profile my_profile \
+-r 1.4.0 \
+--input samples.tsv \
+--skip_amr \
+--run_name MyAssemblies</code></p>
+</div>
+</div>
+</div>
 
 
 
