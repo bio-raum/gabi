@@ -184,7 +184,7 @@ SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
 sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 ```
 
-### Pre-assembled genomes
+## Pre-assembled genomes
 
 GABI also accepts pre-assembled genomes - in which case only limited QC data can be generated of course. 
 
@@ -209,7 +209,9 @@ Then you can run GABI as usual:
 
 === "Skipping AMR predictions"
 
-     ```BASH
+    Skip the optional AMR prediction steps
+
+    ```BASH
     nextflow run bio-raum/gabi -profile my_profile \
     -r 1.4.0 \
     --input samples.tsv \
