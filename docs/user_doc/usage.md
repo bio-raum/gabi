@@ -4,7 +4,7 @@ Please fist check out our [installation guide](installation.md), if you haven't 
 
 ## Running the pipeline
 
-A basic execution of the pipeline looks as follows:
+:   A basic execution of the pipeline looks as follows:
 
 === "Built-in profile"
 
@@ -35,55 +35,55 @@ A basic execution of the pipeline looks as follows:
 
 ## Removing temporary data
 
-Nextflow stores all the process data in a folder structure inside the `work` directory. All the relevant results are subsequently copied to the designated results folder (`--outdir`). The work directory is needed to resume completed or failed pipeline runs, but should be removed once you are satisified with the analysis to save space. To do so, run:
+:   Nextflow stores all the process data in a folder structure inside the `work` directory. All the relevant results are subsequently copied to the designated results folder (`--outdir`). The work directory is needed to resume completed or failed pipeline runs, but should be removed once you are satisified with the analysis to save space. To do so, run:
 
-``` bash
-nextflow clean -f
-```
+    ``` bash
+    nextflow clean -f
+    ```
 
 ## Specifying a pipeline version
 
-If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the `-r` argument:
+:   If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the `-r` argument:
 
-```bash
-nextflow run bio-raum/gabi -profile myprofile -r 1.0.0 <other options here>
-```
+    ```bash
+    nextflow run bio-raum/gabi -profile myprofile -r 1.0.0 <other options here>
+    ```
 
-The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
+    The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
 
-If you are feeling adventurous, you can also provide a specific commit hash, for example: `-r 575faea`.
+    If you are feeling adventurous, you can also provide a specific commit hash, for example: `-r 575faea`.
 
 ## Updating to a new release
 
-To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):
+:   To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):
 
-```bash
-nextflow pull bio-raum/gabi
-```
+    ```bash
+    nextflow pull bio-raum/gabi
+    ```
 
 Then use the `-r` argument as explained above to run the workflow using the new release.
 
 ## Running a test
 
-This pipeline has a built-in test to quickly check that your local setup is working correctly. To run it, do:
+:   This pipeline has a built-in test to quickly check that your local setup is working correctly. To run it, do:
 
-``` bash
-nextflow run bio-raum/gabi -profile myprofile,test
-```
+    ``` bash
+    nextflow run bio-raum/gabi -profile myprofile,test
+    ```
 
-where `myprofile` can either be a site-specific config file or one of the built-in [profiles](installation.md#software-provisioning). This test requires an active internet connection to download the test data. 
+    where `myprofile` can either be a site-specific config file or one of the built-in [profiles](installation.md#software-provisioning). This test requires an active internet connection to download the test data. 
 
 ## Choosing an assembly method
 
-GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
+:   GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
 
-- Samples with only short reads (Assembler: Shovill)
-- Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
-- Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
+    - Samples with only short reads (Assembler: Shovill)
+    - Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
+    - Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
 
-This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
+    This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
 
-Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
+    Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
 
 ## Command-line options
 
@@ -91,7 +91,7 @@ Note: HiFi data cannot be combined with any of the other technologies! (mostly b
 
 `--input samples.tsv` [default = null]
 
-This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
+:   This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
 
 === "Reads"
 

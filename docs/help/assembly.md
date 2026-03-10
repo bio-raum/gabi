@@ -9,7 +9,7 @@ GABI has two alternative strategies for long read assemblies - using either a si
 | Single assembler | Flye |  |
 | Multi-assembler | Canu, Flye, Metamdbg, Miniasm, Necat, Raven | --autocycler |
 
-To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Flye](https://github.com/mikolmogorov/Flye), [Metamdbg](https://github.com/GaetanBenoitDev/metaMDBG), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
+To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Metamdbg](https://github.com/GaetanBenoitDev/metaMDBG), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
 
 Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the best possible assembly. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. 
 
@@ -26,6 +26,7 @@ Polishing is a process by which an initial assembly draft is re-evaluated and im
 | Pacbio + short reads | Polypolish |
 
 ## Technology-specific options
+
 Generally, GABI runs fine with all-default settings. However, depending on your long read data, some adjustments may be necessary:
 
 #### ONT data

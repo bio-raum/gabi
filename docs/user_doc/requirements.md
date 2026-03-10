@@ -4,15 +4,13 @@ Below are some general guidelines to ensure that your data can be successfully a
 
 ## Computing
 
-GABI is a comparatively light-weight pipeline and runs on a wide range of hardware, including your "average" laptop. At the same time, it is also capable of taking advantage of high-performance compute clusters, or "the cloud". 
-
-At minimum, you will need 4 CPU cores, 16-32 GB of Ram and ~20.GB of disk space for the reference databases. In addition, the pipeline requires storage space for the intermediate files and the final results - which will depend on the size of your input data. 
+Computing requirements are largely dependent on your input data. In principle, GABI should run on commodity hardware such as modern laptops or desktop computers. The minimum required specs include 4 CPU cores and 16 Gb of Ram (preferably > 32GB!) as well as ~50 GB of storage for the local reference data. That said, GABI was designed and optimized for powerful workstations and compute clusters, and such hardware is recommended if you plan on assembling many genomes - especially when using time-consuming consensus assembly for long-read data (`--autocycler`). 
 
 While Nextflow, and consequently GABI, are technically compatible with Windows (through [WSL](https://learn.microsoft.com/en-us/windows/wsl/about)) and OSX, it is going to be easiest to run it on a Linux system. For more details, please see our [installation](installation.md) instructions. 
 
 ## Sequencing depth
 
-GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this range (ideally > 40X) to ensure that your data does not trigger a warning or fail. 
+GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this range (ideally 50-100X) to ensure that your data does not trigger a warning or fail. 
 
 ## Contamination
 
@@ -22,7 +20,7 @@ GABI is very sensitive towards read contamination and will fail samples if it de
 
 GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 
-* Reads must be adapter-trimmed (sequencing adapters, that is) - and, if applicable, demultiplexed. GABI does not perform these processing steps.
+* Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  
 
