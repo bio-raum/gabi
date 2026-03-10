@@ -12,13 +12,13 @@
         <meta name="author" content="Marc Höppner">
       
       
-        <link rel="canonical" href="https://bio-raum.github.io/gabi/dev/user_doc/usage/">
+        <link rel="canonical" href="https://bio-raum.github.io/gabi/dev/user_doc/examples/">
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../examples/">
+        <link rel="next" href="../pipeline/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Usage - GABI Documentation</title>
+        <title>Examples - GABI Documentation</title>
       
     
     
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#usage-information" class="md-skip">
+        <a href="#examples-running-gabi" class="md-skip">
           Skip to content
         </a>
       
@@ -137,7 +137,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Usage
+              Examples
             
           </span>
         </div>
@@ -652,6 +652,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -671,7 +699,7 @@
   <span class="md-ellipsis">
     
   
-    Usage
+    Examples
   
 
     
@@ -689,7 +717,7 @@
   <span class="md-ellipsis">
     
   
-    Usage
+    Examples
   
 
     
@@ -715,10 +743,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#running-the-pipeline" class="md-nav__link">
+  <a href="#illumina-short-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running the pipeline
+        Illumina short-reads
       
     </span>
   </a>
@@ -726,10 +754,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#removing-temporary-data" class="md-nav__link">
+  <a href="#ont-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Removing temporary data
+        ONT reads
       
     </span>
   </a>
@@ -737,10 +765,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#specifying-a-pipeline-version" class="md-nav__link">
+  <a href="#ont-and-illumina-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Specifying a pipeline version
+        ONT and Illumina reads
       
     </span>
   </a>
@@ -748,10 +776,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#updating-to-a-new-release" class="md-nav__link">
+  <a href="#pacbio-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Updating to a new release
+        Pacbio reads
       
     </span>
   </a>
@@ -759,96 +787,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-a-test" class="md-nav__link">
+  <a href="#pacbio-and-illumina-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running a test
+        Pacbio and Illumina reads
       
     </span>
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#choosing-an-assembly-method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choosing an assembly method
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#command-line-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command-line options
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Command-line options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basic-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Basic options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#illumina-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Illumina options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nanopore-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nanopore options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pacbio-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pacbio options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#expert-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Expert options
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -856,34 +801,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Examples
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1317,10 +1234,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#running-the-pipeline" class="md-nav__link">
+  <a href="#illumina-short-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running the pipeline
+        Illumina short-reads
       
     </span>
   </a>
@@ -1328,10 +1245,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#removing-temporary-data" class="md-nav__link">
+  <a href="#ont-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Removing temporary data
+        ONT reads
       
     </span>
   </a>
@@ -1339,10 +1256,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#specifying-a-pipeline-version" class="md-nav__link">
+  <a href="#ont-and-illumina-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Specifying a pipeline version
+        ONT and Illumina reads
       
     </span>
   </a>
@@ -1350,10 +1267,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#updating-to-a-new-release" class="md-nav__link">
+  <a href="#pacbio-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Updating to a new release
+        Pacbio reads
       
     </span>
   </a>
@@ -1361,96 +1278,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-a-test" class="md-nav__link">
+  <a href="#pacbio-and-illumina-reads" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running a test
+        Pacbio and Illumina reads
       
     </span>
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#choosing-an-assembly-method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choosing an assembly method
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#command-line-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command-line options
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Command-line options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basic-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Basic options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#illumina-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Illumina options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nanopore-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nanopore options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pacbio-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pacbio options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#expert-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Expert options
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1480,281 +1314,150 @@
   
 
 
-<h1 id="usage-information">Usage information</h1>
-<p>Please fist check out our <a href="../installation/">installation guide</a>, if you haven't already done so. </p>
-<h2 id="running-the-pipeline">Running the pipeline</h2>
-<dl>
-<dd>A basic execution of the pipeline looks as follows:</dd>
-</dl>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Built-in profile</label><label for="__tabbed_1_2">Site-specific profile</label></div>
+<h1 id="examples-running-gabi">Examples running GABI</h1>
+<p>Below are <em>some</em> examples of how you may wish to approach assembling your genomes. Below, we will assume that you use a site-specific config file named <code>my_profile</code>. See your <a href="../installation/">installation</a> for ways to configure the pipeline. </p>
+<h2 id="illumina-short-reads">Illumina short-reads</h2>
+<p>This is probably the most common approach used for obtaining genomic information from bacterial isolates. Typically, you will have one set of paired-end reads per sample - so your samplesheet would look as follows:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
+</span></code></pre></div>
+<p>With this samplesheet, GABI can then be run like so:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">All default options</label><label for="__tabbed_1_2">Using Unicycler</label><label for="__tabbed_1_3">Assembly-only</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-r<span class="w"> </span>main<span class="w"> </span>-profile<span class="w"> </span>apptainer<span class="w"> </span><span class="se">\ </span><span class="c1"># (1)!</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>--input<span class="w"> </span>samples.csv<span class="w"> </span><span class="se">\ </span><span class="c1"># (2)!</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>--reference_base<span class="w"> </span>/path/to/references<span class="w"> </span><span class="se">\ </span><span class="c1"># (3)!</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>--run_name<span class="w"> </span>pipeline-test
+<p>Run GABI with all-defaults options. </p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
-<ol>
-<li>In this example, the pipeline will assume it runs on a single computer with the apptainer container engine. Available options to provision software are documented in the <a href="../installation/">installation section</a>.</li>
-<li>We highly recommend pinning a release number(e.g. <code>-r 1.0.0</code>) instead of using the latest commit.</li>
-<li><code>path_to_references</code> corresponds to the location in which you have <a href="../installation/">installed</a> the pipeline references.</li>
-</ol>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-profile<span class="w"> </span>lsh<span class="w"> </span><span class="se">\ </span><span class="c1"># (1)!</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>-r<span class="w"> </span>main<span class="w"> </span><span class="se">\ </span><span class="c1"># (2)!</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>--input<span class="w"> </span>samples.csv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>--run_name<span class="w"> </span>pipeline-test<span class="w"> </span>
+<p>Switch from Shovill to Unicycler for assembly. </p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>--unicycler<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>--run_name<span class="w"> </span>MyIlluminaRun<span class="w"> </span>
 </span></code></pre></div>
-<ol>
-<li>In this example, both <code>--reference_base</code> and the choice of software provisioning are already set in the  configuration <code>lsh</code> and don't have to provided as command line argument. In addition, in your site-specific configuration, you can set additional site-specific parameters, such as your local resource manager, node configuration (CPU, RAM, wall time), desired cache directory for the configured package/container software etc. It is highly recommended to <a href="../installation/">set up</a> such a config file.</li>
-<li>We highly recommend pinning a release number(e.g. <code>-r 1.0.0</code>) instead of using the latest commit.</li>
-</ol>
+</div>
+<div class="tabbed-block">
+<p>Only assembly genomes and do not perform downstream characterization.</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>--skip_optional<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>--run_name<span class="w"> </span>MyIlluminaRun<span class="w"> </span>
+</span></code></pre></div>
 </div>
 </div>
 </div>
-<h2 id="removing-temporary-data">Removing temporary data</h2>
-<dl>
-<dd>
-<p>Nextflow stores all the process data in a folder structure inside the <code>work</code> directory. All the relevant results are subsequently copied to the designated results folder (<code>--outdir</code>). The work directory is needed to resume completed or failed pipeline runs, but should be removed once you are satisified with the analysis to save space. To do so, run:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nextflow<span class="w"> </span>clean<span class="w"> </span>-f
+<h2 id="ont-reads">ONT reads</h2>
+<p>Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, which can be largely compensated by added sequencing depth. </p>
+<p>Nanopore data per sample is typically split across many read files - which you could either merge before running GABI or provide individually with the same sample ID. With Nanopore being a single-end technology, the <code>fq2</code> remains empty, of course. </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
 </span></code></pre></div>
-</dd>
-</dl>
-<h2 id="specifying-a-pipeline-version">Specifying a pipeline version</h2>
-<dl>
-<dd>
-<p>If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the <code>-r</code> argument:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>myprofile<span class="w"> </span>-r<span class="w"> </span><span class="m">1</span>.0.0<span class="w"> </span>&lt;other<span class="w"> </span>options<span class="w"> </span>here&gt;
-</span></code></pre></div>
-<p>The <code>-r</code> option specifies a github <a href="https://github.com/bio-raum/gabi/releases">release tag</a> or branch, so could also point to <code>main</code> for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be <a href="../installation/">installed</a> separately.</p>
-<p>If you are feeling adventurous, you can also provide a specific commit hash, for example: <code>-r 575faea</code>.</p>
-</dd>
-</dl>
-<h2 id="updating-to-a-new-release">Updating to a new release</h2>
-<dl>
-<dd>
-<p>To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>nextflow<span class="w"> </span>pull<span class="w"> </span>bio-raum/gabi
-</span></code></pre></div>
-</dd>
-</dl>
-<p>Then use the <code>-r</code> argument as explained above to run the workflow using the new release.</p>
-<h2 id="running-a-test">Running a test</h2>
-<dl>
-<dd>
-<p>This pipeline has a built-in test to quickly check that your local setup is working correctly. To run it, do:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>myprofile,test
-</span></code></pre></div>
-<p>where <code>myprofile</code> can either be a site-specific config file or one of the built-in <a href="../installation/#software-provisioning">profiles</a>. This test requires an active internet connection to download the test data. </p>
-</dd>
-</dl>
-<h2 id="choosing-an-assembly-method">Choosing an assembly method</h2>
-<dl>
-<dd>
-<p>GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:</p>
-<ul>
-<li>Samples with only short reads (Assembler: Shovill)</li>
-<li>Samples with Nanopore reads and <strong>optional</strong> short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)</li>
-<li>Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)</li>
-</ul>
-<p>This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. </p>
-<p>Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)</p>
-</dd>
-</dl>
-<h2 id="command-line-options">Command-line options</h2>
-<h3 id="basic-options">Basic options</h3>
-<dl>
-<dt><code>--input samples.tsv</code> [default = null]</dt>
-<dd>
-<p>This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.</p>
-</dd>
-</dl>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Reads</label><label for="__tabbed_2_2">Assembly</label></div>
+<p>With this samplesheet, you can run GABI:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">All default options</label><label for="__tabbed_2_2">Concensus assembly</label><label for="__tabbed_2_3">Concensus assembly with homopolish</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<p>If you want to assemble genomes "from scratch", you can pass raw reads:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sample  platform    fq1 fq2
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>S100    ILLUMINA    /home/marc/projects/gaba/data/S100_R1.fastq.gz  /home/marc/projects/gaba/data/S100_R2.fastq.gz
+<p>Run GABI with all-defaults options. </p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
-<div class="admonition note single-end sequences">
-<p class="admonition-title">Note</p>
-<p>To provide Single-end sequencing data, simply leave the <code>fq2</code> field empty.</p>
-</div>
-<div class="admonition note platform">
-<p class="admonition-title">Note</p>
-<p>GABI distinguishes three sequencing platforms - ILLUMINA, NANPORE and PACBIO.</p>
-</div>
-<p>If the pipeline sees more than one set of reads for a given sample ID (i.e. from multi-lane sequencing runs or multiple platforms), it will combine them automatically at the appropriate time.</p>
-<div class="admonition tip automated sample sheet generation">
-<p class="admonition-title">Tip</p>
-<p>If you want to automatically generate sample sheets from files in a folder, you can use a companion pipeline of GABI:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/samplesheet<span class="w"> </span>-profile<span class="w"> </span>myprofile<span class="w"> </span>--input<span class="w"> </span>/path/to/folder<span class="w"> </span>--platform
-</span></code></pre></div>
-<p>The folder should contain reads with the extension .fastq.gz or .fq.gz. The pipeline will try to guess the proper grouping rules, but please check the resulting file (results/samples.tsv) for correctness. Automatic detection of sequencing platforms will be attempted, but is not guaranteed to work perfectly for long-read data. Also note that the nested folder structure used by Nanopore demultiplexing is not currently supported.</p>
-</div>
 </div>
 <div class="tabbed-block">
-<p>You can also run GABI on pre-assembled genomes, using only those parts of the pipeline that characterize assemblies. Obviously, you will be missing many of the QC measures that rely on raw reads in one form or another. </p>
-<p>The required samplesheet then looks as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sample  assembly
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>S100    /path/to/S100.fasta
+<p>Perform consensus assembly with Autocycler.</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>--autocycler<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Perform consensus assembly with Autocycler and polish with Homopolish.</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>--autocycler<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>--homopolish<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
 </div>
 </div>
 </div>
-<dl>
-<dt><code>--reference_base</code> [ default = null ]</dt>
-<dd>
-<p>The location where the pipeline references are installed on your system. This will typically be pre-set in your site-specific config file and is only needed when you run without one.</p>
-<p>See our <a href="../installation/">installation guide</a> to learn how to install the references permanently on your system.</p>
-</dd>
-<dt><code>--run_name</code> [ default = null]</dt>
-<dd>
-<p>A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. </p>
-</dd>
-<dt><code>--min_contig_len</code> [ default = 300 ]</dt>
-<dd>
-<p>Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. </p>
-<p>The default value aims to include even the shortest of (known) plasmids and some phages. </p>
-</dd>
-</dl>
-<h3 id="illumina-options">Illumina options</h3>
-<p>Some options specific to assembling Illumina short reads. </p>
-<dl>
-<dt><code>--unicycler</code>  [ default = false ]</dt>
-<dd>
-<p>Use <a href="https://github.com/rrwick/Unicycler">Unicycler</a> over <a href="https://github.com/tseemann/shovill">Shovill</a> for assembly. Shovill is an excellent tool, but hasn't been updated in many years and relies on an older version of Spades. </p>
-<p>Unicycler in turn is slower (expect 3-4x the runtime), but potentially (!) more accurate. Note that the reference metrics used in this pipeline were derived from Shovill assemblies, so it's likely that Unicycler assemblies will (slightly) trip some of the defined thresholds (such as GC content). This doesn't necessarily mean that the Unicycler assembly is bad/worse, just different and with fewer or different kinds of 'artifacts'.  </p>
-</dd>
-<dt><code>--shovill_assembler</code> [ default = spades ]</dt>
-<dd>
-<p>Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: <code>--unicycler</code></p>
-</dd>
-</dl>
-<h3 id="nanopore-options">Nanopore options</h3>
-<p>Some options specific to assembling ONT reads. </p>
-<dl>
-<dt><code>--medaka_model</code> [ default = null ]</dt>
-<dd>
-<p>The basecalling model used for ONT reads. This option is set to null by default since more recent base callers encode this information in the sequence headers and Medaka can grab it from there. </p>
-<p>If this is not the case for your data, you can specify the appropriate model here. </p>
-</dd>
-<dt><code>--homopolish_model</code> [ default = R10]</dt>
-<dd>
-<p>Specifies the training file to use in <a href="https://github.com/ythuang0522/homopolish">Homopolish</a>. Valid options are <code>R10</code> and <code>R9</code>. Most people will want to use R10. </p>
-</dd>
-<dt><code>--onthq</code> [ default = false ]</dt>
-<dd>
-<p>Set this option to true if you believe your ONT data to be of "high quality" (much of the reads &gt;= Q20, generated with Dorado SUP basecalling). This option is set to false by default.</p>
-</dd>
-<dt><code>--ont_min_q</code> [ default = 10 ]</dt>
-<dd>
-<p>Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). </p>
-<p>This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. </p>
-</dd>
-<dt><code>--ont_min_length</code>  [ default = 500 ]</dt>
-<dd>
-<p>Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.</p>
-<p>If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). </p>
-</dd>
-<dt><code>--homopolish</code> [ default = false ]</dt>
-<dd>
-<p>Perform ONT polishing using <a href="https://github.com/ythuang0522/homopolish">Homopolish</a> (only the Medaka consensus assembly is used). </p>
-<p>Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.</p>
-</dd>
-<dt><code>--skip_porechop</code> [ default = true ]</dt>
-<dd>
-<p>Skip the removal of adapters from reads using <a href="https://github.com/bonsai-team/Porechop_ABI">Porechop_abi</a>. </p>
-<p>Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. </p>
-</dd>
-</dl>
-<h3 id="pacbio-options">Pacbio options</h3>
-<dl>
-<dt><code>--pacbio_hifi</code> [ default = false]</dt>
-<dd>
-<p>Reads are in HiFi format (high-fidelity); this input format is strongly recommended over CLR (sub) reads to reduce processing time and increase quality of the resulting assembly. </p>
-</dd>
-</dl>
-<h3 id="expert-options">Expert options</h3>
-<p>These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. </p>
-<dl>
-<dt><code>--confindr_db</code> [ default = null ]</dt>
-<dd>
-<p>A local version of the ConfindR rMLST database, available <a href="https://olc-bioinformatics.github.io/ConFindr/install/#downloading-confindr-databases">here</a>. </p>
-<p>Unfortunately, this database requires a personalized registration so we cannot bundle it with GABI. If no database is provided, CondindR will run without one and can consquently only use the built-in references for Escherichia, Listeria, Salmonella and Campylobacter. </p>
-</dd>
-<dt><code>--fast_ref</code> [ default = false ]</dt>
-<dd>
-<p>By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. </p>
-<p>If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.</p>
-</dd>
-<dt><code>--max_coverage</code> [ default = null ]</dt>
-<dd>
-<p>Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. </p>
-<p>Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with <code>--random_seed</code> if you would like the results to be reproducible.</p>
-</dd>
-<dt><code>--max_contigs</code> [ default = 150 ]</dt>
-<dd>
-<p>If <code>--skip_failed</code> is enabled, this parameter controls the maximum number of contigs an assembly is allowed to have before it is stopped. </p>
-<p>High contig numbers are typically a sign of insufficient coverage and/or read length (in some cases it can also be a sign of excessive contamination).</p>
-</dd>
-<dt><code>--prokka_proteins</code> [ default = null ]</dt>
-<dd>
-<p>If you analyse a single species and wish to optimize the quality of the genome annotation, you can pass a Fasta file with known proteins to Prokka using this option, as described <a href="https://github.com/tseemann/prokka?tab=readme-ov-file#option---proteins">here</a>.</p>
-</dd>
-<dt><code>--prokka_prodigal</code> [ default = null ]</dt>
-<dd>
-<p>If you analyse a single species and wish to optimize the quality of the genome annotation, you can pass a custom prodigal training file using this option, as described <a href="https://github.com/tseemann/prokka?tab=readme-ov-file#option---prodigaltf">here</a>.</p>
-</dd>
-<dt><code>--random_seed</code> [ default = false ]</dt>
-<dd>
-<p>A random seed to use during read downsampling (when using --max_coverage). Downsampling will randomly choose reads to retain; if you need your analysis to be perfectly reproducible, provide a random number as seed to fix the sampling to a specific set of reads. </p>
-</dd>
-<dt><code>--remove_host</code> [ default = false ]</dt>
-<dd>
-<p>This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. </p>
-<p>This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an issue and we will consider adding it. </p>
-</dd>
-<dt><code>--skip_failed</code> [ default = false ]</dt>
-<dd>
-<p>By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:</p>
-<ul>
-<li>Remove highly fragmented assemblies</li>
-<li>Remove reads that fail the ConfindR QC for intra-/inter species contamination (Illumina and Pacbio only)</li>
-</ul>
-</dd>
-<dt><code>--skip_amr</code> [ default = false ]</dt>
-<dd>
-<p>Skip prediction of AMR genes</p>
-</dd>
-<dt><code>--skip_annotation</code> [ default = false ]</dt>
-<dd>
-<p>Skip annotation of gene models</p>
-</dd>
-<dt><code>--skip_circos</code> [ default = false ]</dt>
-<dd>
-<p>Skip generation of circos plots.</p>
-</dd>
-<dt><code>--skip_mlst</code> [ default = false ]</dt>
-<dd>
-<p>Skip MLST analyses</p>
-</dd>
-<dt><code>--skip_optional</code> [ default = false ]</dt>
-<dd>
-<p>Short-cut to skip mlst, amr, variant analyses, serotyping and annotation (equivalent to: <code>--skip_amr --skip_mlst --skip_variants --skip_annotation --skip_serotyping</code>)</p>
-</dd>
-<dt><code>--skip_serotyping</code> [ default = false ]</dt>
-<dd>
-<p>Skip Serotyping</p>
-</dd>
-<dt><code>--skip_variants</code> [ default = false ]</dt>
-<dd>
-<p>Skip variant calling</p>
-</dd>
-</dl>
+<h2 id="ont-and-illumina-reads">ONT and Illumina reads</h2>
+<p>Combining Nanopore long reads with Illumina short reads will extend the assembly process by using short reads for assembly polishing. No additional command-line flags are required. A samplesheet with mixed ONT and Illumina reads will look as follows:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+</span></code></pre></div>
+<p>Note that Homopolish will not run if short reads are provided. </p>
+<h2 id="pacbio-reads">Pacbio reads</h2>
+<p>Assembling genomes form Pacbio reads is largely equivalent to using ONT reads, with the exception that Pacbio distinguishes between corrected (HiFi) and uncorrected (CLR) reads - which GABI needs to be told about. GABI only accepts one kind (HiFI or CLR) of Pacbio reads per run. </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
+</span></code></pre></div>
+<p>GABI can then be run like so:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">CLR reads, default options</label><label for="__tabbed_3_2">HiFi reads, default options</label><label for="__tabbed_3_3">CLR reads with Homopolish</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Run GABI with all-defaults options for CLR reads. </p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run GABI with all-defaults options for HiFi reads. </p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>--pacbio_hifi<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run GABI with CLR reads and use Homopolish</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>--homopolish<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="pacbio-and-illumina-reads">Pacbio and Illumina reads</h2>
+<p>Combining Pacbio long reads with Illumina short reads will extend the assembly process by using short reads for assembly polishing. No additional command-line flags are required. A samplesheet with mixed Pacbio and Illumina reads will look as follows:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
+</span></code></pre></div>
 
 
 

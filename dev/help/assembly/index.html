@@ -678,6 +678,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user_doc/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user_doc/pipeline/" class="md-nav__link">
         
   
@@ -1266,7 +1294,7 @@
 </tr>
 </tbody>
 </table>
-<p>To run a consensus assembly, GABI uses <a href="https://github.com/rrwick/Autocycler">Autocycler</a> with a combination of <a href="https://github.com/mikolmogorov/Flye">Flye</a>, <a href="https://github.com/GaetanBenoitDev/metaMDBG">Metamdbg</a>, <a href="https://github.com/lh3/miniasm">Miniasm</a>, <a href="https://github.com/xiaochuanle/NECAT">Necat</a>, <a href="https://github.com/lbcb-sci/raven">Raven</a> - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.</p>
+<p>To run a consensus assembly, GABI uses <a href="https://github.com/rrwick/Autocycler">Autocycler</a> with a combination of <a href="https://github.com/marbl/canu">Canu</a>, <a href="https://github.com/mikolmogorov/Flye">Flye</a>, <a href="https://github.com/GaetanBenoitDev/metaMDBG">Metamdbg</a>, <a href="https://github.com/lh3/miniasm">Miniasm</a>, <a href="https://github.com/xiaochuanle/NECAT">Necat</a>, <a href="https://github.com/lbcb-sci/raven">Raven</a> - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.</p>
 <p>Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the best possible assembly. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. </p>
 <h2 id="assembly-polishing">Assembly polishing</h2>
 <p>Polishing is a process by which an initial assembly draft is re-evaluated and improved by using reference or raw read data. Depending on the sequencing technology, this may simply involve re-mapping the reads initially used for assembly to reconcile any dubious regions in the assembled sequence, or make use of complementary sequence data to fix errors that the assembled reads could not. A specific example would be the polishing of a long-read assembly with Illumina short reads to remove long-read specific issues such as homopolymer errors. </p>
