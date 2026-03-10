@@ -1,6 +1,6 @@
 # Examples running GABI
 
-Below are *some* examples of how you may wish to approach assembling your genomes. Below, we will assume that you use a site-specific config file named `my_profile`. See your [installation](../user_doc/installation.md) for ways to configure the pipeline. 
+Below are *some* examples of how you could approach assembly of your genomes. Below, we will assume that you use a site-specific config file named `my_profile`. See our [installation](../user_doc/installation.md) for ways to configure the pipeline. 
 
 ## Illumina short-reads
 
@@ -39,7 +39,7 @@ With this samplesheet, GABI can then be run like so:
 
 === "Assembly-only"
 
-    Only assembly genomes and do not perform downstream characterization.
+    Only assemble genomes and do not perform downstream characterization.
 
     ```BASH
     nextflow run bio-raum/gabi -profile my_profile \
@@ -51,7 +51,7 @@ With this samplesheet, GABI can then be run like so:
 
 ## ONT reads
 
-Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, which can be largely compensated by added sequencing depth. 
+Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. 
 
 Nanopore data per sample is typically split across many read files - which you could either merge before running GABI or provide individually with the same sample ID. With Nanopore being a single-end technology, the `fq2` remains empty, of course. 
 
@@ -80,7 +80,7 @@ With this samplesheet, you can run GABI:
     --run_name MyIlluminaRun
     ```
 
-=== "Concensus assembly"
+=== "Consensus assembly"
 
     Perform consensus assembly with Autocycler.
 
@@ -92,7 +92,7 @@ With this samplesheet, you can run GABI:
     --run_name MyIlluminaRun
     ```
 
-=== "Concensus assembly with homopolish"
+=== "Consensus assembly with homopolish"
 
     Perform consensus assembly with Autocycler and polish with Homopolish.
 
@@ -184,3 +184,35 @@ SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
 sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 ```
 
+### Pre-assembled genomes
+
+GABI also accepts pre-assembled genomes - in which case only limited QC data can be generated of course. 
+
+A samplesheet for pre-assembled genomes looks as follows:
+
+```TSV
+sample  assembly
+sampleA /path/to/sampleA.fasta
+sampleB /path/to/sampleB.fasta
+```
+
+Then you can run GABI as usual:
+
+=== "All default settings"
+
+    ```BASH
+    nextflow run bio-raum/gabi -profile my_profile \
+    -r 1.4.0 \
+    --input samples.tsv \
+    --run_name MyAssemblies
+    ```
+
+=== "Skipping AMR predictions"
+
+     ```BASH
+    nextflow run bio-raum/gabi -profile my_profile \
+    -r 1.4.0 \
+    --input samples.tsv \
+    --skip_amr \
+    --run_name MyAssemblies
+    ```
