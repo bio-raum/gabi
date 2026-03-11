@@ -28,7 +28,7 @@ workflow PACBIO_ASSEMBLY {
     
     reads.map { m,s,o ->
         tuple(m,s)
-    }.filter { it -> it.last() }
+    }.filter { it.last() }
     .set { sreads }
 
     if (params.autocycler) {
