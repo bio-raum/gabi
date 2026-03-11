@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description="Script options")
 parser.add_argument("--output", "-o")
 parser.add_argument("--taxon", "-t")
 parser.add_argument("--yaml", "-y")
+parser.add_argument("--settings", "-x")
 parser.add_argument("--sample", "-s")
 
 
@@ -74,7 +75,9 @@ def parse_quast(lines):
     data = {}
     for line in lines:
         key, value = line.split("\t")
-        if re.match(r"^[0-9]*$", value):
+        if (value == "0"):
+            value = "0"
+        elif re.match(r"^[0-9]*$", value):
             value = int(value)
         elif re.match(r"^[0-9]*\.[0-9]*$", value):
             value = float(value)
@@ -278,7 +281,7 @@ def delete_keys_from_dict(dict_del, lst_keys):
     return dict_del
 
 
-def main(sample, taxon, yaml_file, output):
+def main(sample, taxon, yaml_file, settings_json, output):
 
     files = [os.path.abspath(f) for f in glob.glob("*/*")]
     date = datetime.today().strftime('%Y-%m-%d')
@@ -293,6 +296,11 @@ def main(sample, taxon, yaml_file, output):
         yaml_lines = [line.rstrip() for line in f]
 
     versions = parse_yaml(yaml_lines)
+
+    with open(settings_json, "r") as f:
+        settings_lines = [line.rstrip() for line in f]
+
+    settings = parse_json(settings_lines)
 
     matrix = {
         "date": date,
@@ -312,7 +320,8 @@ def main(sample, taxon, yaml_file, output):
         "assembly": [],
         "checkm": {},
         "software": versions,
-        "taxonkit": {}
+        "taxonkit": {},
+        "pipeline_settings": settings
     }
 
     for file in files:
@@ -425,4 +434,4 @@ def main(sample, taxon, yaml_file, output):
 
 
 if __name__ == '__main__':
-    main(args.sample, args.taxon, args.yaml, args.output)
+    main(args.sample, args.taxon, args.yaml, args.settings, args.output)

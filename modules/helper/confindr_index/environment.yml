@@ -1,7 +1,8 @@
-name: chopper
+name: confindr_index
 channels:
   - conda-forge
   - bioconda
   
 dependencies:
-  - bioconda::chopper=0.9.0
+  -  bioconda::confindr=0.7.4
+

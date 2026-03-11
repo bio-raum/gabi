@@ -1,11 +1,13 @@
-include { FLYE as FLYE_ONT }        from '../../modules/flye'
-include { MEDAKA_CONSENSUS }        from '../../modules/medaka/consensus'
-include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
-include { HOMOPOLISH }              from '../../modules/homopolish'
-include { DNAAPLER }                from '../../modules/dnaapler'
-include { POLYPOLISH_POLISH }       from '../../modules/polypolish/polish'
+include { FLYE as FLYE_ONT }                        from '../../modules/flye'
+include { MEDAKA_CONSENSUS }                        from '../../modules/medaka/consensus'
+include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF }    from '../../modules/minimap2/align'
+include { HOMOPOLISH as HOMOPOLISH_ONT }            from '../../modules/homopolish'
+include { DNAAPLER }                                from '../../modules/dnaapler'
+include { POLYPOLISH_POLISH }                       from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
-include { BWAMEM2_MEM_POLYPOLISH }  from '../../modules/bwamem2/mem_polypolish'
+include { BWAMEM2_MEM_POLYPOLISH }                  from '../../modules/bwamem2/mem_polypolish'
+// include { AUTOCYCLER_FULL }         from '../../modules/autocycler/full'
+include { AUTOCYCLER_WORKFLOW }                     from './../autocycler_workflow'
 
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
@@ -33,15 +35,25 @@ workflow ONT_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // FLYE long read assembler
-    FLYE_ONT(
-        lreads
-    )
-    ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
+    if (params.autocycler) {
+        AUTOCYCLER_WORKFLOW(
+            lreads,
+            "ont_r10"
+        )
+        ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
+        ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
+    } else {
+        // FLYE long read assembler
+        FLYE_ONT(
+            lreads
+        )
+        ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
+        ch_long_read_assembly = FLYE_ONT.out.fasta
+    }
 
     // Re-polish initial consensus contigs with Medaka
     MEDAKA_CONSENSUS(
-        lreads.join(FLYE_ONT.out.fasta)
+        lreads.join(ch_long_read_assembly)
     )
     ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
 
@@ -60,16 +72,16 @@ workflow ONT_ASSEMBLY {
     }.set { polished_with_short_reads }
 
     // Homopolish to remove homopolymer errors when no short reads
-    // are available ; skippable if user chooses to  
-    if (!params.skip_homopolish) {
-            HOMOPOLISH(
+    // are available 
+    if (params.homopolish) {
+            HOMOPOLISH_ONT(
             polished_with_short_reads.without.map { m,p,r ->
                 tuple(m,p)
             },
             homopolish_db
         )
-        ch_versions = ch_versions.mix(HOMOPOLISH.out.versions)
-        ch_homopolished = HOMOPOLISH.out.polished
+        ch_versions = ch_versions.mix(HOMOPOLISH_ONT.out.versions)
+        ch_homopolished = HOMOPOLISH_ONT.out.polished
     } else {
         ch_homopolished = MEDAKA_CONSENSUS.out.consensus
     }

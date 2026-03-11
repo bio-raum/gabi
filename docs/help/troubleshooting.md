@@ -22,7 +22,11 @@
 
 :   Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. 
 
-## Crashes
+## Crashes and errors
+
+### The required reference directory was not found on your system, exiting!
+
+GABI uses versioned reference databases, which are linked to different versions of the pipeline. If you see this message, it means that you have not yet installed the matching references to the version of GABI you are trying to execute. Using the same release tag, please install the references as per our [instructions](../user_doc/installation.md).
 
 ### I am behind a proxy and the pipeline fails
 

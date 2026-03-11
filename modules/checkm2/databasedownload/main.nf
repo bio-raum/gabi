@@ -31,6 +31,9 @@ process CHECKM2_DATABASEDOWNLOAD {
 
     script:
     def args   = task.ext.args ?: ''
+    if( !args.contains('--user-agent') ) {
+        args = args ? "${args} --user-agent=\"Wget/1.21.4\"" : '--user-agent="Wget/1.21.4"'
+    }
     zenodo_id  = db_zenodo_id ?: 14897628  // Default to version 3 if no ID provided
     api_data   = downloadZenodoApiEntry(zenodo_id)
     db_version = api_data.metadata.version
@@ -39,9 +42,19 @@ process CHECKM2_DATABASEDOWNLOAD {
     """
     # Automatic download is broken when using singularity/apptainer (https://github.com/chklovski/CheckM2/issues/73)
     # So it's necessary to download the database manually
+
+    PROXY_OPTIONS=""
+
+    if [ -z "\${HTTPS_PROXY:-}" ]; then 
+        echo "No Proxy set"
+    else
+        echo "Proxy set"
+        PROXY_OPTIONS="--all-proxy=\$HTTPS_PROXY"
+    fi
+    
     aria2c \
         ${args} \
-        --all-proxy=\$HTTPS_PROXY \
+        \$PROXY_OPTIONS \
         --checksum ${checksum} \
         https://zenodo.org/records/${zenodo_id}/files/checkm2_database.tar.gz
 
