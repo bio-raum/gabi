@@ -71,6 +71,9 @@ workflow ONT_ASSEMBLY {
         without: !it.last()
     }.set { polished_with_short_reads }
 
+    polished_with_short_reads.without.view()
+    polished_with_short_reads.with.view()
+
     // Homopolish to remove homopolymer errors when no short reads
     // are available 
     if (params.homopolish) {
@@ -83,7 +86,7 @@ workflow ONT_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_ONT.out.versions)
         ch_homopolished = HOMOPOLISH_ONT.out.polished
     } else {
-        ch_homopolished = MEDAKA_CONSENSUS.out.consensus
+        ch_homopolished = polished_with_short_reads.without.map { m,p,r -> tuple(m,p) }
     }
 
     // Create BWA index

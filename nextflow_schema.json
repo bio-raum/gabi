@@ -67,7 +67,7 @@
         },
         "max_coverage": {
           "type": "string",
-          "default": "100x",
+          "default": "200x",
           "description": "Maximum coverage to downsample reads to"
         },
         "version": {

@@ -75,15 +75,15 @@ Then use the `-r` argument as explained above to run the workflow using the new 
 
 ## Choosing an assembly method
 
-:   GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
+:   GABIs default mode is to automatically choose the appropriate assembly chain based on your data, supporting three scenarios:
 
     - Samples with only short reads (Assembler: Shovill)
     - Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
-    - Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
+    - Samples with only Pacbio HiFi reads and **optional** short reads  (Assembler: Flye) + Polypolish/Homopolish
 
-    This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
+    Combining long and short reads requires for all data to carry the same sample ID. 
 
-    Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
+    In addition, GABI supports consensus assembly of long reads, using the option `--autocycler`. This option will run multiple assemblers and combine them into a consensus. Please note that this option will increase run time (potentially by a lot). 
 
 ## Command-line options
 
@@ -163,6 +163,14 @@ Some options specific to assembling Illumina short reads.
 
 :   Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: `--unicycler`
 
+### Long read options
+
+Options specific to long read data
+
+`--autocycler` [ default = false ]
+
+:   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. 
+
 ### Nanopore options
 
 Some options specific to assembling ONT reads. 
@@ -227,7 +235,7 @@ These options are only meant for users who have a specific reason to touch them.
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-`--max_coverage` [ default = null ]
+`--max_coverage` [ default = "200x" ]
 
 :   Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
     
