@@ -940,6 +940,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#disclaimer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disclaimer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#long-read-assembly-strategies" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1212,6 +1223,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#disclaimer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disclaimer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#long-read-assembly-strategies" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1271,8 +1293,10 @@
 
 
 <h1 id="assembly-strategies-and-options">Assembly strategies and options</h1>
+<h2 id="disclaimer">Disclaimer</h2>
+<p>GABI is an automated pipeline and while we try to incorporate state-of-the art processing strategies, they are not guaranteed to yield "perfect" results. But we suspect that GABI should get you <em>close enough</em> for many potential applications. Please perform your own analysis/validation if you plan on using GABI in a production scenario. </p>
 <h2 id="long-read-assembly-strategies">Long read assembly strategies</h2>
-<p>GABI has two alternative strategies for long read assemblies - using either a single assembler step, or a multi-assembly pipeline and subsequent consensus finding. </p>
+<p>GABI has two alternative strategies for long read assembly - using either a single assembler step, or a multi-assembly pipeline and subsequent consensus finding. </p>
 <table>
 <thead>
 <tr>
@@ -1295,7 +1319,7 @@
 </tbody>
 </table>
 <p>To run a consensus assembly, GABI uses <a href="https://github.com/rrwick/Autocycler">Autocycler</a> with a combination of <a href="https://github.com/marbl/canu">Canu</a>, <a href="https://github.com/mikolmogorov/Flye">Flye</a>, <a href="https://github.com/GaetanBenoitDev/metaMDBG">Metamdbg</a>, <a href="https://github.com/lh3/miniasm">Miniasm</a>, <a href="https://github.com/xiaochuanle/NECAT">Necat</a>, <a href="https://github.com/lbcb-sci/raven">Raven</a> - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.</p>
-<p>Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the best possible assembly. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. </p>
+<p>Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the absolutely best possible assembly out of GABI. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. </p>
 <h2 id="assembly-polishing">Assembly polishing</h2>
 <p>Polishing is a process by which an initial assembly draft is re-evaluated and improved by using reference or raw read data. Depending on the sequencing technology, this may simply involve re-mapping the reads initially used for assembly to reconcile any dubious regions in the assembled sequence, or make use of complementary sequence data to fix errors that the assembled reads could not. A specific example would be the polishing of a long-read assembly with Illumina short reads to remove long-read specific issues such as homopolymer errors. </p>
 <table>
