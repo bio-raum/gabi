@@ -815,6 +815,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#long-read-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long read options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#nanopore-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1417,6 +1428,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#long-read-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long read options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#nanopore-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1554,14 +1576,14 @@
 <h2 id="choosing-an-assembly-method">Choosing an assembly method</h2>
 <dl>
 <dd>
-<p>GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:</p>
+<p>GABIs default mode is to automatically choose the appropriate assembly chain based on your data, supporting three scenarios:</p>
 <ul>
 <li>Samples with only short reads (Assembler: Shovill)</li>
 <li>Samples with Nanopore reads and <strong>optional</strong> short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)</li>
-<li>Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)</li>
+<li>Samples with only Pacbio HiFi reads and <strong>optional</strong> short reads  (Assembler: Flye) + Polypolish/Homopolish</li>
 </ul>
-<p>This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. </p>
-<p>Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)</p>
+<p>Combining long and short reads requires for all data to carry the same sample ID. </p>
+<p>In addition, GABI supports consensus assembly of long reads, using the option <code>--autocycler</code>. This option will run multiple assemblers and combine them into a consensus. Please note that this option will increase run time (potentially by a lot). </p>
 </dd>
 </dl>
 <h2 id="command-line-options">Command-line options</h2>
@@ -1634,6 +1656,14 @@
 <p>Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: <code>--unicycler</code></p>
 </dd>
 </dl>
+<h3 id="long-read-options">Long read options</h3>
+<p>Options specific to long read data</p>
+<dl>
+<dt><code>--autocycler</code> [ default = false ]</dt>
+<dd>
+<p>Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. </p>
+</dd>
+</dl>
 <h3 id="nanopore-options">Nanopore options</h3>
 <p>Some options specific to assembling ONT reads. </p>
 <dl>
@@ -1691,7 +1721,7 @@
 <p>By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. </p>
 <p>If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.</p>
 </dd>
-<dt><code>--max_coverage</code> [ default = null ]</dt>
+<dt><code>--max_coverage</code> [ default = "200x" ]</dt>
 <dd>
 <p>Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. </p>
 <p>Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with <code>--random_seed</code> if you would like the results to be reproducible.</p>
