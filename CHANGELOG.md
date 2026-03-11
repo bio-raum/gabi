@@ -1,6 +1,7 @@
 # 1.4.0
 
 - Updated reference database to v1.2
+- Added Autocycler to run consensus assembly for long reads
 - Replaced ConfindR db download with proper installation workflow
 - Updated Chopper to 0.9.0
 - Capped genome size estimation for downsampling at 14MB (the largest known bacterial genome)
