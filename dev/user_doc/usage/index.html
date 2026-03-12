@@ -818,7 +818,7 @@
   <a href="#long-read-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Long read options
+        Long-read options
       
     </span>
   </a>
@@ -1431,7 +1431,7 @@
   <a href="#long-read-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Long read options
+        Long-read options
       
     </span>
   </a>
@@ -1656,9 +1656,14 @@
 <p>Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: <code>--unicycler</code></p>
 </dd>
 </dl>
-<h3 id="long-read-options">Long read options</h3>
-<p>Options specific to long read data</p>
+<h3 id="long-read-options">Long-read options</h3>
+<p>Options that influence both ONT and Pacbio processing. </p>
 <dl>
+<dt><code>--homopolish</code> [ default = false ]</dt>
+<dd>
+<p>Perform assembly polishing using <a href="https://github.com/ythuang0522/homopolish">Homopolish</a>. </p>
+<p>Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly. Even when requested, Homopolish is only run when no short reads are available (and never for PacBio Hifi reads). </p>
+</dd>
 <dt><code>--autocycler</code> [ default = false ]</dt>
 <dd>
 <p>Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. </p>
@@ -1690,11 +1695,6 @@
 <p>Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.</p>
 <p>If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). </p>
 </dd>
-<dt><code>--homopolish</code> [ default = false ]</dt>
-<dd>
-<p>Perform ONT polishing using <a href="https://github.com/ythuang0522/homopolish">Homopolish</a> (only the Medaka consensus assembly is used). </p>
-<p>Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.</p>
-</dd>
 <dt><code>--skip_porechop</code> [ default = true ]</dt>
 <dd>
 <p>Skip the removal of adapters from reads using <a href="https://github.com/bonsai-team/Porechop_ABI">Porechop_abi</a>. </p>
@@ -1724,7 +1724,7 @@
 <dt><code>--max_coverage</code> [ default = "200x" ]</dt>
 <dd>
 <p>Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. </p>
-<p>Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with <code>--random_seed</code> if you would like the results to be reproducible.</p>
+<p>The default of 200x is merely meant to cap heavily oversampled data sets, but could probably be set quite a bit lower without compromising the assembly quality.</p>
 </dd>
 <dt><code>--max_contigs</code> [ default = 150 ]</dt>
 <dd>

@@ -907,6 +907,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#can-i-speed-up-gabi-somehow-i-am-only-interested-in-assembling-my-genome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I speed up GABI somehow? I am only interested in assembling my genome!
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#is-it-ok-to-use-conda-or-should-i-use-a-container-manager" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1280,6 +1291,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#can-i-speed-up-gabi-somehow-i-am-only-interested-in-assembling-my-genome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I speed up GABI somehow? I am only interested in assembling my genome!
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#is-it-ok-to-use-conda-or-should-i-use-a-container-manager" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1366,6 +1388,8 @@
 <h3 id="how-is-gabi-different-from-other-pipelines-like-aquamis">How is GABI different from other pipelines, like AQUAMIS?</h3>
 <p>GABI was heavily inspired by <a href="https://gitlab.com/bfr_bioinformatics/AQUAMIS">AQUAMIS</a>, so that question is quite sensible. GABI is fully implemented in Nextflow using a modular code design. With Nextflow come a range of "advantages" such as being able to translate the pipeline to various compute infrastructures and run with different kinds of software provisioning frameworks. It should also be significantly easier to extend than a pipeline written in Snakemake. Case in point, GABI supports not only Illumina short reads, but also Nanopore and Pacbio long reads - which means that you won't have to switch between different pipelines for different technologies. GABI also provides functionality beyond mere assembly, such as AMR profiling, serotyping and annotation. Finally, GABI is very strictly versioned and switching between versions does not require you to install separate versions of the pipeline - versioning is handled via Github and the nextflow <code>release</code> option (-r).</p>
 <p>With all that said, GABI and AQUAMIS should behave fairly similarily on Illumina data as far as assembly and QC are concerned. </p>
+<h3 id="can-i-speed-up-gabi-somehow-i-am-only-interested-in-assembling-my-genome">Can I speed up GABI somehow? I am only interested in assembling my genome!</h3>
+<p>Yes, you absolutely can <em>just</em> assemble a genome and ommitt all the other stuff GABI normally computes (serotype, variants, etc). For this, use <code>--skip_optional</code> when launching the pipeline. GABI will then stop after the assembly. There are still some non-assembly related steps required to compute the basic QC metrics, but those are generally fairly fast. </p>
 <h3 id="is-it-ok-to-use-conda-or-should-i-use-a-container-manager">Is it OK to use Conda, or should I use a container manager?</h3>
 <p><strong>Please</strong> do not use Conda if at all possible. We are making it an option in GABI because it has a broad user base. But Conda is <em>not</em> suitable for production purposes. </p>
 <p>Conda environments are prone to breaking; when you update your conda installation, or try to add additional packages. But more importantly, conda environments are not guaranteed to be reproducible. Many packages
