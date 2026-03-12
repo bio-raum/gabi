@@ -210,7 +210,7 @@ workflow GABI {
     ch_assemblies_size.fail.subscribe { m, f ->
         log.warn "${m.sample_id} - assembly is empty, stopping sample"
     }
-
+    
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Tag and optionally remove highly fragmented assemblies

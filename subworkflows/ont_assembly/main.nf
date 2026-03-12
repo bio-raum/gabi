@@ -83,7 +83,9 @@ workflow ONT_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_ONT.out.versions)
         ch_homopolished = HOMOPOLISH_ONT.out.polished
     } else {
-        ch_homopolished = MEDAKA_CONSENSUS.out.consensus
+        polished_with_short_reads.without.map { m,p,r ->
+            tuple(m,p)
+        }.set { ch_homopolished }
     }
 
     // Create BWA index

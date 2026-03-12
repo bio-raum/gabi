@@ -73,7 +73,9 @@ workflow PACBIO_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_PACBIO.out.versions)
         ch_homopolished = HOMOPOLISH_PACBIO.out.polished
     } else {
-        ch_homopolished = ch_long_read_assembly
+        assembly_with_short_reads.without.map { m,a,r ->
+                tuple(m,a)
+        }.set { ch_homopolished }
     }
 
     // Create BWA index

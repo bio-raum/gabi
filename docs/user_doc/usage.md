@@ -163,6 +163,16 @@ Some options specific to assembling Illumina short reads.
 
 :   Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: `--unicycler`
 
+### Long-read options
+
+Options that influence both ONT and Pacbio processing. 
+
+`--homopolish` [ default = false ]
+
+:   Perform assembly polishing using [Homopolish](https://github.com/ythuang0522/homopolish). 
+
+    Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly. Even when requested, Homopolish is only run when no short reads are available (and never for PacBio Hifi reads). 
+
 ### Nanopore options
 
 Some options specific to assembling ONT reads. 
@@ -192,12 +202,6 @@ Some options specific to assembling ONT reads.
 :   Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
     
     If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
-
-`--homopolish` [ default = false ]
-
-:   Perform ONT polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). 
-
-    Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.
 
 `--skip_porechop` [ default = true ]
 

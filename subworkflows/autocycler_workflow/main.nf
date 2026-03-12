@@ -82,11 +82,8 @@ def parse_genome_size(aFile) {
             } else {
                 log.warn "Genome size estimate exceeds limits for bacterial genomes - capping at 6MB\nMake sure to check reads for contamination."
             }
-            
         }
-
     }
-
     return gsize
 }
 
@@ -99,7 +96,7 @@ def tool_list(meta) {
         if (params.pacbio_hifi) {
             tools = ["flye", "metamdbg", "miniasm", "raven"]
         } else {
-            tools = ["flye", "metamdbg", "miniasm", "raven", "canu"]
+            tools = ["flye", "metamdbg", "miniasm", "raven"]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"

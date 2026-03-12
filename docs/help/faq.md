@@ -10,6 +10,10 @@ GABI was heavily inspired by [AQUAMIS](https://gitlab.com/bfr_bioinformatics/AQU
 
 With all that said, GABI and AQUAMIS should behave fairly similarily on Illumina data as far as assembly and QC are concerned. 
 
+### Can I speed up GABI somehow? I am only interested in assembling my genome!
+
+Yes, you absolutely can *just* assemble a genome and ommitt all the other stuff GABI normally computes (serotype, variants, etc). For this, use `--skip_optional` when launching the pipeline. GABI will then stop after the assembly. There are still some non-assembly related steps required to compute the basic QC metrics, but those are generally fairly fast. 
+
 ### Is it OK to use Conda, or should I use a container manager?
 
 **Please** do not use Conda if at all possible. We are making it an option in GABI because it has a broad user base. But Conda is *not* suitable for production purposes. 
