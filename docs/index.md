@@ -3,7 +3,7 @@
 GABI (Genomic Analysis of Bacterial Isolates) is a [Nextflow](https://nextflow.io/) pipeline for the quality control, assembly and characterization
 of bacterial isolates from short or long "next generation" sequencing reads.
 
-It is designed to be easily installed and used, and work on a wide range of configuration.
+It is designed to be easily installed and used, and work on a wide range of hardware configurations.
 
 ## Highlights
 

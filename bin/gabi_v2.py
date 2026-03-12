@@ -360,17 +360,21 @@ def main(yaml, template, output, version, call, wd):
             ##############
 
             mlst = jdata["mlst"]
-            mlst_data = mlst[0]
 
-            for mentry in mlst:
-                sequence_type = mentry["sequence_type"]
-                scheme = mentry["scheme"]
+            if (len(mlst) > 0):
+                mlst_data = mlst[0]
 
-                scheme_name = f"{scheme} ({taxon})"
-                if (scheme_name in mlst_all):
-                    mlst_all[scheme_name].append({"sample": sample, "sequence_type": sequence_type})
-                else:
-                    mlst_all[scheme_name] = [{"sample": sample, "sequence_type": sequence_type}]
+                for mentry in mlst:
+                    sequence_type = mentry["sequence_type"]
+                    scheme = mentry["scheme"]
+
+                    scheme_name = f"{scheme} ({taxon})"
+                    if (scheme_name in mlst_all):
+                        mlst_all[scheme_name].append({"sample": sample, "sequence_type": sequence_type})
+                    else:
+                        mlst_all[scheme_name] = [{"sample": sample, "sequence_type": sequence_type}]
+            else:
+                mlst_data = {"sequence_type": "", "schema": ""}
 
             ##############
             # Get coverage(s)

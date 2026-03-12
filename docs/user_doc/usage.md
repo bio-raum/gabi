@@ -4,7 +4,7 @@ Please fist check out our [installation guide](installation.md), if you haven't 
 
 ## Running the pipeline
 
-A basic execution of the pipeline looks as follows:
+:   A basic execution of the pipeline looks as follows:
 
 === "Built-in profile"
 
@@ -35,55 +35,55 @@ A basic execution of the pipeline looks as follows:
 
 ## Removing temporary data
 
-Nextflow stores all the process data in a folder structure inside the `work` directory. All the relevant results are subsequently copied to the designated results folder (`--outdir`). The work directory is needed to resume completed or failed pipeline runs, but should be removed once you are satisified with the analysis to save space. To do so, run:
+:   Nextflow stores all the process data in a folder structure inside the `work` directory. All the relevant results are subsequently copied to the designated results folder (`--outdir`). The work directory is needed to resume completed or failed pipeline runs, but should be removed once you are satisified with the analysis to save space. To do so, run:
 
-``` bash
-nextflow clean -f
-```
+    ``` bash
+    nextflow clean -f
+    ```
 
 ## Specifying a pipeline version
 
-If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the `-r` argument:
+:   If you are running this pipeline in a production setting, you will want to lock the pipeline to a specific version. This is natively supported through nextflow with the `-r` argument:
 
-```bash
-nextflow run bio-raum/gabi -profile myprofile -r 1.0.0 <other options here>
-```
+    ```bash
+    nextflow run bio-raum/gabi -profile myprofile -r 1.0.0 <other options here>
+    ```
 
-The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
+    The `-r` option specifies a github [release tag](https://github.com/bio-raum/gabi/releases) or branch, so could also point to `main` for the very latest code release. Please note that every major release of this pipeline (1.0, 2.0 etc) comes with a new reference data set, which has the be [installed](installation.md) separately.
 
-If you are feeling adventurous, you can also provide a specific commit hash, for example: `-r 575faea`.
+    If you are feeling adventurous, you can also provide a specific commit hash, for example: `-r 575faea`.
 
 ## Updating to a new release
 
-To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):
+:   To use a new release, you simply have to tell Nextflow to pull the last version from the source (e.g. Github):
 
-```bash
-nextflow pull bio-raum/gabi
-```
+    ```bash
+    nextflow pull bio-raum/gabi
+    ```
 
 Then use the `-r` argument as explained above to run the workflow using the new release.
 
 ## Running a test
 
-This pipeline has a built-in test to quickly check that your local setup is working correctly. To run it, do:
+:   This pipeline has a built-in test to quickly check that your local setup is working correctly. To run it, do:
 
-``` bash
-nextflow run bio-raum/gabi -profile myprofile,test
-```
+    ``` bash
+    nextflow run bio-raum/gabi -profile myprofile,test
+    ```
 
-where `myprofile` can either be a site-specific config file or one of the built-in [profiles](installation.md#software-provisioning). This test requires an active internet connection to download the test data. 
+    where `myprofile` can either be a site-specific config file or one of the built-in [profiles](installation.md#software-provisioning). This test requires an active internet connection to download the test data. 
 
 ## Choosing an assembly method
 
-GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
+:   GABIs default mode is to automatically choose the appropriate assembly chain based on your data, supporting three scenarios:
 
-- Samples with only short reads (Assembler: Shovill)
-- Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
-- Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
+    - Samples with only short reads (Assembler: Shovill)
+    - Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
+    - Samples with only Pacbio HiFi reads and **optional** short reads  (Assembler: Flye) + Polypolish/Homopolish
 
-This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
+    Combining long and short reads requires for all data to carry the same sample ID. 
 
-Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
+    In addition, GABI supports consensus assembly of long reads, using the option `--autocycler`. This option will run multiple assemblers and combine them into a consensus. Please note that this option will increase run time (potentially by a lot). 
 
 ## Command-line options
 
@@ -91,7 +91,7 @@ Note: HiFi data cannot be combined with any of the other technologies! (mostly b
 
 `--input samples.tsv` [default = null]
 
-This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
+:   This pipeline expects a CSV-formatted sample sheet to properly pull various meta data through the processes. The required format looks as follows, depending on your input data.
 
 === "Reads"
 
@@ -173,6 +173,10 @@ Options that influence both ONT and Pacbio processing.
 
     Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly. Even when requested, Homopolish is only run when no short reads are available (and never for PacBio Hifi reads). 
 
+`--autocycler` [ default = false ]
+
+:   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. 
+
 ### Nanopore options
 
 Some options specific to assembling ONT reads. 
@@ -231,11 +235,11 @@ These options are only meant for users who have a specific reason to touch them.
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-`--max_coverage` [ default = null ]
+`--max_coverage` [ default = "200x" ]
 
 :   Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
     
-    Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with `--random_seed` if you would like the results to be reproducible.
+    The default of 200x is merely meant to cap heavily oversampled data sets, but could probably be set quite a bit lower without compromising the assembly quality.
 
 `--max_contigs` [ default = 150 ]
 

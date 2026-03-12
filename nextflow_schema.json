@@ -47,6 +47,29 @@
       "description": "Less common options for the pipeline, typically set in a config file.",
       "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
       "properties": {
+        "autocycler": {
+          "type": "boolean",
+          "default": true,
+          "description": "Perform consensus assembly for long reads"
+        },
+        "confindr_db": {
+          "type": "string",
+          "description": "Location of a custom confindR database"
+        },
+        "fast_ref": {
+          "type": "boolean",
+          "description": "Perform a faster version of the reference assembly matching (less accurate)"
+        },
+        "max_contigs": {
+          "type": "integer",
+          "default": 150,
+          "hidden": true
+        },
+        "max_coverage": {
+          "type": "string",
+          "default": "200x",
+          "description": "Maximum coverage to downsample reads to"
+        },
         "version": {
           "type": "boolean",
           "description": "Display version and exit.",
@@ -55,7 +78,7 @@
         },
         "reference_version": {
           "type": "integer",
-          "default": 1,
+          "default": 1.2,
           "hidden": true
         },
         "reference_base": {
@@ -71,27 +94,9 @@
           "default": "/home/marc/git/bio-raum/gabi/assets/AQUAMIS_thresholds.json",
           "hidden": true
         },
-        "fast_ref": {
-          "type": "boolean",
-          "description": "Perform a faster version of the reference assembly matching (less accurate)"
-        },
-        "max_contigs": {
-          "type": "integer",
-          "default": 150,
-          "hidden": true
-        },
-        "confindr_db": {
-          "type": "string",
-          "description": "Location of a custom confindR database"
-        },
         "remove_host": {
           "type": "boolean",
           "description": "Remove host DNA from reads (Horse)"
-        },
-        "max_coverage": {
-          "type": "string",
-          "default": "100x",
-          "description": "Maximum coverage to downsample reads to"
         }
       }
     },
@@ -138,7 +143,7 @@
         },
         "ont_min_length": {
           "type": "integer",
-          "default": 1000,
+          "default": 500,
           "description": "Minimum length of ONT reads to keep"
         },
         "ont_min_q": {
@@ -339,7 +344,7 @@
     },
     "template": {
       "type": "string",
-      "default": "/home/marc/git/bio-raum/gabi/assets/gabi_template.html",
+      "default": "/home/marc/git/bio-raum/gabi/assets/gabi_template_v2.html",
       "hidden": true
     },
     "publish_dir_mode": {

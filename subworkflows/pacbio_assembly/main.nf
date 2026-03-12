@@ -28,7 +28,7 @@ workflow PACBIO_ASSEMBLY {
     
     reads.map { m,s,o ->
         tuple(m,s)
-    }.filter { it -> it.last() }
+    }.filter { it.last() }
     .set { sreads }
 
     if (params.autocycler) {
@@ -73,9 +73,7 @@ workflow PACBIO_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_PACBIO.out.versions)
         ch_homopolished = HOMOPOLISH_PACBIO.out.polished
     } else {
-        assembly_with_short_reads.without.map { m,a,r ->
-                tuple(m,a)
-        }.set { ch_homopolished }
+        ch_homopolished = assembly_with_short_reads.without.map { m,a,r -> tuple(m,a) }
     }
 
     // Create BWA index
