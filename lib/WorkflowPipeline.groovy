@@ -20,7 +20,9 @@ class WorkflowPipeline {
             log.info 'No --reference_base specified, cannot proceed!'
             System.exit(1)
         }
-        
+        if (params.autocycler) {
+            log.info "Specified use of autocycler - no downsampling will be performed for long reads."
+        }
     }
 
 }

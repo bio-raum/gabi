@@ -141,10 +141,10 @@
           "type": "boolean",
           "description": "Reads were produced with SUP base calling and are mostly Q20"
         },
-        "ont_min_length": {
+        "reads_min_length": {
           "type": "integer",
           "default": 500,
-          "description": "Minimum length of ONT reads to keep"
+          "description": "Minimum length of long reads to keep"
         },
         "ont_min_q": {
           "type": "integer",

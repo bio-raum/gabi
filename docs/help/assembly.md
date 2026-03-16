@@ -39,8 +39,6 @@ Generally, GABI runs fine with all-default settings. However, depending on your 
 
 `--ont_min_q` Minimum quality ONT reads to keep
 
-`--ont_min_length` Minimum ONT read length to keep
-
 The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads during that process. 
 
 `--homopolish` Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to include such corrections.

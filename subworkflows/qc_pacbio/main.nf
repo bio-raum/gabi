@@ -2,6 +2,7 @@
 include { RASUSA }                          from './../../modules/rasusa'
 include { CAT_FASTQ  }                      from './../../modules/cat_fastq'
 include { FASTQC }                          from './../../modules/fastqc'
+include { FASTPLONG }                       from './../../modules/fastplong'
 
 /*
 subworkflows
@@ -31,23 +32,28 @@ workflow QC_PACBIO {
         ch_reads_pb.multi
     )
 
-    // The trimmed ONT reads, concatenated by sample
-    ch_pb_trimmed = ch_reads_pb.single.mix(CAT_FASTQ.out.reads)
-
+    // Run FastPlong on the reads to remove junk
+    FASTPLONG(
+        ch_reads_pb.single.mix(CAT_FASTQ.out.reads)
+    )
+    ch_versions = ch_versions.mix(FASTPLONG.out.versions)
+    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
+    
+    // Run FastQC on the trimmed files
     FASTQC(
-        reads
+        FASTPLONG.out.reads
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions)
     multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
 
     CONTAMINATION(
-        ch_pb_trimmed,
+        FASTPLONG.out.reads,
         confindr_db
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
 
-    if (params.max_coverage) {
+    if (params.max_coverage && !params.autocycler) {
 
         DOWNSAMPLE_READS(
             ch_reads_decont

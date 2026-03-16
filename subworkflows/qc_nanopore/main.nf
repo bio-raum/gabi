@@ -68,7 +68,7 @@ workflow QC_NANOPORE {
 
     // Stop a sample if the number of ONT reads is under a threshold
     ch_chopped_reads.fail.subscribe { m,r ->
-        log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting ont_min_length, ont_min_reads and ont_min_q."
+        log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting reads_min_length, ont_min_reads and ont_min_q."
     }
 
     // Run contamination check
@@ -85,14 +85,14 @@ workflow QC_NANOPORE {
     ch_versions = ch_versions.mix(NANOPLOT.out.versions)
     multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { m, r -> r })
 
-    if (params.max_coverage) {
+    // Replace tabs in ONT fastq headers, else KMC will not work
+    SEQKIT_REPLACE(
+        ch_chopped_reads.pass
+    )
+    ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
 
-        // Replace tabs in ONT fastq headers, else KMC will not work
-        SEQKIT_REPLACE(
-            ch_chopped_reads.pass
-        )
-        ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
-
+    if (params.max_coverage && !params.autocycler) {
+        
         // Perform downsampling of reads
         DOWNSAMPLE_READS(
             SEQKIT_REPLACE.out.fastx
@@ -102,7 +102,7 @@ workflow QC_NANOPORE {
         ch_processed_reads = DOWNSAMPLE_READS.out.reads
 
     } else {
-        ch_processed_reads = ch_chopped_reads.pass
+        ch_processed_reads = SEQKIT_REPLACE.out.fastx
     }
 
     emit:

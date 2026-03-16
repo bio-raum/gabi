@@ -177,6 +177,12 @@ Options that influence both ONT and Pacbio processing.
 
 :   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. 
 
+`--reads_min_length`  [ default = 500 ]
+
+:   Discard long reads (Pacbio/ONT) below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
+    
+    If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb).
+
 ### Nanopore options
 
 Some options specific to assembling ONT reads. 
@@ -201,12 +207,6 @@ Some options specific to assembling ONT reads.
 
     This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
 
-`--ont_min_length`  [ default = 500 ]
-
-:   Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
-    
-    If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
-
 `--skip_porechop` [ default = true ]
 
 :   Skip the removal of adapters from reads using [Porechop_abi](https://github.com/bonsai-team/Porechop_ABI). 
@@ -222,6 +222,10 @@ Some options specific to assembling ONT reads.
 ### Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 
+
+`--autocycler_subsample` [ default = 4 ]
+
+:   When using autocycler for long read consensus assembly, create this many subsamples from the initial read data. 
 
 `--confindr_db` [ default = null ]
 
@@ -239,7 +243,7 @@ These options are only meant for users who have a specific reason to touch them.
 
 :   Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
     
-    The default of 200x is merely meant to cap heavily oversampled data sets, but could probably be set quite a bit lower without compromising the assembly quality.
+    Settings this option to false on the command line will disable downsampling and use whatever depth read data is provided. Due to how autocycler subsampling works, downsampling is always disabled for long reads when running autocycler (`--autocycler`).
 
 `--max_contigs` [ default = 150 ]
 
