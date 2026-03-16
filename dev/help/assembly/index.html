@@ -1357,7 +1357,6 @@
 <h4 id="ont-data">ONT data</h4>
 <p><code>--medaka_model</code>  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers</p>
 <p><code>--ont_min_q</code> Minimum quality ONT reads to keep</p>
-<p><code>--ont_min_length</code> Minimum ONT read length to keep</p>
 <p>The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads during that process. </p>
 <p><code>--homopolish</code> Perform polishing of homopolymer errors using <a href="https://github.com/ythuang0522/homopolish">Homopolish</a>. Since this uses sequence information from related assemblies, some users may not wish to include such corrections.</p>
 <h4 id="pacbio-data">Pacbio data</h4>
