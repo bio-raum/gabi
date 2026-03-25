@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1350,6 +1350,7 @@
 <ul>
 <li>Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.</li>
 <li>Basecalling should be performed with a recent version of <a href="https://github.com/nanoporetech/dorado">Dorado</a> and a SUP (super-accurate) model</li>
+<li>By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use <code>--skip_medaka</code></li>
 <li>If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  </li>
 </ul>
 <h2 id="iontorrent-reads">IonTorrent Reads</h2>

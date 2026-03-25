@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1035,6 +1035,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#nanopore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nanopore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nanopore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-i-use-older-ont-reads-with-gabi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I use older ONT reads with GABI?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#crashes-and-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1435,6 +1463,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#nanopore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nanopore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nanopore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-i-use-older-ont-reads-with-gabi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I use older ONT reads with GABI?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#crashes-and-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1604,6 +1660,11 @@
 <dl>
 <dd>Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available <a href="https://ccs.how/">tools</a>. Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. </dd>
 </dl>
+<h2 id="nanopore">Nanopore</h2>
+<h3 id="can-i-use-older-ont-reads-with-gabi">Can I use older ONT reads with GABI?</h3>
+<p>GABI uses Medaka for assembly polishing; Medaka in turn requires that reads contain information about the basecalling (i.e. the basecalling model). This is generally the case if reads were basecalled with a somewhat recent version of Dorado. If for some reason that information was stripped from the reads, but is still known, you can provide information about the model to GABI using <code>--medaka_model</code>. The <a href="https://software-docs.nanoporetech.com/dorado/latest/models/list/">model</a> specified must be compatible with Dorado! </p>
+<p>If you have lost the information about the basecalling model or used a software other than Dorado (e.g. Guppy) for basecalling, please consider re-basecalling your data.</p>
+<p>If you do not know the model, and have no way of re-basecalling the data (e.g. if the data was downloaded as FastQ files from ENA/NCBI), please use <code>--skip_medaka</code> to skip Medaka polishing. Better no polishing than wrong polishing. </p>
 <h2 id="crashes-and-errors">Crashes and errors</h2>
 <h3 id="the-required-reference-directory-was-not-found-on-your-system-exiting">The required reference directory was not found on your system, exiting!</h3>
 <p>GABI uses versioned reference databases, which are linked to different versions of the pipeline. If you see this message, it means that you have not yet installed the matching references to the version of GABI you are trying to execute. Using the same release tag, please install the references as per our <a href="../../user_doc/installation/">instructions</a>.</p>
