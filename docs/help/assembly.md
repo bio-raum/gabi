@@ -35,11 +35,17 @@ Generally, GABI runs fine with all-default settings. However, depending on your 
 
 #### ONT data
 
+`--porechop` Perform adapter trimming; this should not be necessary for more recently basecalled data. 
+
 `--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers
+
+`--skip_medaka` Skip polishing with Medaka if your data was not basecalled with Medaka. 
+
+`--onthq` Use this option if your reads were basecalled with a SUP model
 
 `--ont_min_q` Minimum quality ONT reads to keep
 
-The latter two options are more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads during that process. 
+The last option is more meant to nudge the dataset towards "longer and better". GABI will perform downsampling of the reads anyway (unless deactivated by the user); but it will normally not select for the "best" reads during that process. 
 
 `--homopolish` Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to include such corrections.
 

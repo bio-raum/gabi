@@ -49,8 +49,11 @@
       "properties": {
         "autocycler": {
           "type": "boolean",
-          "default": true,
           "description": "Perform consensus assembly for long reads"
+        },
+        "autocycler_subsamples": {
+          "type": "integer",
+          "default": 4
         },
         "confindr_db": {
           "type": "string",
@@ -128,6 +131,10 @@
       "description": "",
       "default": "",
       "properties": {
+        "homopolish": {
+          "type": "boolean",
+          "description": "Run homopolish on ONT assembly"
+        },
         "homopolish_model": {
           "type": "string",
           "default": "R10",
@@ -156,14 +163,13 @@
           "default": 1000,
           "description": "Minimum number of reads to remain after trimming"
         },
-        "homopolish": {
+        "porechop": {
           "type": "boolean",
-          "description": "Run homopolish on ONT assembly"
+          "description": "Perform adapter trimming of ONT reads"
         },
-        "skip_porechop": {
+        "skip_medaka": {
           "type": "boolean",
-          "default": true,
-          "description": "Do not perform adapter trimming with Porechop"
+          "description": "Do not polish with Medaka (pre-Dorado reads)"
         }
       }
     },
@@ -355,6 +361,10 @@
     "custom_config_base": {
       "type": "string",
       "default": "https://raw.githubusercontent.com/bio-raum/nf-configs/main",
+      "hidden": true
+    },
+    "store_reads": {
+      "type": "boolean",
       "hidden": true
     }
   }

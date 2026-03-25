@@ -91,12 +91,16 @@ def parse_genome_size(aFile) {
 def tool_list(meta) {
     def tools = []
     if (meta.platform.contains("NANOPORE")) {
-        tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+        if (params.onthq) {
+            tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+        } else {
+            tools = ["flye", "miniasm", "necat", "raven"]
+        }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
             tools = ["flye", "metamdbg", "miniasm", "raven"]
         } else {
-            tools = ["flye", "metamdbg", "miniasm", "raven", "canu"]
+            tools = ["flye", "miniasm", "raven", "canu"]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"

@@ -22,7 +22,7 @@ workflow QC_NANOPORE {
     ch_versions = channel.from([])
     multiqc_files = channel.from([])
 
-    if (!params.skip_porechop) {
+    if (params.porechop) {
         // Nanopore adapter trimming
         PORECHOP_ABI(
             reads

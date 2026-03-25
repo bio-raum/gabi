@@ -12,7 +12,8 @@ include { AUTOCYCLER_WORKFLOW }                     from './../autocycler_workfl
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
 Since Dragonflye isn't regularly maintained, GABI re-implements the
-basic (slightly simplified) logic into a subworkflow instead
+basic (slightly simplified) logic into a subworkflow instead, with 
+some additional steps
 */
 workflow ONT_ASSEMBLY {
 
@@ -51,14 +52,19 @@ workflow ONT_ASSEMBLY {
         ch_long_read_assembly = FLYE_ONT.out.fasta
     }
 
-    // Re-polish initial consensus contigs with Medaka
-    MEDAKA_CONSENSUS(
-        lreads.join(ch_long_read_assembly)
-    )
-    ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+    if (params.skip_medaka) {
+        ch_medaka_polished = ch_long_read_assembly
+    } else {
+        // Re-polish initial cons0ensus contigs with Medaka
+        MEDAKA_CONSENSUS(
+            lreads.join(ch_long_read_assembly)
+        )
+        ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+        ch_medaka_polished = MEDAKA_CONSENSUS.out.consensus
+    }
 
     // Join polished Medaka assembly with optional short reads
-    MEDAKA_CONSENSUS.out.consensus.map { m,c ->
+    ch_medaka_polished.map { m,c ->
         tuple(m.sample_id,m,c)
     }.join(
         sreads.map {m,r ->
@@ -70,9 +76,6 @@ workflow ONT_ASSEMBLY {
         with: it.last()
         without: !it.last()
     }.set { polished_with_short_reads }
-
-    polished_with_short_reads.without.view()
-    polished_with_short_reads.with.view()
 
     // Homopolish to remove homopolymer errors when no short reads
     // are available 

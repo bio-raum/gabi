@@ -22,6 +22,7 @@ process PORECHOP_ABI {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: reads.getBaseName() + '.trimmed'
     """
+    
     porechop_abi \\
         --input $reads \\
         --threads $task.cpus \\
