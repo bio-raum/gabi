@@ -5,8 +5,9 @@ Include Modules
 include { PORECHOP_ABI }                from './../../modules/porechop/abi'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
-include { CHOPPER }                     from './../../modules/chopper'
+// include { CHOPPER }                     from './../../modules/chopper'
 include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
+include { FASTPLONG }                       from './../../modules/fastplong'
 
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
@@ -56,12 +57,13 @@ workflow QC_NANOPORE {
     ch_ont_trimmed = ch_reads_ont.single.mix(CAT_FASTQ.out.reads)
 
     // Filter the reads by size and quality
-    CHOPPER(
+    FASTPLONG(
         ch_ont_trimmed
     )
-    ch_versions = ch_versions.mix(CHOPPER.out.versions)
+    ch_versions = ch_versions.mix(FASTPLONG.out.versions)
+    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
 
-    CHOPPER.out.fastq.branch { m,r ->
+    FASTPLONG.out.reads.branch { m,r ->
         pass: r.countFastq() >= params.ont_min_reads
         fail: r.countFastq() < params.ont_min_reads
     }.set { ch_chopped_reads }

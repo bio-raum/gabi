@@ -32,9 +32,11 @@ workflow QC_PACBIO {
         ch_reads_pb.multi
     )
 
+    ch_merged_reads = ch_reads_pb.single.mix(CAT_FASTQ.out.reads)
+
     // Run FastPlong on the reads to remove junk
     FASTPLONG(
-        ch_reads_pb.single.mix(CAT_FASTQ.out.reads)
+        ch_merged_reads
     )
     ch_versions = ch_versions.mix(FASTPLONG.out.versions)
     multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
