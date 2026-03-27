@@ -22,6 +22,7 @@ GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 
 * Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
+  * By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use `--skip_medaka`
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  
 
 ## IonTorrent Reads

@@ -69,24 +69,21 @@ workflow AUTOCYCLER_WORKFLOW {
 
 def parse_genome_size(aFile) {
 
-    // defaults to 6Mb in case no base count was reported
-    def gsize = '6000000'
+    // defaults to 5Mb in case no base count was reported
+    def gsize = '5000000'
 
     aFile.eachLine { line ->
         if (line.contains("unique counted k-mers")) {
             def elements = line.trim().split(/\s+/)
             def raw = elements[-1].toInteger()
-            // Capped at 14MB for the largest known bacterial genome - else use 6MB
+            // Capped at 14MB for the largest known bacterial genome - else use 5MB
             if (raw <= 14000000) {
                 gsize = raw
             } else {
-                log.warn "Genome size estimate exceeds limits for bacterial genomes - capping at 6MB\nMake sure to check reads for contamination."
+                log.warn "Genome size estimate exceeds limits for bacterial genomes - capping at 5MB\nMake sure to check reads for contamination."
             }
-            
         }
-
     }
-
     return gsize
 }
 
@@ -94,12 +91,16 @@ def parse_genome_size(aFile) {
 def tool_list(meta) {
     def tools = []
     if (meta.platform.contains("NANOPORE")) {
-        tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+        if (params.onthq) {
+            tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+        } else {
+            tools = ["flye", "miniasm", "necat", "raven"]
+        }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
             tools = ["flye", "metamdbg", "miniasm", "raven"]
         } else {
-            tools = ["flye", "metamdbg", "miniasm", "raven", "canu"]
+            tools = ["flye", "miniasm", "raven", "canu"]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"

@@ -1,0 +1,7 @@
+name: fastplong_41
+channels:
+  - conda-forge
+  - bioconda
+  
+dependencies:
+  - fastplong=0.4.1
