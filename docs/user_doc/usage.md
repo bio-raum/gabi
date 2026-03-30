@@ -175,16 +175,16 @@ Options that influence both ONT and Pacbio processing.
 
 `--autocycler` [ default = false ]
 
-:   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. 
+:   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run-time will increase significantly when this option is enabled. 
 
 The following tools are used, depending on the input data/options:
 
 | Data | Options | Assemblers |
 | ---- | ------- | ---------- |
-| ONT (standard) | | "flye", "miniasm", "necat", "raven" |
-| ONT (SUP) | --onthq | "flye", "metamdbg", "miniasm", "necat", "raven" |
-| Pacbio CLR | | "flye", "miniasm", "raven", "canu", "redbean" |
-| Pacbio HiFi | --pacbio_hifi | "flye", "metamdbg", "hifiasm" |
+| ONT (standard) | | flye, miniasm, necat, raven |
+| ONT (SUP) | --onthq | flye, miniasm, necat, raven |
+| Pacbio CLR | | flye, miniasm, raven, canu |
+| Pacbio HiFi | --pacbio_hifi | flye, hifiasm |
 
 `--reads_min_length`  [ default = 500 ]
 

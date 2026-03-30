@@ -6,7 +6,7 @@ include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem
 include { HOMOPOLISH as HOMOPOLISH_PACBIO } from '../../modules/homopolish'
 include { BWAMEM2_MEM_POLYPOLISH }          from '../../modules/bwamem2/mem_polypolish'
 include { AUTOCYCLER_WORKFLOW }             from './../autocycler_workflow'
-include { GENOMESIZE }                       from './../genomesize'
+include { GENOMESIZE }                      from './../genomesize'
 
 workflow PACBIO_ASSEMBLY {
 

@@ -1,11 +1,9 @@
 /*
 Include Modules
 */
-
 include { PORECHOP_ABI }                from './../../modules/porechop/abi'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
-// include { CHOPPER }                     from './../../modules/chopper'
 include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
 include { FASTPLONG }                   from './../../modules/fastplong'
 

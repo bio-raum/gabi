@@ -11,7 +11,7 @@ GABI has two alternative strategies for long read assembly - using either a sing
 | Strategy | Assembler(s) | Command line option |
 | -------- | ------------ | ------------------- |
 | Single assembler | Flye |  |
-| Multi-assembler | Canu, Flye, Metamdbg, Miniasm, Necat, Raven | --autocycler |
+| Multi-assembler | Canu, Flye, Miniasm, Necat, Raven | --autocycler |
 
 To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Metamdbg](https://github.com/GaetanBenoitDev/metaMDBG), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
 

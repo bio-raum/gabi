@@ -2,7 +2,6 @@ include { AUTOCYCLER_HELPER }                   from'./../../modules/autocycler/
 include { AUTOCYCLER_SUBSAMPLE }                from'./../../modules/autocycler/subsample'
 include { AUTOCYCLER_FINISH }                   from'./../../modules/autocycler/finish'
 
-
 /* Implements the full autocycler workflow outlined in 
 https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Bash_script_by_Ryan_Wick/autocycler_full.sh
 */
@@ -58,15 +57,15 @@ def tool_list(meta) {
     def tools = []
     if (meta.platform.contains("NANOPORE")) {
         if (params.onthq) {
-            tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+            tools = ["flye", "miniasm", "necat", "raven"]
         } else {
             tools = ["flye", "miniasm", "necat", "raven"]
         }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
-            tools = ["flye", "metamdbg", "hifiasm"]
+            tools = ["flye", "hifiasm"]
         } else {
-            tools = ["flye", "miniasm", "raven", "canu", "redbean"]
+            tools = ["flye", "miniasm", "raven", "canu" ]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
