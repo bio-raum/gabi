@@ -7,7 +7,6 @@ include { BIOBLOOM_CATEGORIZER }        from './../../modules/biobloom/categoriz
 subworkflows
 */
 include { CONTAMINATION }               from './../contamination'
-include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_ILLUMINA {
     take:
@@ -81,27 +80,13 @@ workflow QC_ILLUMINA {
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
-    
-    // Downsample reads if a genome size is given
-    if (params.max_coverage) {
-
-        // perform downsampling of reads
-        DOWNSAMPLE_READS(
-            ch_reads_decont
-        )
-        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
-        ch_processed_reads = DOWNSAMPLE_READS.out.reads
-        
-    } else {
-        ch_processed_reads = ch_reads_decont
-    }
-
+   
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     fastp_json      = FASTP.out.json
     confindr_qc     = CONTAMINATION.out.qc
-    reads           = ch_processed_reads
+    reads           = ch_reads_decont
     versions        = ch_versions
     qc              = multiqc_files
     }

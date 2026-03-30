@@ -15,7 +15,7 @@ GABI has two alternative strategies for long read assembly - using either a sing
 
 To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Metamdbg](https://github.com/GaetanBenoitDev/metaMDBG), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
 
-Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the absolutely best possible assembly out of GABI. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. 
+Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the absolutely best possible assembly out of GABI. You most likey also want to run this in a larger compute infrastructure, unless you are really only trying to assembly one or two genomes. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. 
 
 ## Assembly polishing
 
@@ -37,9 +37,9 @@ Generally, GABI runs fine with all-default settings. However, depending on your 
 
 `--porechop` Perform adapter trimming; this should not be necessary for more recently basecalled data. 
 
-`--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers
+`--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers.
 
-`--skip_medaka` Skip polishing with Medaka if your data was not basecalled with Medaka. 
+`--skip_medaka` Skip polishing with Medaka if your data was not basecalled with Dorado and/or the information on the calling model was lost. 
 
 `--onthq` Use this option if your reads were basecalled with a SUP model
 

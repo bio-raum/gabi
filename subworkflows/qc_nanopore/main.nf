@@ -7,11 +7,10 @@ include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
 // include { CHOPPER }                     from './../../modules/chopper'
 include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
-include { FASTPLONG }                       from './../../modules/fastplong'
+include { FASTPLONG }                   from './../../modules/fastplong'
 
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
-include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_NANOPORE {
     take:
@@ -93,25 +92,11 @@ workflow QC_NANOPORE {
     )
     ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
 
-    if (params.max_coverage && !params.autocycler) {
-        
-        // Perform downsampling of reads
-        DOWNSAMPLE_READS(
-            SEQKIT_REPLACE.out.fastx
-        )
-
-        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
-        ch_processed_reads = DOWNSAMPLE_READS.out.reads
-
-    } else {
-        ch_processed_reads = SEQKIT_REPLACE.out.fastx
-    }
-
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     confindr_qc     = CONTAMINATION.out.qc
-    reads           = ch_processed_reads
+    reads           = SEQKIT_REPLACE.out.fastx
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt
     versions        = ch_versions

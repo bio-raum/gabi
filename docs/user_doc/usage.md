@@ -177,6 +177,15 @@ Options that influence both ONT and Pacbio processing.
 
 :   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. 
 
+The following tools are used, depending on the input data/options:
+
+| Data | Options | Assemblers |
+| ---- | ------- | ---------- |
+| ONT (standard) | | "flye", "miniasm", "necat", "raven" |
+| ONT (SUP) | --onthq | "flye", "metamdbg", "miniasm", "necat", "raven" |
+| Pacbio CLR | | "flye", "miniasm", "raven", "canu", "redbean" |
+| Pacbio HiFi | --pacbio_hifi | "flye", "metamdbg", "hifiasm" |
+
 `--reads_min_length`  [ default = 500 ]
 
 :   Discard long reads (Pacbio/ONT) below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
@@ -237,11 +246,9 @@ These options are only meant for users who have a specific reason to touch them.
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-`--max_coverage` [ default = "200x" ]
+`--max_coverage` [ default = "100" ]
 
-:   Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
-    
-    Settings this option to false on the command line will disable downsampling and use whatever depth read data is provided. Due to how autocycler subsampling works, downsampling is always disabled for long reads when running autocycler (`--autocycler`).
+:   Tells the assembly software to downsample the read data to the specified depth. This option only applies to long-read data as Shovill, the short-read assembler, performs downsampling automatically. Down-sampling is automatically disabled when `--autocycler`is requested (autocycler performs its own partitioning and subsampling).
 
 `--max_contigs` [ default = 150 ]
 

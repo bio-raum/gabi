@@ -1,7 +1,7 @@
-include { KMC }                                 from '../../modules/kmc'
 include { AUTOCYCLER_HELPER }                   from'./../../modules/autocycler/helper'
 include { AUTOCYCLER_SUBSAMPLE }                from'./../../modules/autocycler/subsample'
 include { AUTOCYCLER_FINISH }                   from'./../../modules/autocycler/finish'
+
 
 /* Implements the full autocycler workflow outlined in 
 https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Bash_script_by_Ryan_Wick/autocycler_full.sh
@@ -9,29 +9,15 @@ https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Ba
 workflow AUTOCYCLER_WORKFLOW {
 
     take:
-    reads
+    reads_with_genome_size
     read_type
 
     main:
     ch_versions = channel.from([])
 
-    // Determine genome size from Kmers
-    // Autocycler genome size check ist way too slow.
-    KMC(
-        reads
-    )
-    ch_versions = ch_versions.mix(KMC.out.versions)
-
-    reads.join(
-        KMC.out.log
-    ).map { m,r,l ->
-        def gsize = parse_genome_size(l)
-        tuple(m,r,gsize)
-    }.set { ch_reads_with_genome_size }
-
     // Subsample reads for parallel processing
     AUTOCYCLER_SUBSAMPLE(
-        ch_reads_with_genome_size
+        reads_with_genome_size
     )
     ch_versions = ch_versions.mix(AUTOCYCLER_SUBSAMPLE.out.versions)
 
@@ -67,26 +53,6 @@ workflow AUTOCYCLER_WORKFLOW {
     
 }
 
-def parse_genome_size(aFile) {
-
-    // defaults to 5Mb in case no base count was reported
-    def gsize = '5000000'
-
-    aFile.eachLine { line ->
-        if (line.contains("unique counted k-mers")) {
-            def elements = line.trim().split(/\s+/)
-            def raw = elements[-1].toInteger()
-            // Capped at 14MB for the largest known bacterial genome - else use 5MB
-            if (raw <= 14000000) {
-                gsize = raw
-            } else {
-                log.warn "Genome size estimate exceeds limits for bacterial genomes - capping at 5MB\nMake sure to check reads for contamination."
-            }
-        }
-    }
-    return gsize
-}
-
 // Not all data types may be assembled with the same tools
 def tool_list(meta) {
     def tools = []
@@ -98,9 +64,9 @@ def tool_list(meta) {
         }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
-            tools = ["flye", "metamdbg", "miniasm", "raven"]
+            tools = ["flye", "metamdbg", "hifiasm"]
         } else {
-            tools = ["flye", "miniasm", "raven", "canu"]
+            tools = ["flye", "miniasm", "raven", "canu", "redbean"]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"

@@ -1,7 +1,6 @@
 include { KMC }     from '../../modules/kmc'
-include { RASUSA }  from '../../modules/rasusa'
 
-workflow DOWNSAMPLE_READS {
+workflow GENOMESIZE {
 
     take:
     reads
@@ -23,14 +22,9 @@ workflow DOWNSAMPLE_READS {
         tuple(m,r,gsize)
     }.set { ch_reads_with_genome_size }
 
-    // Downsample reads
-    RASUSA(
-        ch_reads_with_genome_size
-    )
-    ch_versions = ch_versions.mix(RASUSA.out.versions)
-
     emit:
-    reads = RASUSA.out.reads
+
+    reads_with_genome_size = ch_reads_with_genome_size
     versions = ch_versions
 
 }
@@ -38,7 +32,7 @@ workflow DOWNSAMPLE_READS {
 def parse_genome_size(aFile) {
 
     // defaults to 6Mb in case no base count was reported
-    def gsize = '6Mb'
+    def gsize = '6M'
 
     aFile.eachLine { line ->
         if (line.contains("unique counted k-mers")) {
@@ -46,7 +40,7 @@ def parse_genome_size(aFile) {
             def raw = (elements[-1].toInteger()/1000000).round(1)
             // Some contaminations may yield inflated genome size estimates, cap at 14MB or set to 6MB otherwise
             if (raw < 14) {
-                gsize = "${raw}Mb"
+                gsize = "${raw}M"
             }
         }
 
