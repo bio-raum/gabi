@@ -1666,7 +1666,7 @@
 </dd>
 <dt><code>--autocycler</code> [ default = false ]</dt>
 <dd>
-<p>Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run time will increase significantly when this option is enabled. </p>
+<p>Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run-time will increase significantly when this option is enabled. </p>
 </dd>
 </dl>
 <p>The following tools are used, depending on the input data/options:</p>
@@ -1682,22 +1682,22 @@
 <tr>
 <td>ONT (standard)</td>
 <td></td>
-<td>"flye", "miniasm", "necat", "raven"</td>
+<td>flye, miniasm, necat, raven</td>
 </tr>
 <tr>
 <td>ONT (SUP)</td>
 <td>--onthq</td>
-<td>"flye", "metamdbg", "miniasm", "necat", "raven"</td>
+<td>flye, miniasm, necat, raven</td>
 </tr>
 <tr>
 <td>Pacbio CLR</td>
 <td></td>
-<td>"flye", "miniasm", "raven", "canu", "redbean"</td>
+<td>flye, miniasm, raven, canu</td>
 </tr>
 <tr>
 <td>Pacbio HiFi</td>
 <td>--pacbio_hifi</td>
-<td>"flye", "metamdbg", "hifiasm"</td>
+<td>flye, hifiasm</td>
 </tr>
 </tbody>
 </table>
