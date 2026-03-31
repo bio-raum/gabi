@@ -1337,7 +1337,7 @@
 
 
 <h1 id="examples-running-gabi">Examples running GABI</h1>
-<p>Below are <em>some</em> examples of how you could approach assembly of your genomes. Below, we will assume that you use a site-specific config file named <code>my_profile</code>. See our <a href="../installation/">installation</a> for ways to configure the pipeline. </p>
+<p>Below are <em>some</em> examples of how you could approach assembly of your genomes. We will assume that you use a site-specific config file named <code>my_profile</code>. See our <a href="../installation/">installation</a> for ways to configure the pipeline. </p>
 <h2 id="illumina-short-reads">Illumina short-reads</h2>
 <p>This is probably the most common approach used for obtaining genomic information from bacterial isolates. Typically, you will have one set of paired-end reads per sample - so your samplesheet would look as follows:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sample  platform    fq1 fq2
@@ -1376,134 +1376,143 @@
 </div>
 </div>
 <h2 id="ont-reads">ONT reads</h2>
-<p>Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. </p>
+<p>Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the superior read length typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. </p>
 <p>Nanopore data per sample is typically split across many read files - which you could either merge before running GABI or provide individually with the same sample ID. With Nanopore being a single-end technology, the <code>fq2</code> remains empty, of course. </p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sample  platform    fq1 fq2
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_3.fastq.gz
 </span></code></pre></div>
 <p>With this samplesheet, you can run GABI:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">All default options</label><label for="__tabbed_2_2">Consensus assembly</label><label for="__tabbed_2_3">Consensus assembly with homopolish</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">All default options</label><label for="__tabbed_2_2">High quality reads</label><label for="__tabbed_2_3">Consensus assembly</label><label for="__tabbed_2_4">Consensus assembly with homopolish</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Run GABI with all-defaults options. </p>
 <div class="language-BASH highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>--run_name<span class="w"> </span>MyOntRun
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run GABI on data generated with SUP basecalling</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>--onthq<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>--run_name<span class="w"> </span>MyOntRun
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>Perform consensus assembly with Autocycler.</p>
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>--autocycler<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
-</span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Perform consensus assembly with Autocycler and polish with Homopolish.</p>
 <div class="language-BASH highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>--autocycler<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>--homopolish<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>--run_name<span class="w"> </span>MyIlluminaRun
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>--run_name<span class="w"> </span>MyOntRun
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Perform consensus assembly with Autocycler and polish with Homopolish.</p>
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>--autocycler<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>--homopolish<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>--run_name<span class="w"> </span>MyOntRun
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <h2 id="ont-and-illumina-reads">ONT and Illumina reads</h2>
 <p>Combining Nanopore long reads with Illumina short reads will extend the assembly process by using short reads for assembly polishing. No additional command-line flags are required. A samplesheet with mixed ONT and Illumina reads will look as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sample  platform    fq1 fq2
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_0.fastq.gz
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_1.fastq.gz
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_2.fastq.gz
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_3.fastq.gz
 </span></code></pre></div>
 <p>Note that Homopolish will not run if short reads are provided. </p>
 <h2 id="pacbio-reads">Pacbio reads</h2>
 <p>Assembling genomes form Pacbio reads is largely equivalent to using ONT reads, with the exception that Pacbio distinguishes between corrected (HiFi) and uncorrected (CLR) reads - which GABI needs to be told about. GABI only accepts one kind (HiFI or CLR) of Pacbio reads per run. </p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sample  platform    fq1 fq2
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 </span></code></pre></div>
 <p>GABI can then be run like so:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">CLR reads, default options</label><label for="__tabbed_3_2">HiFi reads, default options</label><label for="__tabbed_3_3">CLR reads with Homopolish</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Run GABI with all-defaults options for CLR reads. </p>
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>Run GABI with all-defaults options for HiFi reads. </p>
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>--pacbio_hifi<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>--pacbio_hifi<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>Run GABI with CLR reads and use Homopolish</p>
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>--homopolish<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>--homopolish<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>--run_name<span class="w"> </span>MyIlluminaRun
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <h2 id="pacbio-and-illumina-reads">Pacbio and Illumina reads</h2>
 <p>Combining Pacbio long reads with Illumina short reads will extend the assembly process by using short reads for assembly polishing. No additional command-line flags are required. A samplesheet with mixed Pacbio and Illumina reads will look as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sample  platform    fq1 fq2
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sample  platform    fq1 fq2
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>SampleA ILLUMINA    /path/to/sampleA_R1.fastq.gz    /path/to/sampleA_R2.fastq.gz
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>sampleA PACBIO  /path/to/sampleA_hifi.fastq.gz
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>sampleB PACBIO  /path/to/sampleB_hifi.fastq.gz
 </span></code></pre></div>
 <h2 id="pre-assembled-genomes">Pre-assembled genomes</h2>
 <p>GABI also accepts pre-assembled genomes - in which case only limited QC data can be generated of course. </p>
 <p>A samplesheet for pre-assembled genomes looks as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sample  assembly
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sampleA /path/to/sampleA.fasta
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>sampleB /path/to/sampleB.fasta
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sample  assembly
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>sampleA /path/to/sampleA.fasta
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>sampleB /path/to/sampleB.fasta
 </span></code></pre></div>
 <p>Then you can run GABI as usual:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">All default settings</label><label for="__tabbed_4_2">Skipping AMR predictions</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>--run_name<span class="w"> </span>MyAssemblies
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>--run_name<span class="w"> </span>MyAssemblies
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>Skip the optional AMR prediction steps</p>
-<div class="language-BASH highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>--skip_amr<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>--run_name<span class="w"> </span>MyAssemblies
+<div class="language-BASH highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>my_profile<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>-r<span class="w"> </span><span class="m">1</span>.4.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>--input<span class="w"> </span>samples.tsv<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>--skip_amr<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>--run_name<span class="w"> </span>MyAssemblies
 </span></code></pre></div>
 </div>
 </div>

@@ -1728,10 +1728,6 @@ If you have sequenced at sufficient depths, you may decide to discard shorter re
 <p>Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). 
 This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. </p>
 </dd>
-<dt><code>--skip_medaka</code> [ default = false ]</dt>
-<dd>
-<p>Do not perform polishing using Medaka. Medaka requires for the reads to be basecalled with Dorado and a compatible <a href="https://software-docs.nanoporetech.com/dorado/latest/models/list/">model</a>. If this is not the case, Medaka should be skipped</p>
-</dd>
 <dt><code>--porechop</code> [ default = false ]</dt>
 <dd>
 <p>Perform removal of adapters from reads using <a href="https://github.com/bonsai-team/Porechop_ABI">Porechop_abi</a>. Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. </p>

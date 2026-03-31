@@ -724,6 +724,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#plasmids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plasmids
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1310,6 +1321,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#plasmids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plasmids
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1342,7 +1364,7 @@
 <p>Computing requirements are largely dependent on your input data. In principle, GABI should run on commodity hardware such as modern laptops or desktop computers. The minimum required specs include 4 CPU cores and 16 Gb of Ram (preferably &gt; 32GB!) as well as ~50 GB of storage for the local reference data. That said, GABI was designed and optimized for powerful workstations and compute clusters, and such hardware is recommended if you plan on assembling many genomes - especially when using time-consuming consensus assembly for long-read data (<code>--autocycler</code>). </p>
 <p>While Nextflow, and consequently GABI, are technically compatible with Windows (through <a href="https://learn.microsoft.com/en-us/windows/wsl/about">WSL</a>) and OSX, it is going to be easiest to run it on a Linux system. For more details, please see our <a href="../installation/">installation</a> instructions. </p>
 <h2 id="sequencing-depth">Sequencing depth</h2>
-<p>GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see <a href="https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json">threshold</a>), so it is recommended to aim for this range (ideally 50-100X) to ensure that your data does not trigger a warning or fail. </p>
+<p>GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see <a href="https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json">threshold</a>), so it is recommended to aim for this as a lower bound (ideally 50-100X) to ensure that your data does not trigger a warning or fail. </p>
 <h2 id="contamination">Contamination</h2>
 <p>GABI is very sensitive towards read contamination and will fail samples if it detects even lower levels of contamination. Please make sure you work with pure isolate cultures and that no contaminations are introduced during DNA extraction or library prep. Also note that some of the criteria applied to detect contamination may not perform optimally for Nanopore data, which is inherently more noisy. We are working to improve this. </p>
 <h2 id="nanopore-reads">Nanopore Reads</h2>
@@ -1351,7 +1373,8 @@
 <li>Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.</li>
 <li>Basecalling should be performed with a recent version of <a href="https://github.com/nanoporetech/dorado">Dorado</a> and a SUP (super-accurate) model</li>
 <li>By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use <code>--skip_medaka</code></li>
-<li>If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.  </li>
+<li>If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.</li>
+<li>Try to get reasonably long reads; a read N50 of 10kb should be achievable with most extraction methods.   </li>
 </ul>
 <h2 id="iontorrent-reads">IonTorrent Reads</h2>
 <p>GABI was neither designed nor tested to work with IonTorrent single-end reads. We simply do not see enough interest in this technology within our community. In principle, it should be possible to process Torrent data as if it were single-end Illumina data. However, proceed at your own risk as some tools may not appropriately deal with the torrent-specific error profiles. If you would like to see IonTorrent support for GABI, please open an issue on <a href="https://github.com/bio-raum/gabi/issues">github</a>. </p>
@@ -1362,6 +1385,8 @@
 <li>GABI performs only rudimentary polishing of Pacbio assemblies as the best strategy is difficult to nail down(RS vs Sequel, HiFi vs subreads). Results overall should be good when using HiFi reads. </li>
 <li>GABI does not perform any kind of trimming and demultiplexing of the data (use <a href="https://lima.how/">Lima</a>)</li>
 </ul>
+<h2 id="plasmids">Plasmids</h2>
+<p>If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you the plasmids. </p>
 
 
 
