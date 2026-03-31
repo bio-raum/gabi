@@ -58,15 +58,58 @@ workflow ONT_ASSEMBLY {
         ch_long_read_assembly = FLYE_ONT.out.fasta
     }
 
+    ch_medaka_polished = channel.from([])
+    
     if (params.skip_medaka) {
+
         ch_medaka_polished = ch_long_read_assembly
+
     } else {
-        // Re-polish initial cons0ensus contigs with Medaka
-        MEDAKA_CONSENSUS(
-            lreads.join(ch_long_read_assembly)
-        )
-        ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
-        ch_medaka_polished = MEDAKA_CONSENSUS.out.consensus
+
+        if (params.medaka_model) {
+
+            MEDAKA_CONSENSUS(
+                lreads.join(
+                    ch_long_read_assembly
+                )
+            )
+            ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+            ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
+
+        } else {
+
+            // Check if reads contain information about basecalling model
+            lreads.map { m,r ->
+                def status = check_ont_model(r)
+                tuple(m, r, status )
+            }.branch { m, r, s ->
+                with_model: s == true
+                no_model: s == false
+                tuple(m,r)
+            }.set { lreads_with_model_status }
+
+            MEDAKA_CONSENSUS(
+                lreads_with_model_status.with_model.join(
+                    ch_long_read_assembly
+                )
+            )
+            ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+            ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
+
+            // Get any assemblies which were not polished
+            lreads_with_model_status.no_model.join(
+                ch_long_read_assembly
+            ).map { m,l,a -> 
+                tuple(m, a)
+            }.set { ch_skip_polishing }
+
+            ch_medaka_polished = ch_medaka_polished.mix(ch_skip_polishing)
+
+            ch_skip_polishing.subscribe { m, a -> 
+                log.warn "Skipping Medaka polishing for ${m.sample_id} - no basecalling model defined in file or from command line!"
+            }
+        }
+
     }
 
     // Join polished Medaka assembly with optional short reads
@@ -139,4 +182,26 @@ workflow ONT_ASSEMBLY {
     assembly = DNAAPLER.out.fasta
     versions = ch_versions
 
+}
+
+/*
+Dorado encodes the base calling model into the fastQ headers
+Check if it is there, else data has no model information
+*/
+def check_ont_model(fastq) {
+
+    def has_model = false
+
+    fastq.withInputStream { fq ->
+        def isGzip = fastq.name.toString().endsWith('.gz')
+        def stream = isGzip ? new java.util.zip.GZIPInputStream(fq) as InputStream : fq as InputStream
+        def decoder = new InputStreamReader(stream, 'ASCII')
+        def buffered = new BufferedReader(decoder)
+        line = buffered.readLine()
+        if (line.contains("model")) {
+            has_model = true
+        }
+    }
+
+    return has_model
 }
