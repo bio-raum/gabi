@@ -7,6 +7,8 @@
 :   Many reasons can contribute to incomplete assemblies - from the starting material being of poor quality, insufficient sequencing depth, biases in your read data (i.e. loss of certain genomic regions during DNA extraction/preparation) or accidental mix-ups in sample assignment of a subset of your reads. 
 
     You can check results from ConfindR to see if all your reads are from the same strain and were not accidentally mixed up or in fact contaminated. 
+
+    Another culprit may be the quality of the data, especially when trying to assemble Nanopore reads. Read data with very low quality (most of the reads less than Q15) and/or low coverage and/or shorter mean read lengths (< 5kb) may not yield a satisfactory result. You may be able to improve this with some pre-GABI data finagling. 
     
     That said, if you did everything right, it could be that the assembly algorithm we employ in this pipeline simply wasn't up to the task. Please let us know if you suspect that to be the case! We try to use state-of-the-art methods, but are always happy to learn new things. 
 
@@ -24,13 +26,13 @@
 
 ## Nanopore
 
-### Can I use older ONT reads with GABI?
+### Skipping Medaka polishing for MySample - no basecalling model defined in file or from command line!
 
-GABI uses Medaka for assembly polishing; Medaka in turn requires that reads contain information about the basecalling (i.e. the basecalling model). This is generally the case if reads were basecalled with a somewhat recent version of Dorado. If for some reason that information was stripped from the reads, but is still known, you can provide information about the model to GABI using `--medaka_model`. The [model](https://software-docs.nanoporetech.com/dorado/latest/models/list/) specified must be compatible with Dorado! 
+GABI uses Medaka for assembly polishing; Medaka in turn requires that reads contain information about the basecalling (i.e. the basecalling model). This is generally the case if reads were basecalled with a somewhat recent version of Dorado. If for some reason that information was stripped from the reads, but is still known, you can provide information about the model to GABI using `--medaka_model`. Note that this is for the entire run; we do not currently support specifying multiple basecalling models for different read sets. The [model](https://software-docs.nanoporetech.com/dorado/latest/models/list/) specified must be compatible with Dorado! 
 
 If you have lost the information about the basecalling model or used a software other than Dorado (e.g. Guppy) for basecalling, please consider re-basecalling your data.
 
-If you do not know the model, and have no way of re-basecalling the data (e.g. if the data was downloaded as FastQ files from ENA/NCBI), please use `--skip_medaka` to skip Medaka polishing. Better no polishing than wrong polishing. 
+If you do not know the model, and have no way of re-basecalling the data (e.g. if the data was downloaded as FastQ files from ENA/NCBI), GABI will automatically skip polishing to avoid introducing unecessary errors. 
 
 ## Crashes and errors
 

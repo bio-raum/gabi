@@ -298,7 +298,29 @@ def main(yaml, template, output, version, call, wd):
 
                     btyper = serotypes["btyper3"]
                     serotype = btyper["Adjusted_panC_Group(predicted_species)"]
-                    pathogenes = btyper["Bt(genes)"]
+                    # large number of genes to consider:
+                    categories = [
+                        "anthrax_toxin(genes)",
+                        "capsule_Bps(genes)",
+                        "capsule_Cap(genes)",
+                        "capsule_Has(genes)",
+                        "diarrheal_toxin_Hbl(genes)",
+                        "diarrheal_toxin_Nhe(genes)",
+                        "emetic_toxin_cereulide(genes)",
+                        "Bt(genes)",
+                        "sphingomyelinase_Sph(gene)"
+                    ]
+
+                    genes = []
+                    for category in categories:
+                        results = btyper[category]
+                        this_genes = re.findall(r"\((.*?)\)", results)[0]
+                        if (len(this_genes) > 0):
+                            for g in this_genes.split(";"):
+                                genes.append(g)
+
+                    sorted(genes)
+                    pathogenes = ",".join(genes)
                     tool = "Btyper3"
 
                 elif ("Staphylococcus aureus" in taxon):
@@ -308,7 +330,7 @@ def main(yaml, template, output, version, call, wd):
                     pathogenes = "" if sccmec["mecA"] == "-" else "mecA"
                     tool = "SCCMEC"
 
-                elif ("Acinteobacter" in taxon | "Klebsiella" in taxon):
+                elif ("Acinetobacter" in taxon | "Klebsiella" in taxon):
 
                     kaptive = serotypes["kaptive"]
                     serotype = kaptive["best_match"]

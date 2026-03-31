@@ -8,11 +8,11 @@ Some of the key things that happen inside GABI:
 - Group read data by sample id and check which assembly tool is appropriate based on the types of sequencing data we have available
 - Assemble reads with the optimal tool (chain)
 - Determine the species from the assembled genome sequence
-- Perform quality checks on the assembly, including composition as contamination check
+- Perform quality checks on the assembly, including taxonomic composition as contamination check
 - Perform genomic serotyping, if we have suitable tools available for that species
 - Perform MLST typing on the assembly, if we have a pre-configured database for that species
 - Annotate gene models in our assembled genome
-- Predict antimicrobial resistance genes from our assembly
+- Predict antimicrobial resistance genes from the assembly
 - Call variants from the assembly (mostly for QC purposes, since there shouldn't be any!)
 - Make a "pretty" QC report
 

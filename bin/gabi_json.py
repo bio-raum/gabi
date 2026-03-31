@@ -23,9 +23,9 @@ def abricate_to_serotype(entries):
     o = []
     for entry in entries:
         gene = entry["GENE"].split("-")[-1]
-        if "H" in gene:
+        if gene.startswith("H"):
             h.append(gene)
-        elif "O" in gene:
+        elif gene.startswith("O"):
             o.append(gene)
 
     o_antigen = "/".join(set(o))

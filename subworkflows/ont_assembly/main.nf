@@ -60,54 +60,47 @@ workflow ONT_ASSEMBLY {
 
     ch_medaka_polished = channel.from([])
     
-    if (params.skip_medaka) {
+    if (params.medaka_model) {
 
-        ch_medaka_polished = ch_long_read_assembly
+        MEDAKA_CONSENSUS(
+            lreads.join(
+                ch_long_read_assembly
+            )
+        )
+        ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+        ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
 
     } else {
 
-        if (params.medaka_model) {
+        // Check if reads contain information about basecalling model
+        lreads.map { m,r ->
+            def status = check_ont_model(r)
+            tuple(m, r, status )
+        }.branch { m, r, s ->
+            with_model: s == true
+            no_model: s == false
+            tuple(m,r)
+        }.set { lreads_with_model_status }
 
-            MEDAKA_CONSENSUS(
-                lreads.join(
-                    ch_long_read_assembly
-                )
-            )
-            ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
-            ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
-
-        } else {
-
-            // Check if reads contain information about basecalling model
-            lreads.map { m,r ->
-                def status = check_ont_model(r)
-                tuple(m, r, status )
-            }.branch { m, r, s ->
-                with_model: s == true
-                no_model: s == false
-                tuple(m,r)
-            }.set { lreads_with_model_status }
-
-            MEDAKA_CONSENSUS(
-                lreads_with_model_status.with_model.join(
-                    ch_long_read_assembly
-                )
-            )
-            ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
-            ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
-
-            // Get any assemblies which were not polished
-            lreads_with_model_status.no_model.join(
+        MEDAKA_CONSENSUS(
+            lreads_with_model_status.with_model.join(
                 ch_long_read_assembly
-            ).map { m,l,a -> 
-                tuple(m, a)
-            }.set { ch_skip_polishing }
+            )
+        )
+        ch_versions = ch_versions.mix(MEDAKA_CONSENSUS.out.versions)
+        ch_medaka_polished = ch_medaka_polished.mix(MEDAKA_CONSENSUS.out.consensus)
 
-            ch_medaka_polished = ch_medaka_polished.mix(ch_skip_polishing)
+        // Get any assemblies which were not polished
+        lreads_with_model_status.no_model.join(
+            ch_long_read_assembly
+        ).map { m,l,a -> 
+            tuple(m, a)
+        }.set { ch_skip_polishing }
 
-            ch_skip_polishing.subscribe { m, a -> 
-                log.warn "Skipping Medaka polishing for ${m.sample_id} - no basecalling model defined in file or from command line!"
-            }
+        ch_medaka_polished = ch_medaka_polished.mix(ch_skip_polishing)
+
+        ch_skip_polishing.subscribe { m, a -> 
+            log.warn "Skipping Medaka polishing for ${m.sample_id} - no basecalling model defined in file or from command line!"
         }
 
     }
