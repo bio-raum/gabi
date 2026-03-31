@@ -1162,10 +1162,13 @@
 <h1 id="140">1.4.0</h1>
 <ul>
 <li>Updated reference database to v1.2</li>
-<li>Added Autocycler to run consensus assembly for long reads</li>
+<li>Added Autocycler to optionally run consensus assembly for long reads</li>
+<li>Moved redundant genome size calculations into its own sub workflow</li>
+<li>Defaulting genome size estimate to 6MB if calculation fails</li>
+<li>Medaka polishing: Check if reads contain basecalling model meta data; else skip if model isn't provided via command line</li>
 <li>Replaced ConfindR db download with proper installation workflow</li>
-<li>Updated Chopper to 0.9.0</li>
-<li>Capped genome size estimation for downsampling at 14MB (the largest known bacterial genome)</li>
+<li>Replaced Chopper with Fastplong (faster, compatible with MultiQC)</li>
+<li>Removed read downsampling with RASUSA as all assembly tools/chains already take care of that</li>
 <li>Updated CheckM2 database download to specify a user-agent as a fix to aborting file transfers</li>
 <li>Adding pipeline settings to sample-level JSON</li>
 </ul>
