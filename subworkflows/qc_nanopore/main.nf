@@ -1,16 +1,14 @@
 /*
 Include Modules
 */
-
 include { PORECHOP_ABI }                from './../../modules/porechop/abi'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
-include { CHOPPER }                     from './../../modules/chopper'
 include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
+include { FASTPLONG }                   from './../../modules/fastplong'
 
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
-include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_NANOPORE {
     take:
@@ -22,7 +20,7 @@ workflow QC_NANOPORE {
     ch_versions = channel.from([])
     multiqc_files = channel.from([])
 
-    if (!params.skip_porechop) {
+    if (params.porechop) {
         // Nanopore adapter trimming
         PORECHOP_ABI(
             reads
@@ -56,19 +54,20 @@ workflow QC_NANOPORE {
     ch_ont_trimmed = ch_reads_ont.single.mix(CAT_FASTQ.out.reads)
 
     // Filter the reads by size and quality
-    CHOPPER(
+    FASTPLONG(
         ch_ont_trimmed
     )
-    ch_versions = ch_versions.mix(CHOPPER.out.versions)
+    ch_versions = ch_versions.mix(FASTPLONG.out.versions)
+    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
 
-    CHOPPER.out.fastq.branch { m,r ->
+    FASTPLONG.out.reads.branch { m,r ->
         pass: r.countFastq() >= params.ont_min_reads
         fail: r.countFastq() < params.ont_min_reads
     }.set { ch_chopped_reads }
 
     // Stop a sample if the number of ONT reads is under a threshold
     ch_chopped_reads.fail.subscribe { m,r ->
-        log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting ont_min_length, ont_min_reads and ont_min_q."
+        log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting reads_min_length, ont_min_reads and ont_min_q."
     }
 
     // Run contamination check
@@ -85,31 +84,17 @@ workflow QC_NANOPORE {
     ch_versions = ch_versions.mix(NANOPLOT.out.versions)
     multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { m, r -> r })
 
-    if (params.max_coverage) {
-
-        // Replace tabs in ONT fastq headers, else KMC will not work
-        SEQKIT_REPLACE(
-            ch_chopped_reads.pass
-        )
-        ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
-
-        // Perform downsampling of reads
-        DOWNSAMPLE_READS(
-            SEQKIT_REPLACE.out.fastx
-        )
-
-        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
-        ch_processed_reads = DOWNSAMPLE_READS.out.reads
-
-    } else {
-        ch_processed_reads = ch_chopped_reads.pass
-    }
+    // Replace tabs in ONT fastq headers, else KMC will not work
+    SEQKIT_REPLACE(
+        ch_chopped_reads.pass
+    )
+    ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
 
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     confindr_qc     = CONTAMINATION.out.qc
-    reads           = ch_processed_reads
+    reads           = SEQKIT_REPLACE.out.fastx
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt
     versions        = ch_versions

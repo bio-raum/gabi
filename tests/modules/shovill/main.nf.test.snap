@@ -6,14 +6,14 @@
                     {
                         "sample_id": "Test"
                     },
-                    "contigs.fa:md5,b4ae5bfbd2575af6fa7c88c17d31085f"
+                    "contigs.fa:md5,d4170bf381ebb86b0cfa02149cb96c91"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.2"
+            "nextflow": "25.04.2"
         },
-        "timestamp": "2026-02-03T11:37:45.281552429"
+        "timestamp": "2026-03-16T09:26:33.199366405"
     }
 }

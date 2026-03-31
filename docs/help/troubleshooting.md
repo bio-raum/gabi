@@ -22,6 +22,16 @@
 
 :   Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. 
 
+## Nanopore
+
+### Can I use older ONT reads with GABI?
+
+GABI uses Medaka for assembly polishing; Medaka in turn requires that reads contain information about the basecalling (i.e. the basecalling model). This is generally the case if reads were basecalled with a somewhat recent version of Dorado. If for some reason that information was stripped from the reads, but is still known, you can provide information about the model to GABI using `--medaka_model`. The [model](https://software-docs.nanoporetech.com/dorado/latest/models/list/) specified must be compatible with Dorado! 
+
+If you have lost the information about the basecalling model or used a software other than Dorado (e.g. Guppy) for basecalling, please consider re-basecalling your data.
+
+If you do not know the model, and have no way of re-basecalling the data (e.g. if the data was downloaded as FastQ files from ENA/NCBI), please use `--skip_medaka` to skip Medaka polishing. Better no polishing than wrong polishing. 
+
 ## Crashes and errors
 
 ### The required reference directory was not found on your system, exiting!

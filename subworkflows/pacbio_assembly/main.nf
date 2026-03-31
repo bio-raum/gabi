@@ -1,13 +1,12 @@
 include { FLYE as FLYE_PACBIO }             from '../../modules/flye'
 include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
-include { KMC }                             from '../../modules/kmc'
 include { DNAAPLER }                        from '../../modules/dnaapler'
 include { POLYPOLISH_POLISH }               from '../../modules/polypolish/polish'
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { HOMOPOLISH as HOMOPOLISH_PACBIO } from '../../modules/homopolish'
 include { BWAMEM2_MEM_POLYPOLISH }          from '../../modules/bwamem2/mem_polypolish'
-// include { AUTOCYCLER_WORKFLOW }          from '../../modules/autocycler/full'
 include { AUTOCYCLER_WORKFLOW }             from './../autocycler_workflow'
+include { GENOMESIZE }                      from './../genomesize'
 
 workflow PACBIO_ASSEMBLY {
 
@@ -31,19 +30,26 @@ workflow PACBIO_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
+    // Determine genome size of from this read set
+    GENOMESIZE(
+        lreads
+    )
+    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
+
     if (params.autocycler) {
         read_type = params.pacbio_hifi ? "pacbio_hifi" : "pacbio_clr"
         // Autocycler bash workflow
         AUTOCYCLER_WORKFLOW(
-            lreads,
+            GENOMESIZE.out.reads_with_genome_size,
             read_type
         )
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
     } else {
+
         // FLYE long read assembler
         FLYE_PACBIO(
-            lreads
+            GENOMESIZE.out.reads_with_genome_size
         )
         ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
         ch_long_read_assembly = FLYE_PACBIO.out.fasta
@@ -73,7 +79,7 @@ workflow PACBIO_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_PACBIO.out.versions)
         ch_homopolished = HOMOPOLISH_PACBIO.out.polished
     } else {
-        ch_homopolished = ch_long_read_assembly
+        ch_homopolished = assembly_with_short_reads.without.map { m,a,r -> tuple(m,a) }
     }
 
     // Create BWA index

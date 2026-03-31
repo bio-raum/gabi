@@ -1,4 +1,3 @@
-include { KMC }                                 from '../../modules/kmc'
 include { AUTOCYCLER_HELPER }                   from'./../../modules/autocycler/helper'
 include { AUTOCYCLER_SUBSAMPLE }                from'./../../modules/autocycler/subsample'
 include { AUTOCYCLER_FINISH }                   from'./../../modules/autocycler/finish'
@@ -9,29 +8,15 @@ https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Ba
 workflow AUTOCYCLER_WORKFLOW {
 
     take:
-    reads
+    reads_with_genome_size
     read_type
 
     main:
     ch_versions = channel.from([])
 
-    // Determine genome size from Kmers
-    // Autocycler genome size check ist way too slow.
-    KMC(
-        reads
-    )
-    ch_versions = ch_versions.mix(KMC.out.versions)
-
-    reads.join(
-        KMC.out.log
-    ).map { m,r,l ->
-        def gsize = parse_genome_size(l)
-        tuple(m,r,gsize)
-    }.set { ch_reads_with_genome_size }
-
     // Subsample reads for parallel processing
     AUTOCYCLER_SUBSAMPLE(
-        ch_reads_with_genome_size
+        reads_with_genome_size
     )
     ch_versions = ch_versions.mix(AUTOCYCLER_SUBSAMPLE.out.versions)
 
@@ -67,39 +52,20 @@ workflow AUTOCYCLER_WORKFLOW {
     
 }
 
-def parse_genome_size(aFile) {
-
-    // defaults to 6Mb in case no base count was reported
-    def gsize = '6000000'
-
-    aFile.eachLine { line ->
-        if (line.contains("unique counted k-mers")) {
-            def elements = line.trim().split(/\s+/)
-            def raw = elements[-1].toInteger()
-            // Capped at 14MB for the largest known bacterial genome - else use 6MB
-            if (raw <= 14000000) {
-                gsize = raw
-            } else {
-                log.warn "Genome size estimate exceeds limits for bacterial genomes - capping at 6MB\nMake sure to check reads for contamination."
-            }
-            
-        }
-
-    }
-
-    return gsize
-}
-
 // Not all data types may be assembled with the same tools
 def tool_list(meta) {
     def tools = []
     if (meta.platform.contains("NANOPORE")) {
-        tools = ["flye", "metamdbg", "miniasm", "necat", "raven"]
+        if (params.onthq) {
+            tools = ["flye", "miniasm", "necat", "raven"]
+        } else {
+            tools = ["flye", "miniasm", "necat", "raven"]
+        }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
-            tools = ["flye", "metamdbg", "miniasm", "raven"]
+            tools = ["flye", "hifiasm"]
         } else {
-            tools = ["flye", "metamdbg", "miniasm", "raven", "canu"]
+            tools = ["flye", "miniasm", "raven", "canu" ]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"

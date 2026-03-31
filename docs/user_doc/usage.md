@@ -75,15 +75,15 @@ Then use the `-r` argument as explained above to run the workflow using the new 
 
 ## Choosing an assembly method
 
-:   GABI automatically chooses the appropriate assembly chain based on your data, supporting three scenarios:
+:   GABIs default mode is to automatically choose the appropriate assembly chain based on your data, supporting three scenarios:
 
     - Samples with only short reads (Assembler: Shovill)
     - Samples with Nanopore reads and **optional** short reads (Assembler: Flye + Medaka + Polypolish/Homopolish)
-    - Samples with only Pacbio HiFi reads (Assembler: Flye + Racon)
+    - Samples with only Pacbio HiFi reads and **optional** short reads  (Assembler: Flye) + Polypolish/Homopolish
 
-    This is why it is important to make sure that all reads coming from the same sample are linked by a common sample ID. 
+    Combining long and short reads requires for all data to carry the same sample ID. 
 
-    Note: HiFi data cannot be combined with any of the other technologies! (mostly because it is not necessary and usually not done)
+    In addition, GABI supports consensus assembly of long reads, using the option `--autocycler`. This option will run multiple assemblers and combine them into a consensus. Please note that this option will increase run time (potentially by a lot). 
 
 ## Command-line options
 
@@ -163,15 +163,41 @@ Some options specific to assembling Illumina short reads.
 
 :   Choose which assembly tool to use with Shovill. Valid options are skesa, velvet, megahit or spades. Default is: spades. Incompatible with: `--unicycler`
 
+### Long-read options
+
+Options that influence both ONT and Pacbio processing. 
+
+`--homopolish` [ default = false ]
+
+:   Perform assembly polishing using [Homopolish](https://github.com/ythuang0522/homopolish). 
+
+    Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly. Even when requested, Homopolish is only run when no short reads are available (and never for PacBio Hifi reads). 
+
+`--autocycler` [ default = false ]
+
+:   Perform long read consensus assembly using [Autocycler][https://github.com/rrwick/Autocycler]. This will subsample the read data and run a number of individual assembly tools and combine the results into a consensus for (hopefully) improved accuracy over the default single-tool workflow. Pipeline run-time will increase significantly when this option is enabled. 
+
+The following tools are used, depending on the input data/options:
+
+| Data | Options | Assemblers |
+| ---- | ------- | ---------- |
+| ONT (standard) | | flye, miniasm, necat, raven |
+| ONT (SUP) | --onthq | flye, miniasm, necat, raven |
+| Pacbio CLR | | flye, miniasm, raven, canu |
+| Pacbio HiFi | --pacbio_hifi | flye, hifiasm |
+
+`--reads_min_length`  [ default = 500 ]
+
+:   Discard long reads (Pacbio/ONT) below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
+    If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb).
+
 ### Nanopore options
 
 Some options specific to assembling ONT reads. 
 
 `--medaka_model` [ default = null ]
 
-:   The basecalling model used for ONT reads. This option is set to null by default since more recent base callers encode this information in the sequence headers and Medaka can grab it from there. 
-    
-    If this is not the case for your data, you can specify the appropriate model here. 
+:   The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. Else, also see `--skip_medaka`. 
 
 `--homopolish_model` [ default = R10]
 
@@ -179,31 +205,20 @@ Some options specific to assembling ONT reads.
 
 `--onthq` [ default = false ]
 
-:   Set this option to true if you believe your ONT data to be of "high quality" (much of the reads >= Q20, generated with Dorado SUP basecalling). This option is set to false by default.
+:   Set this option to true if your ONT data is of "high quality" (much of the reads >= Q20, generated with Dorado SUP basecalling). This option is set to false by default.
 
 `--ont_min_q` [ default = 10 ]
 
 :   Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). 
-
     This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
 
-`--ont_min_length`  [ default = 500 ]
+`--skip_medaka` [ default = false ]
 
-:   Discard nanopore reads below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
-    
-    If you have sequenced at sufficient depths, you may decide to discard shorter reads to improve your assembly contiguity. However, please note that discarding shorter reads may essentially throw away very short plasmids (which can be as short as ~1kb). 
+:   Do not perform polishing using Medaka. Medaka requires for the reads to be basecalled with Dorado and a compatible [model](https://software-docs.nanoporetech.com/dorado/latest/models/list/). If this is not the case, Medaka should be skipped
 
-`--homopolish` [ default = false ]
+`--porechop` [ default = false ]
 
-:   Perform ONT polishing using [Homopolish](https://github.com/ythuang0522/homopolish) (only the Medaka consensus assembly is used). 
-
-    Homopolish uses homologous sequences from a database to fix potential homopolymer errors; some people may not want to include such corrections in their assembly.
-
-`--skip_porechop` [ default = true ]
-
-:   Skip the removal of adapters from reads using [Porechop_abi](https://github.com/bonsai-team/Porechop_ABI). 
-
-    Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. 
+:   Perform removal of adapters from reads using [Porechop_abi](https://github.com/bonsai-team/Porechop_ABI). Porechop_abi learns potential adapter sequences directly from the read data without external knowledge. This step is skipped by default since it is a) very slow and b) because recent basecallers offer a much faster trimming option so that the reads going into GABI should typically not contain adapters anymore. 
 
 ### Pacbio options
 
@@ -214,6 +229,10 @@ Some options specific to assembling ONT reads.
 ### Expert options
 
 These options are only meant for users who have a specific reason to touch them. For most use cases, the defaults should be fine. 
+
+`--autocycler_subsample` [ default = 4 ]
+
+:   When using autocycler for long read consensus assembly, create this many subsamples from the initial read data. 
 
 `--confindr_db` [ default = null ]
 
@@ -227,11 +246,9 @@ These options are only meant for users who have a specific reason to touch them.
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
 
-`--max_coverage` [ default = null ]
+`--max_coverage` [ default = "100" ]
 
-:   Performs downsampling of the read data to the specified depth. This is done for each sequencing platform, so if you have both Illumina and ONT reads for a given sample, each set will be downsampled separately. 
-    
-    Please not that downsampling uses a random seed to choose which reads to retain and will thus yield slightly differing results each time and/or on different systems. Use with `--random_seed` if you would like the results to be reproducible.
+:   Tells the assembly software to downsample the read data to the specified depth. This option only applies to long-read data as Shovill, the short-read assembler, performs downsampling automatically. Down-sampling is automatically disabled when `--autocycler`is requested (autocycler performs its own partitioning and subsampling).
 
 `--max_contigs` [ default = 150 ]
 
