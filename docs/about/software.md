@@ -23,9 +23,6 @@ Version 5.3.0, [doi](https://doi.org/10.1007/978-1-4939-9173-0_14) | [PubMed](ht
 **BWAMEM 2**
 Version 2.2.1, [doi](https://doi:10.1109/IPDPS.2019.00041) | [github](https://github.com/bwa-mem2/bwa-mem2) | [IEEE Explore](https://ieeexplore.ieee.org/document/8820962)
 
-**Chopper**
-Version 0.3.0, [PubMed](https://pubmed.ncbi.nlm.nih.gov/37171891/) | [github](https://github.com/wdecoster/chopper)
-
 **ConfindR**
 Version 0.7.4, [doi](https://doi.org/10.7717/peerj.6995) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/31183253/) | [github](https://github.com/OLC-Bioinformatics/ConFindr)
 
@@ -37,6 +34,9 @@ Version 2.0.0, [github](https://github.com/phac-nml/ecoli_serotyping)
 
 **FastP**
 Version 0.24, [doi](https://doi.org/10.1093/bioinformatics/bty560) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/30423086/) | [github](https://github.com/OpenGene/fastp)
+
+**FastPlong**
+Version 0.4.1, [doi](https://doi.org/10.1093/bioinformatics/bty560) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/30423086/) | [github](https://github.com/OpenGene/fastplong)
 
 **Flye**
 Version 2.9, [doi](https://doi.org/10.1038/s41587-019-0072-8) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/30936562/) |  [github](https://github.com/fenderglass/Flye/tree/flye)
@@ -79,9 +79,6 @@ Version 5.2.0, [github](https://github.com/ablab/quast)
 
 **Racon**
 Version 1.4.3, [doi](https://doi.org/10.1101/gr.214270.116) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/28100585/) | [github](https://github.com/isovic/racon)
-
-**Rasusa**
-Version 0.3.0, [doi](https://doi.org/10.21105/joss.03941) | [Article](https://joss.theoj.org/papers/10.21105/joss.03941) | [github](https://github.com/mbhall88/rasusa)
 
 **Polypolish**
 Version 0.6.0, [doi](https://doi.org/10.1099/mgen.0.001254) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/38833287/) | [github](https://github.com/rrwick/Polypolish)

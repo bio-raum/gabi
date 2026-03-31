@@ -17,6 +17,23 @@ parser.add_argument("--sample", "-s")
 args = parser.parse_args()
 
 
+def abricate_to_serotype(entries):
+
+    h = []
+    o = []
+    for entry in entries:
+        gene = entry["GENE"].split("-")[-1]
+        if "H" in gene:
+            h.append(gene)
+        elif "O" in gene:
+            o.append(gene)
+
+    o_antigen = "/".join(set(o))
+    h_antigen = "/".join(set(h))
+    serotype = f"{o_antigen}:{h_antigen}"
+    return serotype
+
+
 def parse_bracken(lines):
     header = lines.pop(0).strip().split("\t")
     data = []
@@ -403,6 +420,12 @@ def main(sample, taxon, yaml_file, settings_json, output):
             matrix["samtools"] = parse_samtools_stats(lines)
         elif re.search("mobtyper_results.txt", file):
             matrix["plasmids"] = parse_tabular(lines)
+        elif re.search("ecoh.abricate", file):
+            results = parse_tabular(lines)
+            if not results:
+                continue
+            serotype = abricate_to_serotype(results)
+            matrix["serotype"]["ecoh"] = {"serotype": serotype}
         elif re.search("abricate", file):
             results = parse_tabular(lines)
             if not results:
