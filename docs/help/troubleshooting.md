@@ -22,7 +22,7 @@
 
 ### Can I use Pacbio subreads (CLR) with GABI?
 
-:   Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). Alternatively, you may wish to provide complementary short-read data to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. 
+:   Yes, but the HiFi format has been the defacto standard for Pacbio sequencing for a few years now. If you still have subread data, consider transforming it to CCS/HiFi using available [tools](https://ccs.how/). Alternatively, you may wish to provide complementary short-read data or request `--homopolish` to help GABI improve your assembly. Subread-only assemblies will likely contain numerous errors. 
 
 ## Nanopore
 
