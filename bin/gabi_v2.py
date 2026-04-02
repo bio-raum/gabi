@@ -252,6 +252,18 @@ def main(yaml, template, output, version, call, wd):
             quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 4)
             quast["duplication_status"] = check_status("quast_duplication", qc)
 
+            ###################
+            # Plasmids
+            ###################
+
+            plasmid_count = 0
+            plasmid_contig_count = 0
+
+            if "plasmids" in jdata:
+                for plasmid in jdata["plasmids"]:
+                    plasmid_count += 1
+                    plasmid_contig_count += int(plasmid["num_contigs"])
+
             #################
             # Get serotype(s)
             #################
@@ -290,7 +302,7 @@ def main(yaml, template, output, version, call, wd):
 
                 elif ("Listeria monocytogenes" in taxon):
 
-                    lissero = serotypes["lisstero"]
+                    lissero = serotypes["lissero"]
                     serotype = lissero["SEROTYPE"]
                     tool = "Lissero"
 
@@ -330,7 +342,7 @@ def main(yaml, template, output, version, call, wd):
                     pathogenes = "" if sccmec["mecA"] == "-" else "mecA"
                     tool = "SCCMEC"
 
-                elif ("Acinetobacter" in taxon | "Klebsiella" in taxon):
+                elif ("Acinetobacter" in taxon or "Klebsiella" in taxon):
 
                     kaptive = serotypes["kaptive"]
                     serotype = kaptive["best_match"]
@@ -520,6 +532,8 @@ def main(yaml, template, output, version, call, wd):
                 "fraction_status": genome_fraction_status,
                 "contigs": contigs,
                 "contigs_status": contigs_status,
+                "plasmids": plasmid_count,
+                "plasmid_contig_count": plasmid_contig_count,
                 "assembly": assembly,
                 "assembly_status": assembly_status,
                 "contamination_illumina": contaminated["illumina"]["contaminated"],

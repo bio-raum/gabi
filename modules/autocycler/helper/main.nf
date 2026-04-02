@@ -23,6 +23,8 @@ process AUTOCYCLER_HELPER {
     def prefix = task.ext.prefix ?: "${meta.sample_id}_${idx}-${tool}"
     
     """
+    export TERM=xterm-256color
+    
     autocycler helper \\
         $tool \\
         $args \\

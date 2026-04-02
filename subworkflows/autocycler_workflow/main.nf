@@ -57,15 +57,15 @@ def tool_list(meta) {
     def tools = []
     if (meta.platform.contains("NANOPORE")) {
         if (params.onthq) {
-            tools = ["flye", "miniasm", "necat", "raven"]
+            tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
         } else {
-            tools = ["flye", "miniasm", "necat", "raven"]
+            tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
         }
     } else if (meta.platform.contains("PACBIO")) {
         if (params.pacbio_hifi) {
-            tools = ["flye", "hifiasm"]
+            tools = ["flye", "hifiasm", "plassembler"]
         } else {
-            tools = ["flye", "miniasm", "raven", "canu" ]
+            tools = ["flye", "miniasm", "raven", "canu", "plassembler" ]
         }
     } else {
         log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
