@@ -281,7 +281,7 @@ def main(yaml, template, output, version, call, wd):
                     # We need to merge results from multiple tools here
                     abricate = serotypes["ecoh"]
                     ectyper = serotypes["ectyper"]
-                    stecfinder = serotypes["stecfinder"]
+                    # stecfinder = serotypes["stecfinder"]
 
                     serotype = abricate["serotype"]
                     pathotype = "" if ectyper["Pathotype"] == "ND" else ectyper["Pathotype"]
@@ -292,7 +292,7 @@ def main(yaml, template, output, version, call, wd):
 
                 elif ("Salmonella enterica" in taxon):
 
-                    seqsero = serotypes["seqsero2"]
+                    # seqsero = serotypes["seqsero2"]
                     sistr = serotypes["sistr"]
 
                     serotype = sistr['serogroup']
