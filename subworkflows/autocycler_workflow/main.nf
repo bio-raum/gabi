@@ -54,21 +54,29 @@ workflow AUTOCYCLER_WORKFLOW {
 
 // Not all data types may be assembled with the same tools
 def tool_list(meta) {
+
     def tools = []
-    if (meta.platform.contains("NANOPORE")) {
-        if (params.onthq) {
-            tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
-        } else {
-            tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
-        }
-    } else if (meta.platform.contains("PACBIO")) {
-        if (params.pacbio_hifi) {
-            tools = ["flye", "hifiasm", "plassembler"]
-        } else {
-            tools = ["flye", "miniasm", "raven", "canu", "plassembler" ]
-        }
+
+    if (params.autocycler_tools) {
+        log.info "Using user-provided list of tools for Autocycler"
+        tools = params.tools.split(",")
     } else {
-        log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
+        if (meta.platform.contains("NANOPORE")) {
+            if (params.onthq) {
+                tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
+            } else {
+                tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
+            }
+        } else if (meta.platform.contains("PACBIO")) {
+            if (params.pacbio_hifi) {
+                tools = ["flye", "hifiasm", "plassembler"]
+            } else {
+                tools = ["flye", "miniasm", "raven", "canu", "plassembler" ]
+            }
+        } else {
+            log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
+        }
     }
+
     return tools
 }
