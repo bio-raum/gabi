@@ -20,7 +20,7 @@ process RASUSA {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
-    def output   = meta.single_end ? "--output ${prefix}.fastq.gz" : "--output ${prefix}_1.fastq.gz ${prefix}_2.fastq.gz"
+    def output   = reads.size() == 2 ? "--output ${prefix}_1.fastq.gz ${prefix}_2.fastq.gz" : "--output ${prefix}.fastq.gz" 
     """
     rasusa \\
         $args \\

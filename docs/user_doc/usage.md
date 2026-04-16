@@ -199,6 +199,10 @@ The following tools are used, depending on the input data/options:
     --run_name "AssemblerTest"
     ```
 
+`--max_coverage` [ default = null ]
+
+:   Perform downsampling of long-read data to the specified coverage (e.g. '100'). This option should not be combined with `--autocycler` as autocycler performs an internal subsampling and partitioning of the read data, which works best when using all the reads.
+
 `--reads_min_length`  [ default = 500 ]
 
 :   Discard long reads (Pacbio/ONT) below this length. Depending on your DNA extraction and/or library preparation, you will see a range of sequence lengths.
@@ -254,10 +258,6 @@ These options are only meant for users who have a specific reason to touch them.
 :   By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. 
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
-
-`--max_coverage` [ default = "100" ]
-
-:   Tells the assembly software to downsample the read data to the specified depth. This option only applies to long-read data as Shovill, the short-read assembler, performs downsampling automatically. Down-sampling is automatically disabled when `--autocycler`is requested (autocycler performs its own partitioning and subsampling).
 
 `--max_contigs` [ default = 150 ]
 

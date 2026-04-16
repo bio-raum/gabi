@@ -5,10 +5,11 @@ include { PORECHOP_ABI }                from './../../modules/porechop/abi'
 include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
 include { NANOPLOT }                    from './../../modules/nanoplot'
 include { SEQKIT_REPLACE }              from './../../modules/seqkit/replace'
-include { FASTPLONG }                   from './../../modules/fastplong'
+include { CHOPPER }                     from './../../modules/chopper'
 
 // Subworkflows
 include { CONTAMINATION }               from './../contamination'
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_NANOPORE {
     take:
@@ -54,13 +55,12 @@ workflow QC_NANOPORE {
     ch_ont_trimmed = ch_reads_ont.single.mix(CAT_FASTQ.out.reads)
 
     // Filter the reads by size and quality
-    FASTPLONG(
+    CHOPPER (
         ch_ont_trimmed
     )
-    ch_versions = ch_versions.mix(FASTPLONG.out.versions)
-    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
+    ch_versions = ch_versions.mix(CHOPPER.out.versions)
 
-    FASTPLONG.out.reads.branch { m,r ->
+    CHOPPER.out.fastq.branch { m,r ->
         pass: r.countFastq() >= params.ont_min_reads
         fail: r.countFastq() < params.ont_min_reads
     }.set { ch_chopped_reads }
@@ -90,11 +90,22 @@ workflow QC_NANOPORE {
     )
     ch_versions = ch_versions.mix(SEQKIT_REPLACE.out.versions)
 
+    if (params.max_coverage) {
+        // Perform downsampling of reads
+        DOWNSAMPLE_READS(
+            SEQKIT_REPLACE.out.fastx
+        )
+        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
+        ch_processed_reads = DOWNSAMPLE_READS.out.reads
+    } else {
+        ch_processed_reads = SEQKIT_REPLACE.out.fastx
+    }
+
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     confindr_qc     = CONTAMINATION.out.qc
-    reads           = SEQKIT_REPLACE.out.fastx
+    reads           = ch_processed_reads
     qc              = multiqc_files
     nanoplot_stats  = NANOPLOT.out.txt
     versions        = ch_versions

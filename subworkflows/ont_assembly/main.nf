@@ -12,7 +12,7 @@ include { GENOMESIZE }                              from './../genomesize'
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
 Since Dragonflye isn't regularly maintained, GABI re-implements the
-basic (slightly simplified) logic into a subworkflow instead, with 
+basic logic into a subworkflow instead, with 
 some additional steps
 */
 workflow ONT_ASSEMBLY {
@@ -50,6 +50,7 @@ workflow ONT_ASSEMBLY {
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
     } else {
+
         // FLYE long read assembler
         FLYE_ONT(
             GENOMESIZE.out.reads_with_genome_size
