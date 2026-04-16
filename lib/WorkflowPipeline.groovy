@@ -23,7 +23,7 @@ class WorkflowPipeline {
         if (params.autocycler) {
             log.info "Specified use of autocycler - no downsampling will be performed for long reads."
         }
-        if (params.autocycler_tools) {
+        if (params.autocycler && params.autocycler_tools) {
             def valid_tools = [ "flye", "canu", "miniasm", "hifiasm", "plassembler", "raven", "necat" ]
             def tools = params.autocycler_tools.split(",")
             tools.each { t ->

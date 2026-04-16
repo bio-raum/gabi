@@ -181,10 +181,23 @@ The following tools are used, depending on the input data/options:
 
 | Data | Options | Assemblers |
 | ---- | ------- | ---------- |
-| ONT (standard) | | flye, miniasm, necat, raven |
-| ONT (SUP) | --onthq | flye, miniasm, necat, raven |
-| Pacbio CLR | | flye, miniasm, raven, canu |
-| Pacbio HiFi | --pacbio_hifi | flye, hifiasm |
+| ONT (standard) | | flye, miniasm, necat, raven, plassembler |
+| ONT (SUP) | --onthq | flye, miniasm, necat, raven, plassembler |
+| Pacbio CLR | | flye, miniasm, raven, canu, plassembler |
+| Pacbio HiFi | --pacbio_hifi | flye, hifiasm, plassembler |
+
+`--autocycler_tools` [ default = null ]
+
+:   Specify which of the supported tools should be run by Autocycler; this overrides the defaults set for the different types of long read data. Valid options are: canu,flye,hifiasm,miniasm,necat,raven,plassembler
+
+    ```bash
+    nextflow run bio-raum/gabi -r 1.4.0 \
+    -profile apptainer \
+    --input samples.tsv \
+    --autocycler \
+    --autocycler_tools 'flye,miniasm' \
+    --run_name "AssemblerTest"
+    ```
 
 `--reads_min_length`  [ default = 500 ]
 
