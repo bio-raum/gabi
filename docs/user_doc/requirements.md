@@ -12,6 +12,8 @@ While Nextflow, and consequently GABI, are technically compatible with Windows (
 
 GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this as a lower bound (ideally 50-100X) to ensure that your data does not trigger a warning or fail. 
 
+Please not that there is definitely a "too much coverage" scenario also. The deeper you sequence, the harder it becomes for the various tools to make sense of the data and reduce it to the most useful reads. We have seen data sets with > 500X depth, but very low quality (=Q10) reads; such data is extremely difficult to assemble and we strongly recommend you try and reduce it before feeding it into GABI. 
+
 ## Contamination
 
 GABI is very sensitive towards read contamination and will fail samples if it detects even lower levels of contamination. Please make sure you work with pure isolate cultures and that no contaminations are introduced during DNA extraction or library prep. Also note that some of the criteria applied to detect contamination may not perform optimally for Nanopore data, which is inherently more noisy. We are working to improve this. 

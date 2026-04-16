@@ -6,7 +6,6 @@ include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem
 include { HOMOPOLISH as HOMOPOLISH_PACBIO } from '../../modules/homopolish'
 include { BWAMEM2_MEM_POLYPOLISH }          from '../../modules/bwamem2/mem_polypolish'
 include { AUTOCYCLER_WORKFLOW }             from './../autocycler_workflow'
-include { GENOMESIZE }                      from './../genomesize'
 
 workflow PACBIO_ASSEMBLY {
 
@@ -30,17 +29,12 @@ workflow PACBIO_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // Determine genome size of from this read set
-    GENOMESIZE(
-        lreads
-    )
-    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
-
     if (params.autocycler) {
         read_type = params.pacbio_hifi ? "pacbio_hifi" : "pacbio_clr"
+
         // Autocycler bash workflow
         AUTOCYCLER_WORKFLOW(
-            GENOMESIZE.out.reads_with_genome_size,
+            lreads,
             read_type
         )
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
@@ -49,7 +43,7 @@ workflow PACBIO_ASSEMBLY {
 
         // FLYE long read assembler
         FLYE_PACBIO(
-            GENOMESIZE.out.reads_with_genome_size
+            lreads
         )
         ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
         ch_long_read_assembly = FLYE_PACBIO.out.fasta

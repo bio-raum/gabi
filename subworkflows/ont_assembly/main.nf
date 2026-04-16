@@ -7,7 +7,6 @@ include { POLYPOLISH_POLISH }                       from '../../modules/polypoli
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }                  from '../../modules/bwamem2/mem_polypolish'
 include { AUTOCYCLER_WORKFLOW }                     from './../autocycler_workflow'
-include { GENOMESIZE }                              from './../genomesize'
 
 /* 
 This workflow is inspired by https://github.com/rpetit3/dragonflye
@@ -36,15 +35,10 @@ workflow ONT_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // Determine genome size from this read set
-    GENOMESIZE(
-        lreads
-    )
-    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
-
     if (params.autocycler) {
+
         AUTOCYCLER_WORKFLOW(
-            GENOMESIZE.out.reads_with_genome_size,
+            lreads,
             "ont_r10"
         )
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
@@ -53,7 +47,7 @@ workflow ONT_ASSEMBLY {
 
         // FLYE long read assembler
         FLYE_ONT(
-            GENOMESIZE.out.reads_with_genome_size
+            lreads
         )
         ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
         ch_long_read_assembly = FLYE_ONT.out.fasta
