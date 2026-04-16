@@ -1,6 +1,6 @@
 # Examples running GABI
 
-Below are *some* examples of how you could approach assembly of your genomes. We will assume that you use a site-specific config file named `my_profile`. See our [installation](../user_doc/installation.md) for ways to configure the pipeline. 
+Below are *some* examples of how you could approach the assembly of your genomes. We will assume that you use a site-specific config file named `my_profile`. See our [installation guide](../user_doc/installation.md) for ways to configure the pipeline. 
 
 ## Illumina short-reads
 

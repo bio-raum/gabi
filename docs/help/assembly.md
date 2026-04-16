@@ -13,7 +13,7 @@ GABI has two alternative strategies for long read assembly - using either a sing
 | Single assembler | Flye |  |
 | Multi-assembler | Canu, Flye, Miniasm, Necat, Raven | --autocycler |
 
-To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
+To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) and [Plassembler](https://github.com/gbouras13/plassembler) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
 
 Unsurprisingly, consensus assembly drastically increases run time and is recommended primarily if you want to get the absolutely best possible assembly out of GABI. You most likey also want to run this on a larger compute infrastructure, unless you are really only trying to assembly one or two genomes. For many downstream applications, the single-tool approach may yield sufficiently accurate results - which is why it is the default option in GABI. We recommend you perform your own tests to see which strategy works best for your use case. 
 
