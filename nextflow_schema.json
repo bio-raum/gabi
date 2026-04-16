@@ -47,14 +47,6 @@
       "description": "Less common options for the pipeline, typically set in a config file.",
       "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
       "properties": {
-        "autocycler": {
-          "type": "boolean",
-          "description": "Perform consensus assembly for long reads"
-        },
-        "autocycler_subsamples": {
-          "type": "integer",
-          "default": 4
-        },
         "confindr_db": {
           "type": "string",
           "description": "Location of a custom confindR database"
@@ -67,11 +59,6 @@
           "type": "integer",
           "default": 150,
           "hidden": true
-        },
-        "max_coverage": {
-          "type": "string",
-          "default": "200x",
-          "description": "Maximum coverage to downsample reads to"
         },
         "version": {
           "type": "boolean",
@@ -125,12 +112,21 @@
         }
       }
     },
-    "nanopore_options": {
-      "title": "Nanopore options",
+    "long_read_options": {
+      "title": "Long read options",
       "type": "object",
       "description": "",
       "default": "",
       "properties": {
+        "autocycler": {
+          "type": "boolean",
+          "description": "Perform consensus assembly for long reads"
+        },
+        "autocycler_subsamples": {
+          "type": "integer",
+          "default": 4,
+          "description": "Number of sub samples to create for Autocycler"
+        },
         "homopolish": {
           "type": "boolean",
           "description": "Run homopolish on ONT assembly"
@@ -138,8 +134,22 @@
         "homopolish_model": {
           "type": "string",
           "default": "R10",
-          "description": "Which homopolish model to use (R9, R10)"
+          "description": "Which homopolish model to use (R9, R10)",
+          "hidden": true
         },
+        "max_coverage": {
+          "type": "string",
+          "default": 100,
+          "description": "Maximum coverage to downsample reads to during assembly"
+        }
+      }
+    },
+    "nanopore_options": {
+      "title": "Nanopore options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
         "medaka_model": {
           "type": "string",
           "description": "The applieed basecalling model (only needed for older data)"
@@ -166,10 +176,6 @@
         "porechop": {
           "type": "boolean",
           "description": "Perform adapter trimming of ONT reads"
-        },
-        "skip_medaka": {
-          "type": "boolean",
-          "description": "Do not polish with Medaka (pre-Dorado reads)"
         }
       }
     },
@@ -318,6 +324,9 @@
     },
     {
       "$ref": "#/$defs/illumina_options"
+    },
+    {
+      "$ref": "#/$defs/long_read_options"
     },
     {
       "$ref": "#/$defs/nanopore_options"

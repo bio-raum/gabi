@@ -25,9 +25,9 @@ nextflow run bio-raum/gabi \ # (1)!
 
 1.  Nextflow will fetch the pipeline directly from Github and cache a copy, there is no need to manualy download it.
 2.  If you have a [site-specific config](https://github.com/bio-raum/nf-configs/blob/main/doc/config.md) you should provide it here. In there it is possible to define ressource usage, software deployment method and much more!
-3.  The `-r` argument is always required, you can either provide `-r main` to use the last pipeline version or pin a release with e.g. `-r 1.0.0` (recommended).
+3.  The `-r` argument is always required, you can either provide `-r main` to use the last pipeline version or pin a release with e.g. `-r 1.4.0` (recommended).
 4.  This instructs the pipeline to build the reference database.
-5. The reference database path can also be part of a [site-specific config](https://github.com/bio-raum/nf-configs/blob/main/doc/config.md). Then it can be omitted here.
+5.  The reference database path can also be part of a [site-specific config](https://github.com/bio-raum/nf-configs/blob/main/doc/config.md). Then it can be omitted here.
 
 
 !!! info Nextflow arguments and pipeline options

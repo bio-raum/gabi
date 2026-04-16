@@ -252,6 +252,18 @@ def main(yaml, template, output, version, call, wd):
             quast["duplication_ratio"] = round(float(jdata["quast"]["Duplication ratio"]), 4)
             quast["duplication_status"] = check_status("quast_duplication", qc)
 
+            ###################
+            # Plasmids
+            ###################
+
+            plasmid_count = 0
+            plasmid_contig_count = 0
+
+            if "plasmids" in jdata:
+                for plasmid in jdata["plasmids"]:
+                    plasmid_count += 1
+                    plasmid_contig_count += int(plasmid["num_contigs"])
+
             #################
             # Get serotype(s)
             #################
@@ -259,46 +271,85 @@ def main(yaml, template, output, version, call, wd):
             serotype_data = {}
             if "serotype" in jdata:
                 serotypes = jdata["serotype"]
-                for stool, sresults in serotypes.items():
-                    # we skip these tools
-                    if (stool in ["stecfinder", "seqsero2"]):
-                        continue
-                    pathotype = ""
-                    pathogenes = ""
-                    comment = ""
-                    if (stool == "ectyper"):
-                        serotype = sresults["Serotype"]
-                        pathogenes = sresults["PathotypeGenes"]
-                        pathotype = "" if sresults["Pathotype"] == "ND" else sresults["Pathotype"]
-                        comment = sresults["StxSubtypes"]
-                    elif (stool == "stecfinder"):
-                        serotype = sresults["Serotype"]
-                        pathogenes = sresults["stx type"]
-                    elif (stool == "seqsero2"):
-                        serotype = sresults['serogroup']
-                        pathogenes = ""
-                    elif (stool == "sistr"):
-                        serotype = sresults['serogroup']
-                        pathogenes = ""
-                        pathotype = sresults["serovar"]
-                    elif (stool == "kaptive"):
-                        serotype = sresults["best_match"]
-                    elif (stool == "lissero"):
-                        serotype = sresults["SEROTYPE"]
-                        pathogenes = ""
-                    elif (stool == "btyper3"):
-                        serotype = sresults["Adjusted_panC_Group(predicted_species)"]
-                        pathogenes = sresults["Bt(genes)"]
-                    elif (stool == "sccmec"):
-                        serotype = sresults["subtype"]
-                        pathogenes = "" if sresults["mecA"] == "-" else "mecA"
-                    stool_name = f"{stool} ({taxon})"
-                    pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
-                    serotype_data = {"tool": stool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype, "comment": comment}
-                    if (stool_name in serotypes_all):
-                        serotypes_all[stool_name].append({"sample": sample, "serotype": serotype, "genes": pathogenes})
-                    else:
-                        serotypes_all[stool_name] = [{"sample": sample, "serotype": serotype, "genes": pathogenes}]
+                serotype = ""
+                pathogenes = ""
+                pathotype = ""
+                comment = ""
+                tool = ""
+
+                if ("Escherichia coli" in taxon):
+                    # We need to merge results from multiple tools here
+                    abricate = serotypes["ecoh"]
+                    ectyper = serotypes["ectyper"]
+                    # stecfinder = serotypes["stecfinder"]
+
+                    serotype = abricate["serotype"]
+                    pathotype = "" if ectyper["Pathotype"] == "ND" else ectyper["Pathotype"]
+                    pathogenes = ectyper["PathotypeGenes"]
+                    comment = ectyper["StxSubtypes"]
+
+                    tool = "Ectyper/Abricate"
+
+                elif ("Salmonella enterica" in taxon):
+
+                    # seqsero = serotypes["seqsero2"]
+                    sistr = serotypes["sistr"]
+
+                    serotype = sistr['serogroup']
+                    pathotype = sistr['serovar']
+
+                    tool = "Sistr"
+
+                elif ("Listeria monocytogenes" in taxon):
+
+                    lissero = serotypes["lissero"]
+                    serotype = lissero["SEROTYPE"]
+                    tool = "Lissero"
+
+                elif ("Bacillus" in taxon):
+
+                    btyper = serotypes["btyper3"]
+                    serotype = btyper["Adjusted_panC_Group(predicted_species)"]
+                    # large number of genes to consider:
+                    categories = [
+                        "anthrax_toxin(genes)",
+                        "capsule_Bps(genes)",
+                        "capsule_Cap(genes)",
+                        "capsule_Has(genes)",
+                        "diarrheal_toxin_Hbl(genes)",
+                        "diarrheal_toxin_Nhe(genes)",
+                        "emetic_toxin_cereulide(genes)",
+                        "Bt(genes)",
+                        "sphingomyelinase_Sph(gene)"
+                    ]
+
+                    genes = []
+                    for category in categories:
+                        results = btyper[category]
+                        this_genes = re.findall(r"\((.*?)\)", results)[0]
+                        if (len(this_genes) > 0):
+                            for g in this_genes.split(";"):
+                                genes.append(g)
+
+                    sorted(genes)
+                    pathogenes = ",".join(genes)
+                    tool = "Btyper3"
+
+                elif ("Staphylococcus aureus" in taxon):
+
+                    sccmec = serotypes["sccmec"]
+                    serotype = sccmec["subtype"]
+                    pathogenes = "" if sccmec["mecA"] == "-" else "mecA"
+                    tool = "SCCMEC"
+
+                elif ("Acinetobacter" in taxon or "Klebsiella" in taxon):
+
+                    kaptive = serotypes["kaptive"]
+                    serotype = kaptive["best_match"]
+                    tool = "Kaptive"
+
+                pathogenes = [f"<a href=https://www.uniprot.org/uniprotkb?query={gene}+AND+(taxonomy_id%3A2) target=_new>{gene}</a>" for gene in pathogenes.split(",")]
+                serotype_data = {"tool": tool, "serotype": serotype, "genes": pathogenes, "pathotype": pathotype, "comment": comment}
 
             # Reference genome
             reference = jdata["reference"]
@@ -481,6 +532,8 @@ def main(yaml, template, output, version, call, wd):
                 "fraction_status": genome_fraction_status,
                 "contigs": contigs,
                 "contigs_status": contigs_status,
+                "plasmids": plasmid_count,
+                "plasmid_contig_count": plasmid_contig_count,
                 "assembly": assembly,
                 "assembly_status": assembly_status,
                 "contamination_illumina": contaminated["illumina"]["contaminated"],

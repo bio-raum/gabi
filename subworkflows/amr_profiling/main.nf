@@ -9,8 +9,6 @@ include { HAMRONIZATION_SUMMARIZE }         from './../../modules/hamronization/
 include { HAMRONIZATION_SUMMARIZE as HAMRONIZATION_SUMMARIZE_HTML } from './../../modules/hamronization/summarize'
 include { ABRICATE_RUN }                    from './../../modules/abricate/run'
 include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_VIRULENCE } from './../../modules/abricate/run'
-include { ABRICATE_RUN as ABRICATE_RUN_ECOLI_SERO } from './../../modules/abricate/run'
-
 
 workflow AMR_PROFILING {
     take:
@@ -90,13 +88,6 @@ workflow AMR_PROFILING {
     )
     ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.versions)
     ch_abricate_reports = ch_abricate_reports.mix(ABRICATE_RUN_ECOLI_VIRULENCE.out.report)
-
-    // E. coli - here we use a specific database!
-    ABRICATE_RUN_ECOLI_SERO(
-        assembly_by_taxon.ecoli.map { m,a -> [ m, a, 'ecoh']}
-    )
-    ch_versions = ch_versions.mix(ABRICATE_RUN_ECOLI_SERO.out.versions)
-    ch_abricate_reports = ch_abricate_reports.mix(ABRICATE_RUN_ECOLI_SERO.out.report)
 
     // Join basic Abricate results
     HAMRONIZATION_ABRICATE(

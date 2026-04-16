@@ -23,6 +23,17 @@ class WorkflowPipeline {
         if (params.autocycler) {
             log.info "Specified use of autocycler - no downsampling will be performed for long reads."
         }
+        if (params.autocycler && params.autocycler_tools) {
+            def valid_tools = [ "flye", "canu", "miniasm", "hifiasm", "plassembler", "raven", "necat" ]
+            def tools = params.autocycler_tools.split(",")
+            tools.each { t ->
+                if (!valid_tools.contains(t)) {
+                    log.info "The specified tool ${t} is not supported by Autocycler, quitting...\n"
+                    log.info "Valid options are: ${valid_tools.join(',')}"
+                    System.exit(1)
+                }
+            }
+        }
     }
 
 }

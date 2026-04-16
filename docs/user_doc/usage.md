@@ -181,10 +181,23 @@ The following tools are used, depending on the input data/options:
 
 | Data | Options | Assemblers |
 | ---- | ------- | ---------- |
-| ONT (standard) | | flye, miniasm, necat, raven |
-| ONT (SUP) | --onthq | flye, miniasm, necat, raven |
-| Pacbio CLR | | flye, miniasm, raven, canu |
-| Pacbio HiFi | --pacbio_hifi | flye, hifiasm |
+| ONT (standard) | | flye, miniasm, necat, raven, plassembler |
+| ONT (SUP) | --onthq | flye, miniasm, necat, raven, plassembler |
+| Pacbio CLR | | flye, miniasm, raven, canu, plassembler |
+| Pacbio HiFi | --pacbio_hifi | flye, hifiasm, plassembler |
+
+`--autocycler_tools` [ default = null ]
+
+:   Specify which of the supported tools should be run by Autocycler; this overrides the defaults set for the different types of long read data. Valid options are: canu,flye,hifiasm,miniasm,necat,raven,plassembler
+
+    ```bash
+    nextflow run bio-raum/gabi -r 1.4.0 \
+    -profile apptainer \
+    --input samples.tsv \
+    --autocycler \
+    --autocycler_tools 'flye,miniasm' \
+    --run_name "AssemblerTest"
+    ```
 
 `--reads_min_length`  [ default = 500 ]
 
@@ -211,10 +224,6 @@ Some options specific to assembling ONT reads.
 
 :   Discard nanopore reads below this mean quality. ONT sequencing will produce a spread of qualities, typically ranging from Q10 to Q30 (the higher, the better). 
     This option is mostly useful if you have sequenced at sufficient depth to be able to tolerate removable of some of the data in favor of higher quality reads. 
-
-`--skip_medaka` [ default = false ]
-
-:   Do not perform polishing using Medaka. Medaka requires for the reads to be basecalled with Dorado and a compatible [model](https://software-docs.nanoporetech.com/dorado/latest/models/list/). If this is not the case, Medaka should be skipped
 
 `--porechop` [ default = false ]
 

@@ -5,6 +5,7 @@ include { SISTR }       from './../../modules/sistr'
 include { STECFINDER }  from './../../modules/stecfinder'
 include { SCCMEC }      from './../../modules/sccmec'
 include { BTYPER3 }     from './../../modules/btyper3'
+include { ABRICATE_RUN as ABRICATE_ECOH } from './../../modules/abricate/run'
 include { KAPTIVE as KAPTIVE_KLEBSIELLA } from './../../modules/kaptive'
 include { KAPTIVE as KAPTIVE_ACINETOBACTER } from './../../modules/kaptive'
 
@@ -56,6 +57,15 @@ workflow SEROTYPING {
     ch_versions = ch_versions.mix(STECFINDER.out.versions)
     ch_reports = ch_reports.mix(STECFINDER.out.tsv)
     
+    /*
+    Run Abricate OH to serotype E. coli
+    */
+    ABRICATE_ECOH(
+        assembly_by_taxon.ecoli.map { m,a -> [ m, a, 'ecoh']}
+    )
+    ch_versions = ch_versions.mix(ABRICATE_ECOH.out.versions)
+    ch_reports = ch_reports.mix(ABRICATE_ECOH.out.report)
+
     /*
     Run Kaptive for Klebsiella species
     */

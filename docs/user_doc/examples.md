@@ -1,6 +1,6 @@
 # Examples running GABI
 
-Below are *some* examples of how you could approach assembly of your genomes. Below, we will assume that you use a site-specific config file named `my_profile`. See our [installation](../user_doc/installation.md) for ways to configure the pipeline. 
+Below are *some* examples of how you could approach the assembly of your genomes. We will assume that you use a site-specific config file named `my_profile`. See our [installation guide](../user_doc/installation.md) for ways to configure the pipeline. 
 
 ## Illumina short-reads
 
@@ -51,7 +51,7 @@ With this samplesheet, GABI can then be run like so:
 
 ## ONT reads
 
-Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the added information per read typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. 
+Inexpensive long-reads generated using Nanopore sequencing are an attractive alternative to Illumina sequencing as the superior read length typically enables the reconstruction of the entire bacterial chromosome into one contig. Downsides include platform-specific homopolymer artifacts and a lower per-base quality, the latter of which can be largely compensated by added sequencing depth. 
 
 Nanopore data per sample is typically split across many read files - which you could either merge before running GABI or provide individually with the same sample ID. With Nanopore being a single-end technology, the `fq2` remains empty, of course. 
 
@@ -61,10 +61,10 @@ SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
 SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
 SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
 SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_0.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_1.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_2.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_3.fastq.gz
 ```
 
 With this samplesheet, you can run GABI:
@@ -77,7 +77,19 @@ With this samplesheet, you can run GABI:
     nextflow run bio-raum/gabi -profile my_profile \
     -r 1.4.0 \
     --input samples.tsv \
-    --run_name MyIlluminaRun
+    --run_name MyOntRun
+    ```
+
+=== "High quality reads"
+
+    Run GABI on data generated with SUP basecalling
+
+    ```BASH
+    nextflow run bio-raum/gabi -profile my_profile \
+    -r 1.4.0 \
+    --input samples.tsv \
+    --onthq \
+    --run_name MyOntRun
     ```
 
 === "Consensus assembly"
@@ -89,7 +101,7 @@ With this samplesheet, you can run GABI:
     -r 1.4.0 \
     --input samples.tsv \
     --autocycler \
-    --run_name MyIlluminaRun
+    --run_name MyOntRun
     ```
 
 === "Consensus assembly with homopolish"
@@ -102,7 +114,7 @@ With this samplesheet, you can run GABI:
     --input samples.tsv \
     --autocycler \
     --homopolish \
-    --run_name MyIlluminaRun
+    --run_name MyOntRun
     ```
 
 ## ONT and Illumina reads
@@ -117,10 +129,10 @@ SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
 SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
 SampleA NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
 SampleB ILLUMINA    /path/to/sampleB_R1.fastq.gz    /path/to/sampleB_R2.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_0.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_1.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_2.fastq.gz
-SampleB NANOPORE    /path/to/BBJ413_pass_barcode01_34ed0b48_e8967f4e_3.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_0.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_1.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_2.fastq.gz
+SampleB NANOPORE    /path/to/BBJ413_pass_barcode02_34ed0b48_e8967f4e_3.fastq.gz
 ```
 
 Note that Homopolish will not run if short reads are provided. 
