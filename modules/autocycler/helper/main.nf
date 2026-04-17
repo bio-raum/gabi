@@ -11,7 +11,7 @@ process AUTOCYCLER_HELPER {
     val(read_type)
 
     output:
-    tuple val(meta), path('*.fasta')            , emit: fasta
+    tuple val(meta), path('*.fasta')            , optional: true , emit: fasta // plassembler emits nothing if no plasmids are assembled
     tuple val(meta), path("autocycler.log")     , emit: log  
     path 'versions.yml'                         , emit: versions
 

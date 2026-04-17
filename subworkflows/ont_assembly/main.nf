@@ -185,7 +185,7 @@ def check_ont_model(fastq) {
         def stream = isGzip ? new java.util.zip.GZIPInputStream(fq) as InputStream : fq as InputStream
         def decoder = new InputStreamReader(stream, 'ASCII')
         def buffered = new BufferedReader(decoder)
-        line = buffered.readLine()
+        def line = buffered.readLine()
         if (line.contains("model")) {
             has_model = true
         }

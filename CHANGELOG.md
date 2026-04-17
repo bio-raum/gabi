@@ -7,6 +7,6 @@
 - Medaka polishing: Check if reads contain basecalling model meta data; else skip if model isn't provided via command line
 - Replaced ConfindR db download with proper installation workflow
 - Replaced Chopper with Fastplong (faster, compatible with MultiQC)
-- Removed read downsampling with RASUSA as all assembly tools/chains already take care of that
 - Updated CheckM2 database download to specify a user-agent as a fix to aborting file transfers
 - Adding pipeline settings to sample-level JSON
+- Updated Chopper to version 0.12.0
