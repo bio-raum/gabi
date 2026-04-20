@@ -47,6 +47,7 @@ workflow PACBIO_ASSEMBLY {
         )
         ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
         ch_long_read_assembly = FLYE_PACBIO.out.fasta
+
     }
 
     ch_long_read_assembly.map { m, a ->
