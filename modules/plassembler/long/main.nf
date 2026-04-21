@@ -39,7 +39,7 @@ process PLASSEMBLER_LONG {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        plassembler: \$( plassembler --version )
+        plassembler: \$( plassembler --version 2>&1 | sed 's/^.*version //' )
     END_VERSIONS
     """
 }
