@@ -198,7 +198,8 @@ workflow GABI {
     */
     PACBIO_ASSEMBLY(
         ch_pb_hybrid_reads,
-        homopolish_db
+        homopolish_db,
+        plassembler_db
     )
     ch_versions     = ch_versions.mix(PACBIO_ASSEMBLY.out.versions)
     ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)

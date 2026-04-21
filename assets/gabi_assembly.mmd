@@ -1,0 +1,152 @@
+%%metro title: GABI Pipeline (assembly)
+%%metro style: dark
+%%metro line: main | Main | #1e9b05
+%%metro line: qc | Quality Control | #2196F3 | dashed
+%%metro line: illumina | Illumina processing | #e5e536
+%%metro line: nanopore | Nanopore processing | #a21cc3 
+%%metro line: nanopore_alt | Nanopore alt processing | #7f1699  | dotted
+%%metro line: illumina_alt | Illumina alt processing | #e5c836 | dotted
+%%metro line: pacbio | Pacbio processing | #c64b1a |
+%%metro line: pacbio_alt | Pacbio alt processing | #963914 | dotted
+
+graph LR
+
+    input[Input TSV]
+
+    subgraph illumina_qc [Illumina QC]
+        cat_fastq[cat fastq]
+        fastp[fastP]
+        fastqc[fastQC]
+        confindr[ConfindR]
+        illumina_reads[Illumina Reads]
+
+        cat_fastq -->|illumina| fastp
+        fastp -->|qc| fastqc
+        fastp -->|qc| confindr
+        fastp -->|illumina| illumina_reads
+
+    end
+
+    subgraph illumina_assembly [Illumina Assembly]
+
+        shovill[Shovill]
+        shovill_fix[Shovill Fix Contigs]
+        unicycler[Unicycler]
+
+        shovill -->|illumina| shovill_fix
+
+    end
+
+    
+    subgraph nanopore_qc [Nanopore QC]
+
+        porechop_abi[Porechop ABI]
+        cat_fastq_ont[cat fastq ONT]
+        chopper[Chopper]
+        confindr_ont[ConfindR]
+        nanoplot[Nanoplot]
+        seqkit_replace[SeqKit Replace]
+        kmc_ont[KMC]
+        rasusa_ont[Rasusa]
+        ont_reads[ONT Reads]
+
+        porechop_abi -->|nanopore| cat_fastq_ont
+        cat_fastq_ont -->|nanopore| chopper
+        chopper -->|qc| confindr_ont
+        chopper -->|nanopore| seqkit_replace
+        seqkit_replace -->|nanopore_alt| kmc_ont
+        kmc_ont -->|nanopore_alt| rasusa_ont
+        rasusa_ont -->|nanopore_alt| ont_reads
+        chopper -->|qc| nanoplot
+        seqkit_replace -->|nanopore| ont_reads
+
+    end
+    
+    subgraph ont_assembly [Nanopore Assembly]
+        flye_ont[Flye]
+        autocycler_ont[Autocycler]
+        plassembler_ont[Plassembler]
+        medaka_consensus[Medaka]
+        homopolish_ont[Homopolish]
+        bwamem2_index_ont[BWA-MEM2 Index]
+        bwamem2_align_ont[BWA-MEM2 Align]
+        polypolish_ont[Polypolish]
+        dnaapler_ont[DNAAPLER]
+
+        flye_ont -->|nanopore| plassembler_ont
+        plassembler_ont -->|nanopore_alt| medaka_consensus
+        plassembler_ont -->|nanopore_alt| bwamem2_index_ont
+        medaka_consensus -->|nanopore_alt| bwamem2_index_ont
+        bwamem2_index_ont -->|nanopore_alt| bwamem2_align_ont
+        bwamem2_align_ont -->|nanopore_alt| polypolish_ont
+        polypolish_ont -->|nanopore_alt| dnaapler_ont
+        autocycler_ont -->|nanopore_alt| medaka_consensus
+        autocycler_ont -->|nanopore_alt| bwamem2_index_ont
+        plassembler_ont -->|nanopore_alt| homopolish_ont
+        plassembler_ont -->|nanopore| dnaapler_ont
+        homopolish_ont -->|nanopore_alt| dnaapler_ont
+
+    end
+
+    subgraph pacbio_qc [Pacbio QC]
+        cat_fastq_pb[cat fastq]
+        fastplong[FastPlong]
+        fastqc_pb[FastQC]
+        confindr_pb[ConfindR]
+        kmc_pb[KMC]
+        rasusa_pb[Rasusa]
+        pacbio_reads[Pacbio Reads]
+
+        cat_fastq_pb -->|pacbio| fastplong
+        fastplong -->|qc| fastqc_pb
+        fastplong -->|qc| confindr_pb
+        fastplong -->|pacbio_alt| kmc_pb
+        kmc_pb -->|pacbio_alt| rasusa_pb
+        rasusa_pb -->|pacbio_alt| pacbio_reads
+        fastplong -->|pacbio| pacbio_reads
+
+    end
+
+    subgraph pacbio_assembly [Pacbio Assembly]
+
+        flye_pb[Flye]
+        autocycler_pb[Autocycler]
+        plassembler_pb[Plassembler]
+        homopolish_pb[Homopolish]
+        bwamem2_index_pb[BWA-MEM2 Index]
+        bwamem2_align_pb[BWA-MEM2 align]
+        polypolish_pb[Polypolish]
+        dnaapler_pb[DNAAPLER]
+
+        flye_pb -->|pacbio| plassembler_pb
+        plassembler_pb -->|pacbio_alt| homopolish_pb
+        plassembler_pb -->|pacbio_alt| bwamem2_index_pb
+        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
+        bwamem2_align_pb -->|pacbio_alt| polypolish_pb
+        polypolish_pb -->|pacbio_alt| dnaapler_pb
+        homopolish_pb -->|pacbio_alt| dnaapler_pb
+        plassembler_pb -->|pacbio| dnaapler_pb
+        autocycler_pb -->|pacbio_alt| bwamem2_index_pb
+        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
+        autocycler_pb -->|pacbio_alt| homopolish_pb
+
+    end
+
+    subgraph assembly [Gather assemblies]
+        gather_assembly[Assemblies]
+
+    end
+    
+    input -->|illumina| cat_fastq
+    input -->|nanopore| porechop_abi
+    input -->|pacbio| cat_fastq_pb
+    illumina_reads -->|illumina| shovill
+    illumina_reads -->|illumina_alt| unicycler
+    ont_reads -->|nanopore| flye_ont
+    ont_reads -->|nanopore_alt| autocycler_ont
+    pacbio_reads -->|pacbio| flye_pb
+    pacbio_reads -->|pacbio_alt| autocycler_pb
+    shovill_fix -->|illumina| gather_assembly
+    unicycler -->|illumina_alt| gather_assembly
+    dnaapler_ont -->|nanopore| gather_assembly
+    dnaapler_pb -->|pacbio| gather_assembly

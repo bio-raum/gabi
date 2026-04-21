@@ -1,0 +1,155 @@
+%%metro title: GABI Pipeline (characterization)
+%%metro style: dark
+%%metro line: main | Main | #1e9b05
+%%metro line: qc | Quality Control | #2196F3 | dashed
+
+graph LR
+
+    input[Assemblies]
+
+    subgraph assembly_taxonomy [Assembly Taxonomy]
+        kraken2[Kraken2]
+        taxonkit_lineage[Taxonkit]
+        helper_format_taxonkit[Taxonkit Format]
+        checkm2[CheckM2]
+
+        kraken2 -->|main| taxonkit_lineage
+        taxonkit_lineage -->|main| helper_format_taxonkit
+
+    end
+
+    subgraph coverage [Assembly coverage]
+
+        bwamem2_index_assembly[BWA-MEM2 Index]
+        bwamem2_align_assembly[BWA-MEM2 Align]
+        minimap2_align[Minimap2 Align]
+        samtools_merge[Samtools Merge]
+        samtools_index[Samtools Index]
+        mosdepth[Mosdepth]
+
+        bwamem2_index_assembly -->|main|  bwamem2_align_assembly
+
+        bwamem2_align_assembly -->|main| samtools_merge
+        minimap2_align -->|main| samtools_merge
+        samtools_merge -->|main| samtools_index
+        samtools_index -->|main| mosdepth
+
+    end
+
+    subgraph plasmids [Plasmids]
+
+        mobsuite_recon[Mobsuite Recon]
+
+    end
+
+    subgraph find_reference [Reference Genome]
+
+        sourmash_sketch[SourMash Sketch]
+        sourmash_search[SourMash Search]
+        download_genome[Download Genome]
+        assign_taxonomy[Assign Taxon]
+
+        sourmash_sketch -->|main| sourmash_search
+        sourmash_search -->|main| download_genome
+        download_genome -->|main| assign_taxon
+
+    end
+
+    subgraph serotype [Serotyping]
+
+        branch_by_taxon[Select tool]
+        btyper3[Btyper3]
+        ectyper[ECtyper]
+        stecfinder[Stecfinder]
+        abricate_ecoh[Abricate EcOH]
+        kaptive[Kaptive]
+        seqsero2[SeqSero2]
+        sistr[Sistr]
+        sccmec[SCCMEC]
+        lissero[Lissero]
+
+        branch_by_taxon -->|main| btyper3
+        branch_by_taxon -->|main| ectyper
+        branch_by_taxon -->|main| stecfinder
+        branch_by_taxon -->|main| abricate_ecoh
+        branch_by_taxon -->|main| kaptive
+        branch_by_taxon -->|main| seqsero2
+        branch_by_taxon -->|main| sistr
+        branch_by_taxon -->|main| sccmec
+        branch_by_taxon -->|main| lissero
+
+    end
+
+    subgraph amr [AMR Typing]
+
+        database_by_taxon[Select Databases]
+        amrfinderplus[AMRFinder Plus]
+        abricate[Abricate]
+        hamronization[Hamronization]
+        hamronization_summary[Hamronization Summary]
+
+        database_by_taxon -->|main| amrfinderplus
+        database_by_taxon -->|main| abricate
+        amrfinderplus -->|main| hamronization
+        abricate -->|main| hamronization
+        hamronization -->|main| hamronization_summary
+
+    end
+
+    subgraph annotation [Annotation]
+
+        prokka[Prokka]
+
+    end
+
+    subgraph assembly_qc [Assembly QC]
+        quast[Quast]
+        busco[Busco]
+    
+    end
+
+    subgraph reporting[Report]
+
+        gather_logs[Gather Logs]
+        logs_to_json[Logs to JSON]
+        multiqc[MultiQC]
+        quarto[Quarto]
+
+        gather_logs -->|main| logs_to_json
+        gather_logs -->|main| multiqc
+        logs_to_json -->|main| quarto
+
+    end
+
+
+    input -->|main| checkm2
+    input -->|main| bwamem2_index_assembly
+    input -->|main| minimap2_align
+    input -->|main| mobsuite_recon
+    input -->|main| sourmash_sketch
+    assign_taxon -->|main| prokka
+    assign_taxon -->|main| database_by_taxon
+    assign_taxon -->|main| quast
+    assign_taxon -->|main| busco
+    assign_taxon -->|main|database_by_taxon
+    assign_taxon -->|main|branch_by_taxon
+    checkm2 -->|qc| gather_logs
+    taxonkit_lineage -->|qc| gather_logs
+    mosdepth -->|qc| gather_logs
+    mobsuite_recon -->|qc| gather_logs
+    amrfinderplus -->|qc| gather_logs
+    abricate -->|qc| gather_logs
+    prokka -->|qc| gather_logs
+    quast -->|qc| gather_logs
+    busco -->|qc| gather_logs
+    assign_taxon -->|qc| gather_logs
+    btyper3 -->|qc| gather_logs
+    ectyper -->|qc| gather_logs
+    stecfinder -->|qc| gather_logs
+    abricate_ecoh -->|qc| gather_logs
+    kaptive -->|qc| gather_logs
+    seqsero2 -->|qc| gather_logs
+    sistr -->|qc| gather_logs
+    sccmec -->|qc| gather_logs
+    lissero -->|qc| gather_logs
+

@@ -52,7 +52,7 @@ workflow ONT_ASSEMBLY {
             lreads
         )
         ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
-        
+                
         // Execute plassembler run for hybrid data
         PLASSEMBLER_RUN_ONT(
             ch_reads_by_config.with_short.join(FLYE_ONT.out.dir),
@@ -62,7 +62,7 @@ workflow ONT_ASSEMBLY {
 
         // or plassembler long for long-read only
         PLASSEMBLER_LONG_ONT(
-            ch_reads_by_config.no_short.join(FLYE_ONT.out.dir),
+            ch_reads_by_config.no_short.map { m, s, o -> tuple(m,o) }.join(FLYE_ONT.out.dir),
             ch_plassembler_db
         )
         ch_versions = ch_versions.mix(PLASSEMBLER_LONG_ONT.out.versions)

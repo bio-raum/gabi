@@ -24,6 +24,9 @@ process PLASSEMBLER_LONG {
     def prefix = task.ext.prefix ?: "${meta.sample_id}"
 
     """
+
+    export TERM=xterm-256color
+    
     plassembler long \
     -d $db \
     -l $lreads \
@@ -32,7 +35,7 @@ process PLASSEMBLER_LONG {
     --keep_chromosome \
     $args
 
-    cat chromosome.fasta *_plasmids.fasta > ${prefix}.assembly.fasta
+    cat plassembler.output/chromosome.fasta plassembler.output/plassembler_plasmids.fasta > ${prefix}.assembly.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

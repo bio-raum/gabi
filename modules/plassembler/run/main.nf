@@ -9,7 +9,7 @@ process PLASSEMBLER_RUN {
         'quay.io/biocontainers/plassembler:1.8.1--pyhdfd78af_0' }"
 
     input:
-    tuple val(meta), path(lreads), path(sreads),path(flye_folder)
+    tuple val(meta), path(sreads), path(lreads),path(flye_folder)
     val(db)
 
     output:
@@ -25,6 +25,9 @@ process PLASSEMBLER_RUN {
     def short_reads = (sreads.size() == 1) ? "-1 $sreads" : "-1 ${sreads[0]} -2 ${sreads[1]}"
 
     """
+
+    export TERM=xterm-256color
+    
     plassembler run \
     -d $db \
     -l $lreads \
@@ -34,7 +37,7 @@ process PLASSEMBLER_RUN {
     --keep_chromosome \
     $args
 
-    cat chromosome.fasta *_plasmids.fasta > ${prefix}.assembly.fasta
+    cat plassembler.output/chromosome.fasta plassembler.output/plassembler_plasmids.fasta > ${prefix}.assembly.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
