@@ -143,6 +143,16 @@ Then use the `-r` argument as explained above to run the workflow using the new 
 
 :   A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. 
 
+`--max_coverage` [ default = null ]
+
+:   Perform downsampling of read data to the specified coverage (e.g. '100').  For typical data (~100X coverage), downsampling should not be necessary. However, we found it to be occassionally useful for heavily oversampled (> 500X) read sets where the inherent noise can make it difficult to obtain a clean assembly.
+
+    Caveats:
+
+    - The `--max_coverage` argument will be applied to all individual read sets in your pipeline run, across all technologies, unless:
+    - The `--max_coverage` option will be ignored for long reads when also requesting `--autocycler`
+    - Accurate downsampling relies on GABI being able to correctly guess the genome size of the bacterium. In case of very noisy data, that guess may be off (however, we cap genome size estimates at 6MB)
+
 `--min_contig_len` [ default = 300 ]
 
 :   Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. 
@@ -198,10 +208,6 @@ The following tools are used, depending on the input data/options:
     --autocycler_tools 'flye,miniasm' \
     --run_name "AssemblerTest"
     ```
-
-`--max_coverage` [ default = null ]
-
-:   Perform downsampling of long-read data to the specified coverage (e.g. '100'). This option should not be combined with `--autocycler` as autocycler performs an internal subsampling and partitioning of the read data, which works best when using all the reads.
 
 `--reads_min_length`  [ default = 500 ]
 

@@ -99,7 +99,7 @@ GABI uses versioned reference databases, which are linked to different versions 
 
 ### Why is the pipeline so slow?
 
-:   We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data. 
+:   We assume you mean the overall start-up time - the performance of the individual processes is dictated by the capabilities of your hardware and the complexity/depth of your data.
 
     Otherwise, if you run this pipeline without a site-specific config file, the pipeline will not know where to cache the various containers or conda environments. In such cases, it will install/download these dependencies into the respective work directory of your pipeline run, every time you run the pipeline. And yes, that can be slow - especially when using Conda. Consider adding your own config file to make use of the caching functionality.
 

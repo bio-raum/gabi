@@ -64,7 +64,7 @@ workflow PACBIO_ASSEMBLY {
 
         // or plassembler long for long-read only
         PLASSEMBLER_LONG_PACBIO(
-            ch_reads_by_config.no_short.join(FLYE_PACBIO.out.dir),
+            ch_reads_by_config.no_short.map {m, s, l -> tuple(m,l) }.join(FLYE_PACBIO.out.dir),
             ch_plassembler_db
         )
         ch_versions = ch_versions.mix(PLASSEMBLER_LONG_PACBIO.out.versions)

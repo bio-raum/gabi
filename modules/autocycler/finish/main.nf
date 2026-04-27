@@ -18,7 +18,7 @@ process AUTOCYCLER_FINISH {
     tuple val(meta), path('*.assembly.fasta')   , emit: fasta
     tuple val(meta), path("autocycler_out")     , emit: results
     tuple val(meta), path("autocycler.log")     , emit: log  
-    tuple val(meta), path("*.summary.tsv")      , emit: tsv
+    tuple val(meta), path("*.summary.tsv")      , optional: true, emit: tsv
     path 'versions.yml'                         , emit: versions
 
     when:
