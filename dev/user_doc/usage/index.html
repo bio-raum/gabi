@@ -1637,6 +1637,16 @@
 <dd>
 <p>A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. </p>
 </dd>
+<dt><code>--max_coverage</code> [ default = null ]</dt>
+<dd>
+<p>Perform downsampling of read data to the specified coverage (e.g. '100').  For typical data (~100X coverage), downsampling should not be necessary. However, we found it to be occassionally useful for heavily oversampled (&gt; 500X) read sets where the inherent noise can make it difficult to obtain a clean assembly.</p>
+<p>Caveats:</p>
+<ul>
+<li>The <code>--max_coverage</code> argument will be applied to all individual read sets in your pipeline run, across all technologies, unless:</li>
+<li>The <code>--max_coverage</code> option will be ignored for long reads when also requesting <code>--autocycler</code></li>
+<li>Accurate downsampling relies on GABI being able to correctly guess the genome size of the bacterium. In case of very noisy data, that guess may be off (however, we cap genome size estimates at 6MB)</li>
+</ul>
+</dd>
 <dt><code>--min_contig_len</code> [ default = 300 ]</dt>
 <dd>
 <p>Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. </p>
@@ -1712,10 +1722,6 @@
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>--autocycler_tools<span class="w"> </span><span class="s1">&#39;flye,miniasm&#39;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>--run_name<span class="w"> </span><span class="s2">&quot;AssemblerTest&quot;</span>
 </span></code></pre></div>
-</dd>
-<dt><code>--max_coverage</code> [ default = null ]</dt>
-<dd>
-<p>Perform downsampling of long-read data to the specified coverage (e.g. '100'). This option should not be combined with <code>--autocycler</code> as autocycler performs an internal subsampling and partitioning of the read data, which works best when using all the reads.</p>
 </dd>
 <dt><code>--reads_min_length</code>  [ default = 500 ]</dt>
 <dd>
