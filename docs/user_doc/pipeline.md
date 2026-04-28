@@ -16,6 +16,14 @@ Some of the key things that happen inside GABI:
 - Call variants from the assembly (mostly for QC purposes, since there shouldn't be any!)
 - Make a "pretty" QC report
 
+A simplified summary of the assembly part of GABI can be visualized as follows:
+
+![schema](../img/gabi_assembly_web.png)
+
+A simplified version of the assembly characterization:
+
+![schema](../img/gabi_characterize_web.png)
+
 # Does GABI distinguish between chromosomal assembly and "full" assembly, and what does that even mean?
 
 Yes, GABI does make that distinction - meaning that some parts of the pipeline see the assembly with all the contigs, and some others only see the bits of the assembly that are likely to represent the bacterial chromosomes (without plasmids). 

@@ -1,5 +1,5 @@
 %%metro title: GABI Pipeline (assembly)
-%%metro style: dark
+%%metro style: light
 %%metro line: main | Main | #1e9b05
 %%metro line: qc | Quality Control | #2196F3 | dashed
 %%metro line: illumina | Illumina processing | #e5e536
@@ -19,10 +19,15 @@ graph LR
         fastqc[fastQC]
         confindr[ConfindR]
         illumina_reads[Illumina Reads]
+        kmc_illumina[KMC]
+        rasusa_illumina[Rasusa]
 
         cat_fastq -->|illumina| fastp
         fastp -->|qc| fastqc
         fastp -->|qc| confindr
+        fastp -->|illumina_alt| kmc_illumina
+        kmc_illumina -->|illumina_alt| rasusa_illumina
+        rasusa_illumina -->|illumina_alt| illumina_reads
         fastp -->|illumina| illumina_reads
 
     end
@@ -41,24 +46,22 @@ graph LR
     subgraph nanopore_qc [Nanopore QC]
 
         porechop_abi[Porechop ABI]
-        cat_fastq_ont[cat fastq ONT]
+        cat_fastq_ont[cat fastq]
         chopper[Chopper]
         confindr_ont[ConfindR]
         nanoplot[Nanoplot]
-        seqkit_replace[SeqKit Replace]
         kmc_ont[KMC]
         rasusa_ont[Rasusa]
         ont_reads[ONT Reads]
 
-        porechop_abi -->|nanopore| cat_fastq_ont
-        cat_fastq_ont -->|nanopore| chopper
-        chopper -->|qc| confindr_ont
-        chopper -->|nanopore| seqkit_replace
-        seqkit_replace -->|nanopore_alt| kmc_ont
+        porechop_abi -->|nanopore_alt| chopper
+        chopper -->|nanopore| cat_fastq_ont
+        cat_fastq_ont -->|qc| confindr_ont
+        cat_fastq_ont -->|qc| nanoplot
+        cat_fastq_ont -->|nanopore| ont_reads
+        cat_fastq_ont -->|nanopore_alt| kmc_ont
         kmc_ont -->|nanopore_alt| rasusa_ont
         rasusa_ont -->|nanopore_alt| ont_reads
-        chopper -->|qc| nanoplot
-        seqkit_replace -->|nanopore| ont_reads
 
     end
     
@@ -68,21 +71,17 @@ graph LR
         plassembler_ont[Plassembler]
         medaka_consensus[Medaka]
         homopolish_ont[Homopolish]
-        bwamem2_index_ont[BWA-MEM2 Index]
-        bwamem2_align_ont[BWA-MEM2 Align]
         polypolish_ont[Polypolish]
         dnaapler_ont[DNAAPLER]
 
         flye_ont -->|nanopore| plassembler_ont
         plassembler_ont -->|nanopore_alt| medaka_consensus
-        plassembler_ont -->|nanopore_alt| bwamem2_index_ont
-        medaka_consensus -->|nanopore_alt| bwamem2_index_ont
+        plassembler_ont -->|nanopore_alt| polypolish_ont
+        medaka_consensus -->|nanopore_alt| polypolish_ont
         medaka_consensus -->|nanopore_alt| dnaapler_ont
-        bwamem2_index_ont -->|nanopore_alt| bwamem2_align_ont
-        bwamem2_align_ont -->|nanopore_alt| polypolish_ont
         polypolish_ont -->|nanopore_alt| dnaapler_ont
         autocycler_ont -->|nanopore_alt| medaka_consensus
-        autocycler_ont -->|nanopore_alt| bwamem2_index_ont
+        autocycler_ont -->|nanopore_alt| polypolish_ont
         plassembler_ont -->|nanopore_alt| homopolish_ont
         plassembler_ont -->|nanopore| dnaapler_ont
         homopolish_ont -->|nanopore_alt| dnaapler_ont
@@ -114,38 +113,45 @@ graph LR
         autocycler_pb[Autocycler]
         plassembler_pb[Plassembler]
         homopolish_pb[Homopolish]
-        bwamem2_index_pb[BWA-MEM2 Index]
-        bwamem2_align_pb[BWA-MEM2 align]
         polypolish_pb[Polypolish]
         dnaapler_pb[DNAAPLER]
 
         flye_pb -->|pacbio| plassembler_pb
         plassembler_pb -->|pacbio_alt| homopolish_pb
-        plassembler_pb -->|pacbio_alt| bwamem2_index_pb
-        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
-        bwamem2_align_pb -->|pacbio_alt| polypolish_pb
+        plassembler_pb -->|pacbio_alt| polypolish_pb
         polypolish_pb -->|pacbio_alt| dnaapler_pb
         homopolish_pb -->|pacbio_alt| dnaapler_pb
         plassembler_pb -->|pacbio| dnaapler_pb
-        autocycler_pb -->|pacbio_alt| bwamem2_index_pb
-        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
+        autocycler_pb -->|pacbio_alt| polypolish_pb
         autocycler_pb -->|pacbio_alt| homopolish_pb
 
     end
 
-    subgraph assembly [Gather assemblies]
+    subgraph taxonomy_profile [Read Taxonomy]
+        kraken2[Kraken2]
+        bracken2[Bracken2]
+
+        kraken2 -->|qc| bracken2
+
+    end
+
+    subgraph assembly [Collect]
         gather_assembly[Assemblies]
 
     end
     
     input -->|illumina| cat_fastq
-    input -->|nanopore| porechop_abi
+    input -->|nanopore_alt| porechop_abi
+    input -->|nanopore| chopper
     input -->|pacbio| cat_fastq_pb
     illumina_reads -->|illumina| shovill
+    illumina_reads -->|illumina| kraken2
     illumina_reads -->|illumina_alt| unicycler
     ont_reads -->|nanopore| flye_ont
+    ont_reads -->|nanopore| kraken2
     ont_reads -->|nanopore_alt| autocycler_ont
     pacbio_reads -->|pacbio| flye_pb
+    pacbio_reads -->|pacbio| kraken2
     pacbio_reads -->|pacbio_alt| autocycler_pb
     shovill_fix -->|illumina| gather_assembly
     unicycler -->|illumina_alt| gather_assembly

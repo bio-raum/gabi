@@ -11,7 +11,9 @@
 
 If you are really impatient, check out our [quickstart](https://bio-raum.github.io/gabi/latest/user_doc/quickstart/) guide. 
 
-![schema](images/gabi_schema_readme.png)
+![schema](images/gabi_assembly_web.png)
+
+![characterize](images/gabi_characterize_web.png)
 
 ## Developer team
 

@@ -51,7 +51,7 @@ graph LR
 
         sourmash_sketch -->|main| sourmash_search
         sourmash_search -->|main| download_genome
-        download_genome -->|main| assign_taxon
+        download_genome -->|main| assign_taxonomy
 
     end
 
@@ -121,20 +121,20 @@ graph LR
 
     end
 
-
     input -->|main| checkm2
     input -->|main| bwamem2_index_assembly
     input -->|main| minimap2_align
     input -->|main| mobsuite_recon
     input -->|main| sourmash_sketch
-    assign_taxon -->|main| prokka
-    assign_taxon -->|main| database_by_taxon
-    assign_taxon -->|main| quast
-    assign_taxon -->|main| busco
-    assign_taxon -->|main|database_by_taxon
-    assign_taxon -->|main|branch_by_taxon
+    input -->|main| kraken2
+    assign_taxonomy -->|main| prokka
+    assign_taxonomy -->|main| database_by_taxon
+    assign_taxonomy -->|main| quast
+    assign_taxonomy -->|main| busco
+    assign_taxonomy -->|main| database_by_taxon
+    assign_taxonomy -->|main| branch_by_taxon
     checkm2 -->|qc| gather_logs
-    taxonkit_lineage -->|qc| gather_logs
+    helper_format_taxonkit -->|qc| gather_logs
     mosdepth -->|qc| gather_logs
     mobsuite_recon -->|qc| gather_logs
     amrfinderplus -->|qc| gather_logs
@@ -142,7 +142,7 @@ graph LR
     prokka -->|qc| gather_logs
     quast -->|qc| gather_logs
     busco -->|qc| gather_logs
-    assign_taxon -->|qc| gather_logs
+    assign_taxonomy -->|qc| gather_logs
     btyper3 -->|qc| gather_logs
     ectyper -->|qc| gather_logs
     stecfinder -->|qc| gather_logs
