@@ -149,7 +149,7 @@ Then use the `-r` argument as explained above to run the workflow using the new 
 
     Caveats:
 
-    - The `--max_coverage` argument will be applied to all individual read sets in your pipeline run, across all technologies, unless:
+    - The `--max_coverage` argument will be applied to all individual read sets in your pipeline run, across all technologies, but:
     - The `--max_coverage` option will be ignored for long reads when also requesting `--autocycler`
     - Accurate downsampling relies on GABI being able to correctly guess the genome size of the bacterium. In case of very noisy data, that guess may be off (however, we cap genome size estimates at 6MB)
 
@@ -220,7 +220,7 @@ Some options specific to assembling ONT reads.
 
 `--medaka_model` [ default = null ]
 
-:   The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. Else, also see `--skip_medaka`. 
+:   The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. If no model is provided and no information on basecalling is encoded in the read data, Medaka polishing will be skipped.
 
 `--homopolish_model` [ default = R10]
 

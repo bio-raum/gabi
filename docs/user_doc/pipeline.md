@@ -4,14 +4,14 @@ A DAG schema is included with this [code base](../dag-GABI.html)
 
 Some of the key things that happen inside GABI:
 - Perform quality control of the read data, and merge libraries across lanes
-- Downsample reads to the global default (= 100X; can be adjusted)
-- Group read data by sample id and check which assembly tool is appropriate based on the types of sequencing data we have available
-- Assemble reads with the optimal tool (chain)
+- Optional: Downsample reads to a specified mean coverage based on an automatic estimate of the genome size
+- Group read data by sample id and check which assembly chain is appropriate based on the types of sequencing data we have available
+- Assemble reads with the optimal tool(s)
 - Determine the species from the assembled genome sequence
 - Perform quality checks on the assembly, including taxonomic composition as contamination check
 - Perform genomic serotyping, if we have suitable tools available for that species
 - Perform MLST typing on the assembly, if we have a pre-configured database for that species
-- Annotate gene models in our assembled genome
+- Annotate gene models in assembled genome
 - Predict antimicrobial resistance genes from the assembly
 - Call variants from the assembly (mostly for QC purposes, since there shouldn't be any!)
 - Make a "pretty" QC report
@@ -24,9 +24,9 @@ A simplified version of the assembly characterization:
 
 ![schema](../img/gabi_characterize_web.png)
 
-# Does GABI distinguish between chromosomal assembly and "full" assembly, and what does that even mean?
+# Does GABI distinguish between chromosomal assembly and "full" assembly, and what does that mean?
 
-Yes, GABI does make that distinction - meaning that some parts of the pipeline see the assembly with all the contigs, and some others only see the bits of the assembly that are likely to represent the bacterial chromosomes (without plasmids). 
+Yes, GABI does make that distinction - meaning that some parts of the pipeline see the assembly with all the contigs, and some others only see the bits of the assembly that are likely to represent the bacterial chromosome (i.e. without plasmids). 
 
 | Pipeline section | Assembly used|
 |------------------|--------------|

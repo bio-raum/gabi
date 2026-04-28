@@ -21,8 +21,8 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.78650361"
-     inkscape:cx="900.82231"
-     inkscape:cy="525.74457"
+     inkscape:cx="1120.7832"
+     inkscape:cy="572.78822"
      inkscape:window-width="2560"
      inkscape:window-height="1368"
      inkscape:window-x="0"
@@ -46,7 +46,7 @@
      stroke-linecap="round"
      stroke-linejoin="round"
      id="path44"
-     inkscape:export-filename="gabi_characterize_highres.pngpng"
+     inkscape:export-filename="gabi_characterize_highres.png"
      inkscape:export-xdpi="300"
      inkscape:export-ydpi="300" />
   <path
@@ -1916,15 +1916,15 @@
      dominant-baseline="hanging"
      id="text208">Lissero</text>
   <text
-     x="1510.0"
-     y="131.0"
-     font-size="14.0"
+     x="1510"
+     y="131"
+     font-size="14px"
      fill="#333333"
      font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
      font-weight="bold"
      text-anchor="middle"
      dominant-baseline="hanging"
-     id="text209">Quarto</text>
+     id="text209">HTML</text>
   <text
      x="406.0"
      y="106.0"
@@ -2036,13 +2036,12 @@
      stroke-linecap="round"
      id="path218" />
   <text
-     x="108.0"
-     y="994.5421609868496"
-     font-size="16.0"
+     x="108"
+     y="994.54218"
+     font-size="16px"
      fill="#333333"
      font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
-     dy="0.3em"
-     id="text219">Quality Control</text>
+     id="text219">Logs</text>
   <circle
      cx="700.0"
      cy="499.3091271890821"

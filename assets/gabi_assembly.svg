@@ -21,8 +21,8 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.74639049"
-     inkscape:cx="835.35362"
-     inkscape:cy="482.99115"
+     inkscape:cx="746.92806"
+     inkscape:cy="515.1459"
      inkscape:window-width="2560"
      inkscape:window-height="1368"
      inkscape:window-x="0"
@@ -39,6 +39,17 @@
     .nf-metro-title { fill: #ffffff; }
 }
 </style>
+  <path
+     style="fill:none;fill-opacity:0.78;stroke:#d7d49b;stroke-width:3.77953;stroke-dasharray:15.11812019, 3.77953005;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 604.24135,196.94785 216.37468,512.46633 h 309.48947 l 42.2031,-20.76661"
+     id="path2"
+     inkscape:export-filename="gabi_assembly_highres.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <path
+     style="fill:none;fill-opacity:0.78;stroke:#d0cca2;stroke-width:3.77953;stroke-dasharray:11.33859015, 11.33859015;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 604.91124,194.93818 c 237.14129,245.84986 235.80151,245.17997 235.80151,245.17997 h 478.30195 l 45.5525,-64.3095"
+     id="path1" />
   <path
      d="M680.5,189.11651689888376 L685.0,189.11651689888376 Q698.0,189.11651689888376,698.0,202.11651689888376 L698.0,779.1165168988837 Q698.0,789.1165168988837,708.0,789.1165168988837 L831.0,789.1165168988837"
      stroke="#e5e536"
@@ -69,7 +80,8 @@
      fill="#ededed"
      stroke="#e6e6e6"
      stroke-width="1.0"
-     id="rect1" />
+     id="rect1"
+     style="fill:#ededed;fill-opacity:0.77999997" />
   <circle
      cx="211.0"
      cy="70.0"
@@ -184,7 +196,8 @@
      fill="#ededed"
      stroke="#e6e6e6"
      stroke-width="1.0"
-     id="rect7" />
+     id="rect7"
+     style="fill:#ededed;fill-opacity:0.77999997" />
   <circle
      cx="842.0"
      cy="270.0"
@@ -260,7 +273,8 @@
      fill="#ededed"
      stroke="#e6e6e6"
      stroke-width="1.0"
-     id="rect11" />
+     id="rect11"
+     style="fill:#ededed;fill-opacity:0.77999997" />
   <circle
      cx="842.0"
      cy="536.1165168988837"

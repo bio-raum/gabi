@@ -1,7 +1,7 @@
 %%metro title: GABI Pipeline (characterization)
 %%metro style: dark
 %%metro line: main | Main | #1e9b05
-%%metro line: qc | Quality Control | #2196F3 | dashed
+%%metro line: qc | Logs | #2196F3 | dashed
 
 graph LR
 
@@ -117,7 +117,7 @@ graph LR
 
         gather_logs -->|main| logs_to_json
         gather_logs -->|main| multiqc
-        logs_to_json -->|main| quarto
+        logs_to_json -->|main| HTML
 
     end
 

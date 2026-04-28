@@ -24,7 +24,7 @@ GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 
 * Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
-  * By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use `--skip_medaka`
+  * By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use `--skip_medaka` or provide the model with `--medaka_model`.
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.
 * Try to get reasonably long reads; a read N50 of 10kb should be achievable with most extraction methods.   
 
@@ -42,4 +42,4 @@ GABI supports processing of Pacbio reads. Some recommendations include:
 
 ## Plasmids
 
-If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you the plasmids. 
+If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you some or all of the plasmids. 

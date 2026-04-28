@@ -11,7 +11,7 @@ GABI has two alternative strategies for long read assembly - using either a sing
 | Strategy | Assembler(s) | Command line option |
 | -------- | ------------ | ------------------- |
 | Single assembler | Flye |  |
-| Multi-assembler | Canu, Flye, Miniasm, Necat, Raven | --autocycler |
+| Multi-assembler | Canu, Flye, Miniasm, Necat, Raven, Plassembler | --autocycler |
 
 To run a consensus assembly, GABI uses [Autocycler](https://github.com/rrwick/Autocycler) with a combination of [Canu](https://github.com/marbl/canu), [Flye](https://github.com/mikolmogorov/Flye), [Miniasm](https://github.com/lh3/miniasm), [Necat](https://github.com/xiaochuanle/NECAT), [Raven](https://github.com/lbcb-sci/raven) and [Plassembler](https://github.com/gbouras13/plassembler) - depending on the type of sequencing reads (ONT, Pacbio CLR or Pacbio HiFI) available.
 
@@ -39,8 +39,6 @@ Generally, GABI runs fine with all-default settings. However, depending on your 
 
 `--medaka_model`  The basecalling model used; only needed if your basecaller does not encode it in the sequence headers.
 
-`--skip_medaka` Skip polishing with Medaka if your data was not basecalled with Dorado and/or the information on the calling model was lost. 
-
 `--onthq` Use this option if your reads were basecalled with a SUP model
 
 `--ont_min_q` Minimum quality ONT reads to keep
@@ -53,4 +51,4 @@ The last option is more meant to nudge the dataset towards "longer and better". 
 
  `--pacbio_hifi` - use this option of your Pacbio data is from HiFi reads.
 
- `--homopolish` - Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to use such corrections. For Pacbio data, homopolish will only run when using CLR reads - i.e. is mutually exclusive with `--pacbio_hifi`.
+ `--homopolish` - Perform polishing of homopolymer errors using [Homopolish](https://github.com/ythuang0522/homopolish). Since this uses sequence information from related assemblies, some users may not wish to use such corrections. For Pacbio data, homopolish will only run when using CLR reads without short reads - i.e. is mutually exclusive with `--pacbio_hifi`.
