@@ -1642,7 +1642,7 @@
 <p>Perform downsampling of read data to the specified coverage (e.g. '100').  For typical data (~100X coverage), downsampling should not be necessary. However, we found it to be occassionally useful for heavily oversampled (&gt; 500X) read sets where the inherent noise can make it difficult to obtain a clean assembly.</p>
 <p>Caveats:</p>
 <ul>
-<li>The <code>--max_coverage</code> argument will be applied to all individual read sets in your pipeline run, across all technologies, unless:</li>
+<li>The <code>--max_coverage</code> argument will be applied to all individual read sets in your pipeline run, across all technologies, but:</li>
 <li>The <code>--max_coverage</code> option will be ignored for long reads when also requesting <code>--autocycler</code></li>
 <li>Accurate downsampling relies on GABI being able to correctly guess the genome size of the bacterium. In case of very noisy data, that guess may be off (however, we cap genome size estimates at 6MB)</li>
 </ul>
@@ -1734,7 +1734,7 @@ If you have sequenced at sufficient depths, you may decide to discard shorter re
 <dl>
 <dt><code>--medaka_model</code> [ default = null ]</dt>
 <dd>
-<p>The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. Else, also see <code>--skip_medaka</code>. </p>
+<p>The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. If no model is provided and no information on basecalling is encoded in the read data, Medaka polishing will be skipped.</p>
 </dd>
 <dt><code>--homopolish_model</code> [ default = R10]</dt>
 <dd>

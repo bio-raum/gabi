@@ -1373,7 +1373,7 @@
 <ul>
 <li>Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.</li>
 <li>Basecalling should be performed with a recent version of <a href="https://github.com/nanoporetech/dorado">Dorado</a> and a SUP (super-accurate) model</li>
-<li>By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use <code>--skip_medaka</code></li>
+<li>By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use <code>--skip_medaka</code> or provide the model with <code>--medaka_model</code>.</li>
 <li>If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.</li>
 <li>Try to get reasonably long reads; a read N50 of 10kb should be achievable with most extraction methods.   </li>
 </ul>
@@ -1387,7 +1387,7 @@
 <li>GABI does not perform any kind of trimming and demultiplexing of the data (use <a href="https://lima.how/">Lima</a>)</li>
 </ul>
 <h2 id="plasmids">Plasmids</h2>
-<p>If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you the plasmids. </p>
+<p>If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you some or all of the plasmids. </p>
 
 
 
