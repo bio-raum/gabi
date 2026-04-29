@@ -4,18 +4,19 @@ channels:
   - bioconda
   
 dependencies:
-   - autocycler>=0.5.2            # https://github.com/rrwick/Autocycler
-   - canu>=2.3                    # https://github.com/marbl/canu
-   - flye>=2.9.6                  # https://github.com/mikolmogorov/Flye
-   - metamdbg>=1.0                # https://github.com/GaetanBenoitDev/metaMDBG
-   - miniasm>=0.3                 # https://github.com/lh3/miniasm
-   - minimap2>=2.28               # https://github.com/lh3/minimap2
-   - minipolish>=0.2.0            # https://github.com/rrwick/Minipolish
-   - myloasm>=0.1.0               # https://github.com/bluenote-1577/myloasm
-   - necat>=0.0.1_update20200803  # https://github.com/xiaochuanle/NECAT
-   - nextdenovo>=2.5.2            # https://github.com/Nextomics/NextDenovo
-   - nextpolish>=1.4.1            # https://github.com/Nextomics/NextPolish
-   - plassembler>=1.8.0           # https://github.com/gbouras13/plassembler
-   - racon>=1.5.0                 # https://github.com/lbcb-sci/racon
-   - raven-assembler>=1.8.3       # https://github.com/lbcb-sci/raven
-   - wtdbg>=2.5                   # https://github.com/ruanjue/wtdbg2
+  - autocycler=0.6.2
+  - plassembler=1.8.2
+  - raven-assembler=1.8.3
+  - canu=2.3
+  - miniasm=0.3
+  - hifiasm=0.25.0
+  - necat=0.0.1_update20200803
+  - flye=2.9.6
+  - minipolish>=0.2.0
+  - minimap2>=2.28
+  - nextdenovo>=2.5.2
+  - nextpolish>=1.4.1 
+  - wtdbg>=2.5  
+  - racon>=1.5.0 
+  - metamdbg>=1.0 
+  - myloasm>=0.1.0

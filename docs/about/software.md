@@ -9,7 +9,7 @@ Version 1.0.1, [github](https://github.com/tseemann/abricate)
 Version 3.11.18, [doi](https://doi.org/10.1038/s41598-021-91456-0) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/34135355/) | [github](https://github.com/ncbi/amr)
 
 **Autocycler**
-Version  0.5.2, [doi](https://doi.org/10.1093/bioinformatics/btaf474) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/40875535/) | [github](https://github.com/rrwick/Autocycler)
+Version  0.6.2, [doi](https://doi.org/10.1093/bioinformatics/btaf474) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/40875535/) | [github](https://github.com/rrwick/Autocycler)
 
 **Bracken**
 Version 2.9, [github](https://github.com/jenniferlu717/Bracken)
@@ -22,6 +22,9 @@ Version 5.3.0, [doi](https://doi.org/10.1007/978-1-4939-9173-0_14) | [PubMed](ht
 
 **BWAMEM 2**
 Version 2.2.1, [doi](https://doi:10.1109/IPDPS.2019.00041) | [github](https://github.com/bwa-mem2/bwa-mem2) | [IEEE Explore](https://ieeexplore.ieee.org/document/8820962)
+
+**Canu** 
+Version 2.2, [doi](https://doi.org/10.1101/gr.215087.116) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/28298431/) | [github](https://github.com/marbl/canu)
 
 **ConfindR**
 Version 0.7.4, [doi](https://doi.org/10.7717/peerj.6995) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/31183253/) | [github](https://github.com/OLC-Bioinformatics/ConFindr)
@@ -41,6 +44,9 @@ Version 0.4.1, [doi](https://doi.org/10.1093/bioinformatics/bty560) | [PubMed](h
 **Flye**
 Version 2.9, [doi](https://doi.org/10.1038/s41587-019-0072-8) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/30936562/) |  [github](https://github.com/fenderglass/Flye/tree/flye)
 
+**Hifiasm**
+Version 0.25.0, [doi](https://doi.org/10.1038/s41592-020-01056-5) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/33526886/) | [github](https://github.com/chhylp123/hifiasm)
+
 **Hamronization**
 Version 1.1.4, [github](https://github.com/pha4ge/hAMRonization)
 
@@ -59,6 +65,9 @@ Version 2.1.2, [doi](https://doi.org/10.1186/s13059-019-1891-0) | [PubMed](https
 **Medaka**
 Version 2.0.1, [github](https://github.com/nanoporetech/medaka)
 
+**Miniasm**
+Version 0.3, [github](https://github.com/lh3/miniasm)
+
 **Minimap2**
 Version 2.28, [doi](https://doi:10.1093/bioinformatics/bty191) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/29750242/) | [github](https://github.com/lh3/minimap2)
 
@@ -74,11 +83,20 @@ Version 1.19, [doi](https://doi.org/10.1093/bioinformatics/btw354) | [PubMed](ht
 **Mosdepth**
 Version 0.3.8, [github](https://github.com/brentp/mosdepth)
 
+**Necat**
+Version 0.0.1, [doi](https://doi.org/10.1038/s41467-020-20236-7) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/33397900/) | [github](https://github.com/xiaochuanle/NECAT)
+
 **Quast**
 Version 5.2.0, [github](https://github.com/ablab/quast)
 
 **Racon**
 Version 1.4.3, [doi](https://doi.org/10.1101/gr.214270.116) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/28100585/) | [github](https://github.com/isovic/racon)
+
+**Raven**
+Version 1.8.3, [github](https://github.com/lbcb-sci/raven)
+
+**Plassembler**
+Version 1.8.1, [doi](https://doi.org/10.1093/bioinformatics/btad409) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/37369026/) | [github](https://github.com/gbouras13/plassembler)
 
 **Polypolish**
 Version 0.6.0, [doi](https://doi.org/10.1099/mgen.0.001254) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/38833287/) | [github](https://github.com/rrwick/Polypolish)
