@@ -1,18 +1,20 @@
-include { FLYE as FLYE_PACBIO }             from '../../modules/flye'
-include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF } from '../../modules/minimap2/align'
-include { DNAAPLER }                        from '../../modules/dnaapler'
-include { POLYPOLISH_POLISH }               from '../../modules/polypolish/polish'
-include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
-include { HOMOPOLISH as HOMOPOLISH_PACBIO } from '../../modules/homopolish'
-include { BWAMEM2_MEM_POLYPOLISH }          from '../../modules/bwamem2/mem_polypolish'
-include { AUTOCYCLER_WORKFLOW }             from './../autocycler_workflow'
-include { GENOMESIZE }                      from './../genomesize'
+include { FLYE as FLYE_PACBIO }                         from '../../modules/flye'
+include { MINIMAP2_ALIGN as MINIMAP2_ALIGN_PAF }        from '../../modules/minimap2/align'
+include { DNAAPLER }                                    from '../../modules/dnaapler'
+include { POLYPOLISH_POLISH }                           from '../../modules/polypolish/polish'
+include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH }   from '../../modules/bwamem2/index'
+include { HOMOPOLISH as HOMOPOLISH_PACBIO }             from '../../modules/homopolish'
+include { BWAMEM2_MEM_POLYPOLISH }                      from '../../modules/bwamem2/mem_polypolish'
+include { AUTOCYCLER_WORKFLOW }                         from './../autocycler_workflow'
+include { PLASSEMBLER_RUN as PLASSEMBLER_RUN_PACBIO }   from '../../modules/plassembler/run'
+include { PLASSEMBLER_LONG as PLASSEMBLER_LONG_PACBIO } from '../../modules/plassembler/long'
 
 workflow PACBIO_ASSEMBLY {
 
     take:
     reads // [ meta, illumina, pacbio ] where illumina reads are optional
     homopolish_db
+    ch_plassembler_db
 
     main:
 
@@ -30,29 +32,44 @@ workflow PACBIO_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // Determine genome size of from this read set
-    GENOMESIZE(
-        lreads
-    )
-    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
-
     if (params.autocycler) {
         read_type = params.pacbio_hifi ? "pacbio_hifi" : "pacbio_clr"
+
         // Autocycler bash workflow
         AUTOCYCLER_WORKFLOW(
-            GENOMESIZE.out.reads_with_genome_size,
+            lreads,
             read_type
         )
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
     } else {
 
+        reads.branch { m,s,o ->
+            with_short: s
+            no_short: !s
+        }.set { ch_reads_by_config }
+
         // FLYE long read assembler
         FLYE_PACBIO(
-            GENOMESIZE.out.reads_with_genome_size
+            lreads
         )
         ch_versions = ch_versions.mix(FLYE_PACBIO.out.versions)
-        ch_long_read_assembly = FLYE_PACBIO.out.fasta
+
+        // Execute plassembler run for hybrid data
+        PLASSEMBLER_RUN_PACBIO(
+            ch_reads_by_config.with_short.join(FLYE_PACBIO.out.dir),
+            ch_plassembler_db
+        )
+        ch_versions = ch_versions.mix(PLASSEMBLER_RUN_PACBIO.out.versions)
+
+        // or plassembler long for long-read only
+        PLASSEMBLER_LONG_PACBIO(
+            ch_reads_by_config.no_short.map {m, s, l -> tuple(m,l) }.join(FLYE_PACBIO.out.dir),
+            ch_plassembler_db
+        )
+        ch_versions = ch_versions.mix(PLASSEMBLER_LONG_PACBIO.out.versions)
+        
+        ch_long_read_assembly = PLASSEMBLER_RUN_PACBIO.out.fasta.mix(PLASSEMBLER_LONG_PACBIO.out.fasta)
     }
 
     ch_long_read_assembly.map { m, a ->

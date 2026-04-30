@@ -143,6 +143,16 @@ Then use the `-r` argument as explained above to run the workflow using the new 
 
 :   A name to use for various output files. This tends to be useful to relate analyses back to individual pipeline runs or projects later on. 
 
+`--max_coverage` [ default = null ]
+
+:   Perform downsampling of read data to the specified coverage (e.g. '100').  For typical data (~100X coverage), downsampling should not be necessary. However, we found it to be occassionally useful for heavily oversampled (> 500X) read sets where the inherent noise can make it difficult to obtain a clean assembly.
+
+    Caveats:
+
+    - The `--max_coverage` argument will be applied to all individual read sets in your pipeline run, across all technologies, but:
+    - The `--max_coverage` option will be ignored for long reads when also requesting `--autocycler`
+    - Accurate downsampling relies on GABI being able to correctly guess the genome size of the bacterium. In case of very noisy data, that guess may be off (however, we cap genome size estimates at 6MB)
+
 `--min_contig_len` [ default = 300 ]
 
 :   Discard contigs shorter than this from the assembly. Very short contigs generally do not add useful information to the assembly but increase the overall size and noise. Change this value at your own discretion. 
@@ -210,7 +220,7 @@ Some options specific to assembling ONT reads.
 
 `--medaka_model` [ default = null ]
 
-:   The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. Else, also see `--skip_medaka`. 
+:   The basecalling model used for ONT reads. This option is set to null by default since Dorado encodes this information in the sequence headers and Medaka can grab it from there. If this is not the case for your data, you can specify the appropriate model here. If no model is provided and no information on basecalling is encoded in the read data, Medaka polishing will be skipped.
 
 `--homopolish_model` [ default = R10]
 
@@ -254,10 +264,6 @@ These options are only meant for users who have a specific reason to touch them.
 :   By default, GABI uses a comprehensive reference database to identify the best reference match per assembly. This can take a substantial amount of time, depending on completeness of the assembly and hardware. 
 
     If you do not care about the best reference, but are happy with a "close enough" inference to get the correct species only, you can set this option to true. This will then run a reduced version of the database with a focus on covering relevant taxonomic groups at a much less dense sampling. Note that some of the Quast metrics may notably deteriorate as you are no longer guaranteed to get the closest possible match. This approach may yield subpar results if your sample belongs to a group of closely related taxa, such as <i>Campylobacter</i>.
-
-`--max_coverage` [ default = "100" ]
-
-:   Tells the assembly software to downsample the read data to the specified depth. This option only applies to long-read data as Shovill, the short-read assembler, performs downsampling automatically. Down-sampling is automatically disabled when `--autocycler`is requested (autocycler performs its own partitioning and subsampling).
 
 `--max_contigs` [ default = 150 ]
 

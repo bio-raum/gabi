@@ -1,0 +1,268 @@
+%%metro title: GABI Pipeline (full)
+%%metro style: light
+%%metro line: main | Main | #1e9b05
+%%metro line: qc | Quality Control | #2196F3 | dashed
+%%metro line: illumina | Illumina processing | #e5e536
+%%metro line: nanopore | Nanopore processing | #a21cc3 
+%%metro line: nanopore_alt | Nanopore alt processing | #7f1699  | dotted
+%%metro line: illumina_alt | Illumina alt processing | #e5c836 | dotted
+%%metro line: pacbio | Pacbio processing | #c64b1a |
+%%metro line: pacbio_alt | Pacbio alt processing | #963914 | dotted
+
+graph LR
+
+    input[Input TSV]
+
+    subgraph illumina_qc [Illumina QC]
+        cat_fastq[cat fastq]
+        fastp[fastP]
+        fastqc[fastQC]
+        confindr[ConfindR]
+        illumina_reads[Illumina Reads]
+
+        cat_fastq -->|illumina| fastp
+        fastp -->|qc| fastqc
+        fastp -->|qc| confindr
+        fastp -->|illumina| illumina_reads
+
+    end
+
+    subgraph illumina_assembly [Illumina Assembly]
+
+        shovill[Shovill]
+        shovill_fix[Shovill Fix Contigs]
+        unicycler[Unicycler]
+
+        shovill -->|illumina| shovill_fix
+
+    end
+
+    
+    subgraph nanopore_qc [Nanopore QC]
+
+        porechop_abi[Porechop ABI]
+        cat_fastq_ont[cat fastq ONT]
+        chopper[Chopper]
+        confindr_ont[ConfindR]
+        nanoplot[Nanoplot]
+        seqkit_replace[SeqKit Replace]
+        kmc_ont[KMC]
+        rasusa_ont[Rasusa]
+        ont_reads[ONT Reads]
+
+        porechop_abi -->|nanopore| cat_fastq_ont
+        cat_fastq_ont -->|nanopore| chopper
+        chopper -->|qc| confindr_ont
+        chopper -->|nanopore| seqkit_replace
+        seqkit_replace -->|nanopore_alt| kmc_ont
+        kmc_ont -->|nanopore_alt| rasusa_ont
+        rasusa_ont -->|nanopore_alt| ont_reads
+        chopper -->|qc| nanoplot
+        seqkit_replace -->|nanopore| ont_reads
+
+    end
+    
+    subgraph ont_assembly [Nanopore Assembly]
+        flye_ont[Flye]
+        autocycler_ont[Autocycler]
+        plassembler_ont[Plassembler]
+        medaka_consensus[Medaka]
+        homopolish_ont[Homopolish]
+        bwamem2_index_ont[BWA-MEM2 Index]
+        bwamem2_align_ont[BWA-MEM2 Align]
+        polypolish_ont[Polypolish]
+        dnaapler_ont[DNAAPLER]
+
+        flye_ont -->|nanopore| plassembler_ont
+        plassembler_ont -->|nanopore_alt| medaka_consensus
+        plassembler_ont -->|nanopore_alt| bwamem2_index_ont
+        medaka_consensus -->|nanopore_alt| bwamem2_index_ont
+        bwamem2_index_ont -->|nanopore_alt| bwamem2_align_ont
+        bwamem2_align_ont -->|nanopore_alt| polypolish_ont
+        polypolish_ont -->|nanopore_alt| dnaapler_ont
+        autocycler_ont -->|nanopore_alt| medaka_consensus
+        autocycler_ont -->|nanopore_alt| bwamem2_index_ont
+        plassembler_ont -->|nanopore_alt| homopolish_ont
+        plassembler_ont -->|nanopore| dnaapler_ont
+        homopolish_ont -->|nanopore_alt| dnaapler_ont
+
+    end
+
+    subgraph pacbio_qc [Pacbio QC]
+        cat_fastq_pb[cat fastq]
+        fastplong[FastPlong]
+        fastqc_pb[FastQC]
+        confindr_pb[ConfindR]
+        kmc_pb[KMC]
+        rasusa_pb[Rasusa]
+        pacbio_reads[Pacbio Reads]
+
+        cat_fastq_pb -->|pacbio| fastplong
+        fastplong -->|qc| fastqc_pb
+        fastplong -->|qc| confindr_pb
+        fastplong -->|pacbio_alt| kmc_pb
+        kmc_pb -->|pacbio_alt| rasusa_pb
+        rasusa_pb -->|pacbio_alt| pacbio_reads
+        fastplong -->|pacbio| pacbio_reads
+
+    end
+
+    subgraph pacbio_assembly [Pacbio Assembly]
+
+        flye_pb[Flye]
+        autocycler_pb[Autocycler]
+        plassembler_pb[Plassembler]
+        homopolish_pb[Homopolish]
+        bwamem2_index_pb[BWA-MEM2 Index]
+        bwamem2_align_pb[BWA-MEM2 align]
+        polypolish_pb[Polypolish]
+        dnaapler_pb[DNAAPLER]
+
+        flye_pb -->|pacbio| plassembler_pb
+        plassembler_pb -->|pacbio_alt| homopolish_pb
+        plassembler_pb -->|pacbio_alt| bwamem2_index_pb
+        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
+        bwamem2_align_pb -->|pacbio_alt| polypolish_pb
+        polypolish_pb -->|pacbio_alt| dnaapler_pb
+        homopolish_pb -->|pacbio_alt| dnaapler_pb
+        plassembler_pb -->|pacbio| dnaapler_pb
+        autocycler_pb -->|pacbio_alt| bwamem2_index_pb
+        bwamem2_index_pb -->|pacbio_alt| bwamem2_align_pb
+        autocycler_pb -->|pacbio_alt| homopolish_pb
+
+    end
+
+    subgraph assembly [Gather assemblies]
+        gather_assembly[Assemblies]
+
+    end
+
+    subgraph assembly_taxonomy [Assembly Taxonomy]
+        kraken2[Kraken2]
+        taxonkit_lineage[Taxonkit]
+        helper_format_taxonkit[Taxonkit Format]
+        checkm2[CheckM2]
+
+        kraken2 -->|main| taxonkit_lineage
+        taxonkit_lineage -->|main| helper_format_taxonkit
+
+    end
+
+    subgraph coverage [Assembly coverage]
+
+        bwamem2_index_assembly[BWA-MEM2 Index]
+        bwamem2_align_assembly[BWA-MEM2 Align]
+        minimap2_align[Minimap2 Align]
+        samtools_merge[Samtools Merge]
+        samtools_index[Samtools Index]
+        mosdepth[Mosdepth]
+
+        bwamem2_index_assembly -->|main|  bwamem2_align_assembly
+
+        bwamem2_align_assembly -->|main| samtools_merge
+        minimap2_align -->|main| samtools_merge
+        samtools_merge -->|main| samtools_index
+        samtools_index -->|main| mosdepth
+
+    end
+
+    subgraph plasmids [Plasmids]
+
+        mobsuite_recon[Mobsuite Recon]
+
+    end
+
+    subgraph find_reference [Reference Genome]
+
+        sourmash_sketch[SourMash Sketch]
+        sourmash_search[SourMash Search]
+        download_genome[Download Genome]
+        assign_taxon[Assign Taxon]
+
+        sourmash_sketch -->|main| sourmash_search
+        sourmash_search -->|main| download_genome
+        download_genome -->|main| assign_taxon
+
+    end
+
+    subgraph serotype [Serotyping]
+
+        branch_by_taxon[Select tool]
+        btyper3[Btyper3]
+        ectyper[ECtyper]
+        stecfinder[Stecfinder]
+        abricate_ecoh[Abricate EcOH]
+        kaptive[Kaptive]
+        seqsero2[SeqSero2]
+        sistr[Sistr]
+        sccmec[SCCMEC]
+        lissero[Lissero]
+
+        branch_by_taxon -->|main| btyper3
+        branch_by_taxon -->|main| ectyper
+        branch_by_taxon -->|main| stecfinder
+        branch_by_taxon -->|main| abricate_ecoh
+        branch_by_taxon -->|main| kaptive
+        branch_by_taxon -->|main| seqsero2
+        branch_by_taxon -->|main| sistr
+        branch_by_taxon -->|main| sccmec
+        branch_by_taxon -->|main| lissero
+
+    end
+
+    subgraph amr [AMR Typing]
+
+        database_by_taxon[Select Databases]
+        amrfinderplus[AMRFinder Plus]
+        abricate[Abricate]
+        hamronization[Hamronization]
+        hamronization_summary[Hamronization Summary]
+
+        database_by_taxon -->|main| amrfinderplus
+        database_by_taxon -->|main| abricate
+        amrfinderplus -->|main| hamronization
+        abricate -->|main| hamronization
+        hamronization -->|main| hamronization_summary
+
+    end
+
+    subgraph annotation [Annotation]
+
+        prokka[Prokka]
+
+    end
+
+    subgraph assembly_qc [Assembly QC]
+        quast[Quast]
+        busco[Busco]
+    
+    end
+
+    
+    input -->|illumina| cat_fastq
+    input -->|nanopore| porechop_abi
+    input -->|pacbio| cat_fastq_pb
+    illumina_reads -->|illumina| shovill
+    illumina_reads -->|illumina_alt| unicycler
+    illumina_reads -->|illumina_alt| bwamem2_align_ont
+    illumina_reads -->|illumina_alt| bwamem2_align_pb
+    ont_reads -->|nanopore| flye_ont
+    ont_reads -->|nanopore_alt| autocycler_ont
+    pacbio_reads -->|pacbio| flye_pb
+    pacbio_reads -->|pacbio_alt| autocycler_pb
+    shovill_fix -->|illumina| gather_assembly
+    unicycler -->|illumina_alt| gather_assembly
+    dnaapler_ont -->|nanopore| gather_assembly
+    dnaapler_pb -->|pacbio| gather_assembly
+    gather_assembly -->|main| checkm2
+    gather_assembly -->|main| kraken2
+    gather_assembly -->|main| bwamem2_index_assembly
+    gather_assembly -->|main| minimap2_align
+    gather_assembly -->|main| mobsuite_recon
+    gather_assembly -->|main| sourmash_sketch
+    assign_taxon -->|main| prokka
+    assign_taxon -->|main| database_by_taxon
+    assign_taxon -->|main| quast
+    assign_taxon -->|main| busco
+    assign_taxon -->|main| database_by_taxon
+    assign_taxon -->|main| branch_by_taxon

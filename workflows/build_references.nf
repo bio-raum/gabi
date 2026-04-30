@@ -12,6 +12,7 @@ include { UNTAR as UNTAR_CONFINDR_SCHEMA }                  from './../modules/u
 include { CHECKM2_DATABASEDOWNLOAD }                        from './../modules/checkm2/databasedownload'
 include { CONFINDR_INDEX }                                  from './../modules/helper/confindr_index'
 include { CONFINDR_DATABASE_SETUP }                         from './../modules/confindr/database_setup'
+include { PLASSEMBLER_DOWNLOAD }                            from './../modules/plassembler/download'
 
 workflow BUILD_REFERENCES {
     
@@ -25,6 +26,9 @@ workflow BUILD_REFERENCES {
     ch_busco_lineage    = channel.from(['bacteria_odb10'])
     host_genome         = channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
     aux_confindr_files  = channel.fromPath("${baseDir}/assets/confindr/*.tar.gz").map { f -> [ [sample_id: f.getSimpleName()], f]}
+
+    // Download plassembler database
+    PLASSEMBLER_DOWNLOAD()
 
     // Install the default ConfindR database
     CONFINDR_DATABASE_SETUP()

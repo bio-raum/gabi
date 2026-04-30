@@ -50,7 +50,7 @@ workflow GABI {
     ch_multiqc_pacbio   = channel.from([])
 
     samplesheet = params.input ? channel.fromPath(file(params.input, checkIfExists:true)) : channel.value([])
-    pipeline_info = Channel.fromPath(dumpParametersToJSON(params.outdir)).collect()
+    pipeline_info = channel.fromPath(dumpParametersToJSON(params.outdir)).collect()
 
     refDir = file(params.reference_base + "/gabi/${params.reference_version}")
     if (!refDir.exists()) {
@@ -73,6 +73,7 @@ workflow GABI {
     homopolish_db   = params.reference_base ? file(params.references['homopolish_db'].db, checkIfExists:true) : []
     checkm_db       = params.reference_base ? file(params.references['checkmdb'].db, checkIfExists: true)     : []
     taxdb           = params.reference_base ? file(params.references['taxdb'].db, checkIfExists:true)         : []
+    plassembler_db  = params.reference_base ? file(params.references['plassembler'].db, checkIfExists: true)  : []
 
     // Sourmash DB choice - either the full thing or a smaller "nr" one to speed up searches at the cost of some precision
     if (params.fast_ref) {
@@ -185,7 +186,8 @@ workflow GABI {
     */    
     ONT_ASSEMBLY(
         ch_dragonflye,
-        homopolish_db
+        homopolish_db,
+        plassembler_db
     )
     ch_versions = ch_versions.mix(ONT_ASSEMBLY.out.versions)
     ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
@@ -196,7 +198,8 @@ workflow GABI {
     */
     PACBIO_ASSEMBLY(
         ch_pb_hybrid_reads,
-        homopolish_db
+        homopolish_db,
+        plassembler_db
     )
     ch_versions     = ch_versions.mix(PACBIO_ASSEMBLY.out.versions)
     ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)

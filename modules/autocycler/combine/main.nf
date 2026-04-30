@@ -4,7 +4,7 @@ process AUTOCYCLER_COMPRESS {
     label 'medium_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "mjfos2r/autocycler:0.5.2"
+    container "mhoeppner/autocycler:0.6.2"
 
     input:
     tuple val(meta), val(assemblies, stageAs: 'assemblies/?')

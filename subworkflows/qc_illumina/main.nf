@@ -7,6 +7,7 @@ include { BIOBLOOM_CATEGORIZER }        from './../../modules/biobloom/categoriz
 subworkflows
 */
 include { CONTAMINATION }               from './../contamination'
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_ILLUMINA {
     take:
@@ -80,13 +81,27 @@ workflow QC_ILLUMINA {
     )
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
+
+    /*
+    Perform downsampling if requested. This is both for hybrid assembly approaches
+    and for Shovill, as Shovills downsampling seems to struggle with very high 
+    coverage datasets
+    */
+    if (params.max_coverage) {
+        DOWNSAMPLE_READS(
+            ch_reads_decont
+        )
+        ch_final_reads = DOWNSAMPLE_READS.out.reads
+    } else {
+        ch_final_reads = ch_reads_decont
+    }
    
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     fastp_json      = FASTP.out.json
     confindr_qc     = CONTAMINATION.out.qc
-    reads           = ch_reads_decont
+    reads           = ch_final_reads
     versions        = ch_versions
     qc              = multiqc_files
     }

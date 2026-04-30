@@ -7,19 +7,15 @@ include { POLYPOLISH_POLISH }                       from '../../modules/polypoli
 include { BWAMEM2_INDEX as BWAMEM2_INDEX_POLYPOLISH } from '../../modules/bwamem2/index'
 include { BWAMEM2_MEM_POLYPOLISH }                  from '../../modules/bwamem2/mem_polypolish'
 include { AUTOCYCLER_WORKFLOW }                     from './../autocycler_workflow'
-include { GENOMESIZE }                              from './../genomesize'
+include { PLASSEMBLER_RUN as PLASSEMBLER_RUN_ONT }  from '../../modules/plassembler/run'
+include { PLASSEMBLER_LONG as PLASSEMBLER_LONG_ONT } from '../../modules/plassembler/long'
 
-/* 
-This workflow is inspired by https://github.com/rpetit3/dragonflye
-Since Dragonflye isn't regularly maintained, GABI re-implements the
-basic (slightly simplified) logic into a subworkflow instead, with 
-some additional steps
-*/
 workflow ONT_ASSEMBLY {
 
     take:
     reads // [ meta, [short_reads], ont_reads ]
     homopolish_db
+    ch_plassembler_db
 
     main:
 
@@ -36,26 +32,42 @@ workflow ONT_ASSEMBLY {
     }.filter { it.last() }
     .set { sreads }
 
-    // Determine genome size from this read set
-    GENOMESIZE(
-        lreads
-    )
-    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
-
     if (params.autocycler) {
+
         AUTOCYCLER_WORKFLOW(
-            GENOMESIZE.out.reads_with_genome_size,
+            lreads,
             "ont_r10"
         )
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
     } else {
+
+        reads.branch { m,s,o ->
+            with_short: s
+            no_short: !s
+        }.set { ch_reads_by_config }
+
         // FLYE long read assembler
         FLYE_ONT(
-            GENOMESIZE.out.reads_with_genome_size
+            lreads
         )
         ch_versions = ch_versions.mix(FLYE_ONT.out.versions)
-        ch_long_read_assembly = FLYE_ONT.out.fasta
+                
+        // Execute plassembler run for hybrid data
+        PLASSEMBLER_RUN_ONT(
+            ch_reads_by_config.with_short.join(FLYE_ONT.out.dir),
+            ch_plassembler_db
+        )
+        ch_versions = ch_versions.mix(PLASSEMBLER_RUN_ONT.out.versions)
+
+        // or plassembler long for long-read only
+        PLASSEMBLER_LONG_ONT(
+            ch_reads_by_config.no_short.map { m, s, o -> tuple(m,o) }.join(FLYE_ONT.out.dir),
+            ch_plassembler_db
+        )
+        ch_versions = ch_versions.mix(PLASSEMBLER_LONG_ONT.out.versions)
+        
+        ch_long_read_assembly = PLASSEMBLER_RUN_ONT.out.fasta.mix(PLASSEMBLER_LONG_ONT.out.fasta)
     }
 
     ch_medaka_polished = channel.from([])
@@ -190,7 +202,7 @@ def check_ont_model(fastq) {
         def stream = isGzip ? new java.util.zip.GZIPInputStream(fq) as InputStream : fq as InputStream
         def decoder = new InputStreamReader(stream, 'ASCII')
         def buffered = new BufferedReader(decoder)
-        line = buffered.readLine()
+        def line = buffered.readLine()
         if (line.contains("model")) {
             has_model = true
         }

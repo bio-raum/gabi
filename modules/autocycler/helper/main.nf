@@ -4,14 +4,14 @@ process AUTOCYCLER_HELPER {
     label 'medium_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "mjfos2r/autocycler:0.5.2"
+    container "mhoeppner/autocycler:0.6.2"
 
     input:
     tuple val(meta), path(reads), val(genome_size), val(idx), val(tool)
     val(read_type)
 
     output:
-    tuple val(meta), path('*.fasta')            , emit: fasta
+    tuple val(meta), path('*.fasta')            , optional: true , emit: fasta // plassembler emits nothing if no plasmids are assembled
     tuple val(meta), path("autocycler.log")     , emit: log  
     path 'versions.yml'                         , emit: versions
 

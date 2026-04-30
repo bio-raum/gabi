@@ -338,7 +338,7 @@ def main(yaml, template, output, version, call, wd):
                 elif ("Staphylococcus aureus" in taxon):
 
                     sccmec = serotypes["sccmec"]
-                    serotype = sccmec["subtype"]
+                    serotype = f"{sccmec['type']} ({sccmec['subtype']})"
                     pathogenes = "" if sccmec["mecA"] == "-" else "mecA"
                     tool = "SCCMEC"
 

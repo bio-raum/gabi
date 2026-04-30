@@ -20,10 +20,11 @@ process KMC {
 
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: meta.sample_id
-    def ci = (meta.platform == "NANOPORE") ? 10 : 2
+    def ci = (meta.platform.contains("NANOPORE")) ? 10 : 2
 
     """
     for i in $reads ; do echo \$i >> files.txt ; done;
+
 
     mkdir -p kmc
     $args \\

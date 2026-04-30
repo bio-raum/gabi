@@ -1,13 +1,13 @@
 
-include { RASUSA }                          from './../../modules/rasusa'
-include { CAT_FASTQ  }                      from './../../modules/cat_fastq'
-include { FASTQC }                          from './../../modules/fastqc'
-include { FASTPLONG }                       from './../../modules/fastplong'
+include { CAT_FASTQ  }                  from './../../modules/cat_fastq'
+include { FASTQC }                      from './../../modules/fastqc'
+include { FASTPLONG }                   from './../../modules/fastplong'
 
 /*
 subworkflows
 */
 include { CONTAMINATION }               from './../contamination'
+include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_PACBIO {
     take:
@@ -54,11 +54,23 @@ workflow QC_PACBIO {
     ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
     ch_reads_decont = CONTAMINATION.out.reads
 
+    if (params.max_coverage) {
+
+        DOWNSAMPLE_READS(
+            ch_reads_decont
+        )
+        ch_versions = ch_versions.mix(DOWNSAMPLE_READS.out.versions)
+        ch_processed_reads = DOWNSAMPLE_READS.out.reads
+        
+    } else {
+        ch_processed_reads = ch_reads_decont
+    }
+
     emit:
     confindr_report = CONTAMINATION.out.report
     confindr_json   = CONTAMINATION.out.confindr_json
     confindr_qc = CONTAMINATION.out.qc
-    reads = ch_reads_decont
+    reads = ch_processed_reads
     qc = multiqc_files
     versions = ch_versions
     }

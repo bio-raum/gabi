@@ -9,7 +9,7 @@ process AUTOCYCLER_FINISH {
     label 'short_parallel'
 
     conda "${moduleDir}/environment.yml"
-    container "mjfos2r/autocycler:0.5.2"
+    container "mhoeppner/autocycler:0.6.2"
 
     input:
     tuple val(meta), path(assemblies, stageAs: 'assemblies/*')
@@ -18,6 +18,7 @@ process AUTOCYCLER_FINISH {
     tuple val(meta), path('*.assembly.fasta')   , emit: fasta
     tuple val(meta), path("autocycler_out")     , emit: results
     tuple val(meta), path("autocycler.log")     , emit: log  
+    tuple val(meta), path("*.summary.tsv")      , optional: true, emit: tsv
     path 'versions.yml'                         , emit: versions
 
     when:

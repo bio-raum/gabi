@@ -1,2 +1,3 @@
 sample	platform	single_end	fq1	fq2
-SRR29782673	NANOPORE	true	ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR297/073/SRR29782673/SRR29782673_1.fastq.gz
+JKD6159	NANOPORE	true	ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR213/012/SRR21386012/SRR21386012_1.fastq.gz
+JKD6159 ILLUMINA    false   ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR213/014/SRR21386014/SRR21386014_1.fastq.gz    ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR213/014/SRR21386014/SRR21386014_2.fastq.gz

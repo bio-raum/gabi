@@ -1,6 +1,7 @@
 include { AUTOCYCLER_HELPER }                   from'./../../modules/autocycler/helper'
 include { AUTOCYCLER_SUBSAMPLE }                from'./../../modules/autocycler/subsample'
 include { AUTOCYCLER_FINISH }                   from'./../../modules/autocycler/finish'
+include { GENOMESIZE }                          from './../genomesize'
 
 /* Implements the full autocycler workflow outlined in 
 https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Bash_script_by_Ryan_Wick/autocycler_full.sh
@@ -8,15 +9,25 @@ https://github.com/rrwick/Autocycler/blob/main/pipelines/Automated_Autocycler_Ba
 workflow AUTOCYCLER_WORKFLOW {
 
     take:
-    reads_with_genome_size
+    reads
     read_type
 
     main:
     ch_versions = channel.from([])
 
+    /*
+    Determine the genome size from KMErs
+    Note that this will not work perfectly on very poor or too deeply
+    sampled data!
+    */
+    GENOMESIZE(
+        reads
+    )
+    ch_versions = ch_versions.mix(GENOMESIZE.out.versions)
+
     // Subsample reads for parallel processing
     AUTOCYCLER_SUBSAMPLE(
-        reads_with_genome_size
+        GENOMESIZE.out.reads_with_genome_size
     )
     ch_versions = ch_versions.mix(AUTOCYCLER_SUBSAMPLE.out.versions)
 
