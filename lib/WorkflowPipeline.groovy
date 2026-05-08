@@ -27,7 +27,10 @@ class WorkflowPipeline {
             log.info "It is strongly discouraged to perform downsampling in combination with running autocycler!!!"
         }
         if (params.autocycler && params.autocycler_tools) {
-            def valid_tools = [ "flye", "canu", "miniasm", "hifiasm", "plassembler", "raven", "necat" ]
+            
+            def valid_tools = [ "canu", "flye", "hifiasm", "metamdbg",
+                "miniasm", "myloasm", "necat", "nextdenovo", "plassembler", "raven", "redbean" ]
+
             def tools = params.autocycler_tools.split(",")
             tools.each { t ->
                 if (!valid_tools.contains(t)) {

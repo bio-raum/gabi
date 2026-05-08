@@ -203,7 +203,7 @@ def check_ont_model(fastq) {
         def decoder = new InputStreamReader(stream, 'ASCII')
         def buffered = new BufferedReader(decoder)
         def line = buffered.readLine()
-        if (line.contains("model")) {
+        if (line.contains("model") || (line.contains("_dna_r"))) {
             has_model = true
         }
     }

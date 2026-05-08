@@ -70,11 +70,11 @@ def tool_list(meta) {
 
     if (params.autocycler_tools) {
         log.info "Using user-provided list of tools for Autocycler"
-        tools = params.tools.split(",")
+        tools = params.autocycler_tools.split(",")
     } else {
         if (meta.platform.contains("NANOPORE")) {
             if (params.onthq) {
-                tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
+                tools = ["flye", "miniasm", "necat", "raven", "plassembler", "nextdenovo"]
             } else {
                 tools = ["flye", "miniasm", "necat", "raven", "plassembler"]
             }
@@ -82,7 +82,7 @@ def tool_list(meta) {
             if (params.pacbio_hifi) {
                 tools = ["flye", "hifiasm", "plassembler"]
             } else {
-                tools = ["flye", "miniasm", "raven", "canu", "plassembler" ]
+                tools = ["flye", "raven", "canu", "plassembler" ]
             }
         } else {
             log.warn "No known sequencing platform attached to reads of sample ${meta.sample_id}"
