@@ -95,7 +95,7 @@ For each sample, a folder is created with results from various tools, as follows
 - assembly - The genome assembly and related information
   - busco - Busco analysis of gene space coverage
   - quast - Quast assembly metrics
-  - flye/dragonflye/shovill - the assembler output(s)
+  - flye/autocycler/shovill - the assembler output(s)
 - mlst - MLST typing results
 - plasmids - Identification of plasmids from the assembly
 - qc - Basic read QC
