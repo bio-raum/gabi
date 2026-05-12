@@ -90,8 +90,9 @@ workflow ONT_ASSEMBLY {
             tuple(m, r, status )
         }.branch { m, r, s ->
             with_model: s == true
+                tuple(m,r)
             no_model: s == false
-            tuple(m,r)
+                tuple(m,r)
         }.set { lreads_with_model_status }
 
         MEDAKA_CONSENSUS(
@@ -191,7 +192,9 @@ workflow ONT_ASSEMBLY {
 
 /*
 Dorado encodes the base calling model into the fastQ headers
-Check if it is there, else data has no model information
+Check if it is there, else data has no model information and
+medaka must be skipped unless medak_model is defined from the
+command line
 */
 def check_ont_model(fastq) {
 
@@ -203,7 +206,7 @@ def check_ont_model(fastq) {
         def decoder = new InputStreamReader(stream, 'ASCII')
         def buffered = new BufferedReader(decoder)
         def line = buffered.readLine()
-        if (line.contains("model")) {
+        if (line.contains("model") || (line.contains("_dna_r"))) {
             has_model = true
         }
     }
