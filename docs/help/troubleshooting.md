@@ -1,5 +1,11 @@
 # Common issues
 
+## Startup failures
+
+### The pipeline fails to start with code validation errors
+
+GABI was developed to work with Nextflow versions 24 and 25. Trying to use GABI with much older or newer versions of Nextflow will likely fail due to changes in Nextflow conventions.
+
 ## Assembly and qc
 
 ### The pipeline did not close my assembly, even though I have used both Nanopore and Illumina reads. 
