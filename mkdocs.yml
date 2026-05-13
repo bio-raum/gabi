@@ -17,6 +17,7 @@ nav:
     - Examples: user_doc/examples.md
     - Pipeline: user_doc/pipeline.md
     - Output: user_doc/output.md
+    - Offline: user_doc/offline.md
   - Help:
     - FAQ: help/faq.md
     - Contamination: help/contamination.md
