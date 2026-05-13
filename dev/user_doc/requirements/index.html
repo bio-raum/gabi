@@ -659,6 +659,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#nextflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nextflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#computing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1256,6 +1267,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#nextflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nextflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#computing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1360,6 +1382,8 @@
 
 <h1 id="gabi-pipeline-requirements">GABI Pipeline requirements</h1>
 <p>Below are some general guidelines to ensure that your data can be successfully analyzed by GABI. </p>
+<h2 id="nextflow">Nextflow</h2>
+<p>GABI was developed in Nextflow and should work with Nextflow versions 24 and <a href="https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5">25</a>. GABI is <strong>not</strong> compatible with Nextflow release 26 or above at this time. </p>
 <h2 id="computing">Computing</h2>
 <p>Computing requirements are largely dependent on your input data. In principle, GABI should run on commodity hardware such as modern laptops or desktop computers. The minimum required specs include 4 CPU cores and 16 Gb of Ram (preferably &gt; 32GB!) as well as ~50 GB of storage for the local reference data. That said, GABI was designed and optimized for powerful workstations and compute clusters, and such hardware is recommended if you plan on assembling many genomes - especially when using time-consuming consensus assembly for long-read data (<code>--autocycler</code>). </p>
 <p>While Nextflow, and consequently GABI, are technically compatible with Windows (through <a href="https://learn.microsoft.com/en-us/windows/wsl/about">WSL</a>) and OSX, it is going to be easiest to run it on a Linux system. For more details, please see our <a href="../installation/">installation</a> instructions. </p>
