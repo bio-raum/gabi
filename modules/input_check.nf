@@ -24,7 +24,6 @@ workflow INPUT_CHECK {
 def input_channel(LinkedHashMap row) {
     def meta = [:]
 
-    println(row)
     if (!row.sample) {
         exit 1, "ERROR: Please check input samplesheet -> no sample column found!\n"
     }
