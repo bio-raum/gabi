@@ -3,7 +3,8 @@
     "os": ["Linux"],
     "node": ["HPC03"],
     "user": ["Dr. Holger Brendebach (BfR-4NSZ)"],
-    "timestamp": ["2023-09-12 15:43:28.679503"]
+    "timestamp": ["2023-09-12 15:43:28.679503"],
+    "copyright": "Copyright (c) 2019, Carlus Deneke, Holger Brendebach and Simon H. Tausch. All rights reserved."
   },
   "thresholds": {
     "Acinetobacter": {

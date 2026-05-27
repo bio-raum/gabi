@@ -2,6 +2,10 @@
 
 Below are some general guidelines to ensure that your data can be successfully analyzed by GABI. 
 
+## Nextflow
+
+GABI was developed in Nextflow and should work with Nextflow versions 24 and [25](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). GABI is **not** compatible with Nextflow release 26 or above at this time. 
+
 ## Computing
 
 Computing requirements are largely dependent on your input data. In principle, GABI should run on commodity hardware such as modern laptops or desktop computers. The minimum required specs include 4 CPU cores and 16 Gb of Ram (preferably > 32GB!) as well as ~50 GB of storage for the local reference data. That said, GABI was designed and optimized for powerful workstations and compute clusters, and such hardware is recommended if you plan on assembling many genomes - especially when using time-consuming consensus assembly for long-read data (`--autocycler`). 
