@@ -18,6 +18,9 @@ workflow QC_PACBIO {
 
     ch_versions = channel.from([])
     multiqc_files = channel.from([])
+    ch_confindr_report = channel.from([])
+    ch_confindr_json = channel.from([])
+    ch_confindr_qc = channel.from([])
 
     // Merge Nanopore reads per sample
     reads.groupTuple().branch { meta, fastq ->
@@ -47,12 +50,22 @@ workflow QC_PACBIO {
     ch_versions = ch_versions.mix(FASTQC.out.versions)
     multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
 
-    CONTAMINATION(
-        FASTPLONG.out.reads,
-        confindr_db
-    )
-    ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
-    ch_reads_decont = CONTAMINATION.out.reads
+    /* This may need further evaluation; for now we only
+    run confindr when reads are hifi
+    */
+    if (params.hifi) {
+        CONTAMINATION(
+            FASTPLONG.out.reads,
+            confindr_db
+        )
+        ch_confindr_report = CONTAMINATION.out.report
+        ch_confindr_json = CONTAMINATION.out.confindr_json
+        ch_confindr_qc = CONTAMINATION.out.qc
+        ch_versions = ch_versions.mix(CONTAMINATION.out.versions)
+        ch_reads_decont = CONTAMINATION.out.reads
+    } else {
+        ch_reads_decont = FASTPLONG.out.reads
+    }
 
     if (params.max_coverage) {
 
@@ -67,9 +80,9 @@ workflow QC_PACBIO {
     }
 
     emit:
-    confindr_report = CONTAMINATION.out.report
-    confindr_json   = CONTAMINATION.out.confindr_json
-    confindr_qc = CONTAMINATION.out.qc
+    confindr_report = ch_confindr_report
+    confindr_json   = ch_confindr_json
+    confindr_qc = ch_confindr_qc
     reads = ch_processed_reads
     qc = multiqc_files
     versions = ch_versions

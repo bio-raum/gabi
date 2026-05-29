@@ -6,7 +6,7 @@ If you are new to our pipeline ecosystem, we recommend you first check out our g
 
 Nextflow is a highly portable pipeline engine. Please see the official [installation guide](https://www.nextflow.io/docs/latest/getstarted.html#installation) to learn how to set it up.
 
-This pipeline supports Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [25.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). Please note that GABI is **not** currently compatible with Nextflow release 26. 
+This pipeline supports Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [25.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). Please note that GABI is **not** currently (officially) compatible with Nextflow release 26. 
 
 ## Software provisioning
 
@@ -100,23 +100,26 @@ This pipeline requires locally stored references:
 
     ``` bash
     nextflow run bio-raum/gabi -profile apptainer \
-      -r main \
+      -r main \ #(1)!
       --build_references \
       --run_name build_refs \
       --reference_base /path/to/references \
     ```
 
+    1. Specify the version of the pipeline here, corresponding to a github release tag (e.g. 1.5.1) or branch (e.g. main)
+
 === "Site-specific profile"
 
     ``` bash
     nextflow run bio-raum/gabi -profile myprofile \
-      -r main \
+      -r main \ #(1)!
       --build_references \
       --run_name build \
       --reference_base /path/to/references # (1)!
     ```
 
-    1. You can define `reference_base` in your site-specific profile and omit it in the command-line
+    1. Specify the version of the pipeline here, corresponding to a github release tag (e.g. 1.5.1) or branch (e.g. main)
+    2. You can define `reference_base` in your site-specific profile and omit it in the command-line
 
 where `/path/to/references` could be something like `/data/pipelines/references` or whatever is most appropriate on your system.
 
@@ -124,7 +127,7 @@ The path specified with `--reference_base` can then be given to the pipeline dur
 
 Please note that the build process will create a pipeline-specific subfolder (`gabi`) that must not be given as part of the `--reference_base` argument. GABI is part of a collection of pipelines that use a shared reference directory and it will choose the appropriate subfolder by itself.
 
-Please note that references are combined into versioned "packages" and different versions of GABI may require different versions of this reference "package". Should you try to launch a version of GABI for which you do not have the matched references installed, GABI will let you know. In that case, run the commands above with the release tag of the pipeline version you wish to use.
+Also, references are combined into versioned "packages" and different versions of GABI may require different versions of this reference "package". Should you try to launch a version of GABI for which you do not have the matched references installed, GABI will let you know. In that case, run the commands above with the release tag of the pipeline version you wish to use.
 
 ## Site-specific config file
 

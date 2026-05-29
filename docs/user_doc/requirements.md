@@ -16,11 +16,13 @@ While Nextflow, and consequently GABI, are technically compatible with Windows (
 
 GABI applies species-specific QC criteria to determine the suitabilty of a data set for analysis - one of which is the sequencing depth. As a rule of thumb, GABI expects somewhere between 20X to 40X of mean coverage (see [threshold](https://github.com/bio-raum/gabi/blob/main/assets/AQUAMIS_thresholds.json)), so it is recommended to aim for this as a lower bound (ideally 50-100X) to ensure that your data does not trigger a warning or fail. 
 
-Please not that there is definitely a "too much coverage" scenario also. The deeper you sequence, the harder it becomes for the various tools to make sense of the data and reduce it to the most useful reads. We have seen data sets with > 500X depth, but very low quality (=Q10) reads; such data is extremely difficult to assemble and we strongly recommend you try and reduce it before feeding it into GABI. 
+Please note that there is definitely a "too much coverage" scenario also. The deeper you sequence, the harder it becomes for the various tools to make sense of the data and reduce it to the most useful reads. We have seen data sets with > 500X depth, but very low quality (=Q10) reads; such data is extremely difficult to assemble and we strongly recommend you try and reduce it before feeding it into GABI. 
+
+GABI provides you with some tools to perform filtering of your inputs, including setting a minium read quality, minimum read length as well as downsampling. Please see our [usage guide](usage.md) for more information.
 
 ## Contamination
 
-GABI is very sensitive towards read contamination and will fail samples if it detects even lower levels of contamination. Please make sure you work with pure isolate cultures and that no contaminations are introduced during DNA extraction or library prep. Also note that some of the criteria applied to detect contamination may not perform optimally for Nanopore data, which is inherently more noisy. We are working to improve this. 
+GABI is very sensitive towards read contamination and will fail samples if it detects even lower levels of contamination. Please make sure you work with pure isolate cultures and that no contaminations are introduced during DNA extraction or library prep. Also note that some of the criteria applied to detect contamination may not perform optimally for Nanopore data, which is inherently more noisy. We are working to improve this. When in doubt, please perform your own analysis of the results to make a final decision on whether a dataset is safe to be used.
 
 ## Nanopore Reads
 
@@ -28,9 +30,9 @@ GABI supports processing of Nanopore (ONT) reads. Some recommendations include:
 
 * Reads must be adapter-trimmed - and, if applicable, demultiplexed. GABI does not perform these processing steps.
 * Basecalling should be performed with a recent version of [Dorado](https://github.com/nanoporetech/dorado) and a SUP (super-accurate) model
-  * By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado. If this is not the case, use `--skip_medaka` or provide the model with `--medaka_model`.
+  * By default, GABI will use Medaka for polishing. This requires for your data to have been basecalled with Dorado to automatically detect the basecalling model. If this is not the case, provide the model with `--medaka_model`.
 * If you have not yet concatenated the various individual FastQ files per sample, GABI can perform this task for you - just list one FastQ file per line in the sample sheet, each with the same sample ID.
-* Try to get reasonably long reads; a read N50 of 10kb should be achievable with most extraction methods.   
+* Try to get reasonably long reads; a read N50 of 10kb should be achievable with most extraction methods.
 
 ## IonTorrent Reads
 
@@ -46,4 +48,4 @@ GABI supports processing of Pacbio reads. Some recommendations include:
 
 ## Plasmids
 
-If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest reads will automatically lose you some or all of the plasmids. 
+If you want to recover all the plasmids from your input DNA, please make sure that you perform no size filtering of the DNA (using something like a BluePippin) nor the read data (we use a default minium length of 500 bp, which should be fine). Plasmids can be as small as a few kilobases, so selecting for the longest DNA or reads will automatically lose you some or all of the plasmids. 

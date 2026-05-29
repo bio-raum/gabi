@@ -1,3 +1,8 @@
+# dev
+
+- Increased phred threshold in ConfindR analysis of Illumina data to remove false positive contaminations
+- Removed Nanopore ConfindR as a fail category from final sample classification due to occurences of false contamination calls
+
 # 1.4.2
 
 - Added an upper version lock to the pipeline, preventing execution with new and untestet versions of nextflow
