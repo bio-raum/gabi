@@ -1346,7 +1346,7 @@
 <p>If you are new to our pipeline ecosystem, we recommend you first check out our general setup guide <a href="https://github.com/bio-raum/nf-configs/blob/main/doc/installation.md">here</a>.</p>
 <h2 id="installing-nextflow">Installing nextflow</h2>
 <p>Nextflow is a highly portable pipeline engine. Please see the official <a href="https://www.nextflow.io/docs/latest/getstarted.html#installation">installation guide</a> to learn how to set it up.</p>
-<p>This pipeline supports Nextflow versions between <a href="https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5">24.10.5</a> and <a href="https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5">25.10.5</a>. Please note that GABI is <strong>not</strong> currently compatible with Nextflow release 26. </p>
+<p>This pipeline supports Nextflow versions between <a href="https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5">24.10.5</a> and <a href="https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5">25.10.5</a>. Please note that GABI is <strong>not</strong> currently (officially) compatible with Nextflow release 26. </p>
 <h2 id="software-provisioning">Software provisioning</h2>
 <p>This pipeline is set up to work with a range of software provisioning technologies - no need to manually install packages!</p>
 <p>You can choose one of the following options:</p>
@@ -1418,20 +1418,24 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>apptainer<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span>-r<span class="w"> </span>main<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span>-r<span class="w"> </span>main<span class="w"> </span><span class="se">\ </span><span class="c1">#(1)!</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span>--build_references<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span>--run_name<span class="w"> </span>build_refs<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span>--reference_base<span class="w"> </span>/path/to/references<span class="w"> </span><span class="se">\</span>
 </span></code></pre></div>
+<ol>
+<li>Specify the version of the pipeline here, corresponding to a github release tag (e.g. 1.5.1) or branch (e.g. main)</li>
+</ol>
 </div>
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>bio-raum/gabi<span class="w"> </span>-profile<span class="w"> </span>myprofile<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>-r<span class="w"> </span>main<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>-r<span class="w"> </span>main<span class="w"> </span><span class="se">\ </span><span class="c1">#(1)!</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span>--build_references<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span>--run_name<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span>--reference_base<span class="w"> </span>/path/to/references<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div>
 <ol>
+<li>Specify the version of the pipeline here, corresponding to a github release tag (e.g. 1.5.1) or branch (e.g. main)</li>
 <li>You can define <code>reference_base</code> in your site-specific profile and omit it in the command-line</li>
 </ol>
 </div>
@@ -1440,7 +1444,7 @@
 <p>where <code>/path/to/references</code> could be something like <code>/data/pipelines/references</code> or whatever is most appropriate on your system.</p>
 <p>The path specified with <code>--reference_base</code> can then be given to the pipeline during normal execution as <code>--reference_base</code>.</p>
 <p>Please note that the build process will create a pipeline-specific subfolder (<code>gabi</code>) that must not be given as part of the <code>--reference_base</code> argument. GABI is part of a collection of pipelines that use a shared reference directory and it will choose the appropriate subfolder by itself.</p>
-<p>Please note that references are combined into versioned "packages" and different versions of GABI may require different versions of this reference "package". Should you try to launch a version of GABI for which you do not have the matched references installed, GABI will let you know. In that case, run the commands above with the release tag of the pipeline version you wish to use.</p>
+<p>Also, references are combined into versioned "packages" and different versions of GABI may require different versions of this reference "package". Should you try to launch a version of GABI for which you do not have the matched references installed, GABI will let you know. In that case, run the commands above with the release tag of the pipeline version you wish to use.</p>
 <h2 id="site-specific-config-file">Site-specific config file</h2>
 <p>If you run on anything other than a local system, this pipeline requires a site-specific configuration file to be able to talk to your cluster or compute infrastructure. Nextflow supports a wide range of such infrastructures, including Slurm, LSF and SGE - but also Kubernetes and AWS. For more information, see <a href="https://www.nextflow.io/docs/latest/executor.html">here</a>. In addition, a site-specific config file allows you to pre-set certain options specifically for your system and removes some of the complexity of the command line calls.</p>
 <p>Site-specific config-files for our pipeline ecosystem are stored centrally on <a href="https://github.com/bio-raum/nf-configs">github</a>. Please <a href="https://github.com/bio-raum/nf-configs/issues/new">talk to us</a> if you want to add your system.</p>
