@@ -269,7 +269,7 @@ def main(yaml, template, output, version, call, wd):
             #################
 
             serotype_data = {}
-            if "serotype" in jdata:
+            if "serotype" in jdata and jdata["serotype"]:
                 serotypes = jdata["serotype"]
                 serotype = ""
                 pathogenes = ""
