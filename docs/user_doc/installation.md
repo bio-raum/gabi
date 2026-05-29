@@ -6,7 +6,7 @@ If you are new to our pipeline ecosystem, we recommend you first check out our g
 
 Nextflow is a highly portable pipeline engine. Please see the official [installation guide](https://www.nextflow.io/docs/latest/getstarted.html#installation) to learn how to set it up.
 
-This pipeline supports Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [25.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). Please note that GABI is **not** currently compatible with Nextflow release 26. 
+This pipeline supports Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [25.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). Please note that GABI is **not** currently guaranteed to fully work with Nextflow release 26. 
 
 ## Software provisioning
 
