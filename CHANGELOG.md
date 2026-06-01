@@ -1,6 +1,6 @@
 # dev
 
-- Increased phred threshold in ConfindR analysis of Illumina data to remove false positive contaminations
+- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q30 to remove false positive contaminations reported to occur on current generaton Illumina instruments
 - Removed Nanopore ConfindR as a fail category from final sample classification due to occurences of false contamination calls
 
 # 1.4.2

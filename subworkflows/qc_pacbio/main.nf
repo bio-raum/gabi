@@ -53,7 +53,7 @@ workflow QC_PACBIO {
     /* This may need further evaluation; for now we only
     run confindr when reads are hifi
     */
-    if (params.pacbiop_hifi) {
+    if (params.pacbio_hifi) {
         CONTAMINATION(
             FASTPLONG.out.reads,
             confindr_db
