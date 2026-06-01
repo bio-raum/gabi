@@ -36,7 +36,7 @@ We gratefully acknowledge the trememdous efforts put in by many developers witho
 | Racon | 1.4.3 | MIT | [link](https://github.com/isovic/racon) | [link](https://doi.org/10.1101/gr.214270.116) |
 | Raven | 1.8.3 | MIT | [link](https://github.com/lbcb-sci/raven) | |
 | Plassembler | 1.8.1 | MIT | [link](https://github.com/gbouras13/plassembler) | [link](https://doi.org/10.1093/bioinformatics/btad409) |
-| Polypolish | 0.6.0 | [link](https://github.com/rrwick/Polypolish) | [link](https://doi.org/10.1099/mgen.0.001254) |
+| Polypolish | 0.6.0 | GPL 3.0 | [link](https://github.com/rrwick/Polypolish) | [link](https://doi.org/10.1099/mgen.0.001254) |
 | Porechop_abi | 0.5.0 | GPL 3.0 | [link](https://github.com/bonsai-team/Porechop_ABI) | [link](https://doi.org/10.1101/2022.07.07.499093)
 | Prokka | 1.14.6 | GPL 3.0 | [link](https://github.com/tseemann/prokka) | [link](https://doi.org/10.1093/bioinformatics/btu153) |
 | Samtools | 1.19 | MIT/Expat | [link](https://github.com/samtools/samtools) | [link](https://doi.org/10.1093/bioinformatics/btp352) |
