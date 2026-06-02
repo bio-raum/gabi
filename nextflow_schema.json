@@ -83,10 +83,6 @@
           "type": "string",
           "default": "/home/marc/git/bio-raum/gabi/assets/AQUAMIS_thresholds.json",
           "hidden": true
-        },
-        "remove_host": {
-          "type": "boolean",
-          "description": "Remove host DNA from reads (Horse)"
         }
       }
     },

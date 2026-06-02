@@ -1,7 +1,8 @@
-# dev
+# 1.5.0
 
-- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q30 to remove false positive contaminations reported to occur on current generaton Illumina instruments
+- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q30 to remove false positive contaminations on new generaton Illumina instruments
 - Removed Nanopore ConfindR as a fail category from final sample classification due to occurences of false contamination calls
+- Removed option to filter reads against host genome due to aggressive license restrictions of biobloomtools as well as unpredictable effects on downstream applications
 
 # 1.4.2
 

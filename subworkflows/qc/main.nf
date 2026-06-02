@@ -14,7 +14,6 @@ workflow QC {
     take:
     reads
     confindr_db
-    bloomfilter
 
     main:
 
@@ -42,8 +41,7 @@ workflow QC {
     */
     QC_ILLUMINA(
         ch_reads.illumina,
-        confindr_db,
-        bloomfilter
+        confindr_db
     )
     ch_illumina_trimmed = QC_ILLUMINA.out.reads
     ch_confindr_reports = ch_confindr_reports.mix(QC_ILLUMINA.out.confindr_report)

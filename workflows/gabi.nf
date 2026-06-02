@@ -87,8 +87,6 @@ workflow GABI {
 
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
-    ch_bloom_filter = params.reference_base ? channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
-
     STAGE_SAMPLESHEET(samplesheet)
 
     INPUT_CHECK(samplesheet)
@@ -116,8 +114,7 @@ workflow GABI {
     */
     QC(
         INPUT_CHECK.out.reads,
-        confindr_db,
-        ch_bloom_filter
+        confindr_db9
     )
     ch_versions         = ch_versions.mix(QC.out.versions)
     ch_illumina_trimmed = QC.out.illumina
