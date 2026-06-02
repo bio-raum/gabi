@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://bio-raum.github.io/gabi/dev/user_doc/usage/">
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../examples/">
       
       
-        <link rel="next" href="../examples/">
+        <link rel="next" href="../output/">
       
       
         
@@ -599,6 +599,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../requirements/" class="md-nav__link">
         
   
@@ -635,6 +663,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
   
 
     
@@ -879,62 +935,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Examples
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../pipeline/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pipeline
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../output/" class="md-nav__link">
         
   
@@ -1076,14 +1076,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../help/contamination/" class="md-nav__link">
+      <a href="../../help/assembly/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Contamination
+    Assembly
   
 
     
@@ -1104,14 +1104,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../help/assembly/" class="md-nav__link">
+      <a href="../../help/contamination/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Assembly
+    Contamination
   
 
     
@@ -1822,11 +1822,6 @@ This option is mostly useful if you have sequenced at sufficient depth to be abl
 <dt><code>--random_seed</code> [ default = false ]</dt>
 <dd>
 <p>A random seed to use during read downsampling (when using --max_coverage). Downsampling will randomly choose reads to retain; if you need your analysis to be perfectly reproducible, provide a random number as seed to fix the sampling to a specific set of reads. </p>
-</dd>
-<dt><code>--remove_host</code> [ default = false ]</dt>
-<dd>
-<p>This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. </p>
-<p>This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an issue and we will consider adding it. </p>
 </dd>
 <dt><code>--skip_failed</code> [ default = false ]</dt>
 <dd>
