@@ -11,12 +11,12 @@ Modules
 include { CONFINDR2MQC_SUMMARY } from './../../modules/helper/confindr2mqc_summary'
 
 workflow QC {
+    
     take:
     reads
     confindr_db
 
     main:
-
 
     ch_versions         = channel.from([])
     multiqc_files       = channel.from([])

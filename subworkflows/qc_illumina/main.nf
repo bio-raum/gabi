@@ -9,6 +9,7 @@ include { CONTAMINATION }               from './../contamination'
 include { DOWNSAMPLE_READS }            from './../downsample_reads'
 
 workflow QC_ILLUMINA {
+    
     take:
     reads
     confindr_db

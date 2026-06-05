@@ -114,7 +114,7 @@ workflow GABI {
     */
     QC(
         INPUT_CHECK.out.reads,
-        confindr_db9
+        confindr_db
     )
     ch_versions         = ch_versions.mix(QC.out.versions)
     ch_illumina_trimmed = QC.out.illumina
