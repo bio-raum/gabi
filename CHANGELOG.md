@@ -1,7 +1,8 @@
-# dev
+# 1.5.0
 
-- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q30 to remove false positive contaminations reported to occur on current generaton Illumina instruments
+- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q25 to remove false positive contaminations reported to otherwise occur on current generaton Illumina instruments
 - Removed Nanopore ConfindR as a fail category from final sample classification due to occurences of false contamination calls
+- Combined serotyping results from ECTper and Abricate EcOH in the final HTML report as neither tool alone seems to do well on benchmark data
 
 # 1.4.2
 
