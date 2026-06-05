@@ -53,8 +53,6 @@ We gratefully acknowledge the trememdous efforts put in by many developers witho
 
 # Databases
 
-## Abricate
-
 | Package | Database | URL | License |
 | --- | -------- | --- | ------- |
 | Abricate | Ecoli_VF | [link](https://github.com/phac-nml/ecoli_vf)  | Apache 2.0 |

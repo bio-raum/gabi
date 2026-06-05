@@ -283,12 +283,6 @@ These options are only meant for users who have a specific reason to touch them.
 
 :   A random seed to use during read downsampling (when using --max_coverage). Downsampling will randomly choose reads to retain; if you need your analysis to be perfectly reproducible, provide a random number as seed to fix the sampling to a specific set of reads. 
 
-`--remove_host` [ default = false ]
-
-:   This option will perform filtering of short reads against a built-in reference (currently: horse) to remove any host contamination from the data. 
-
-    This option was found to be useful for Campylobacter, which is often grown in blood medium (in our case: horse). If you use another kind of medium and require decontamination, please open an issue and we will consider adding it. 
-
 `--skip_failed` [ default = false ]
 
 :   By default, all samples are processed all the way to the end of the pipeline. This flag allows you to apply criteria to stop samples along the processing graph. The following criteria will be applied:

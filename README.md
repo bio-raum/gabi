@@ -1,9 +1,9 @@
 # bio-raum/gabi
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.10.5-23aa62.svg)](https://www.nextflow.io/)
-[![run with apptainer](https://img.shields.io/badge/apptainer-run?logo=apptainer&logoColor=3EB049&label=run%20with&labelColor=000000&logo)](https://apptainer.org/)
+[![Nextflow](https://img.shields.io/badge/nextflow_DSL2-%3E%3D24.02.5_%7C_%3C%3D25.10.2-23aa62.svg)](https://www.nextflow.io/)
+[![run with apptainer](https://img.shields.io/badge/apptainer-run?logo=apptainer&logoColor=3EB049&label=run%20with&labelColor=000000&logo=apptainer)](https://apptainer.org/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
-[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/) 
+[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000&logo=singularity)](https://sylabs.io/docs/) 
 [![run with podman](https://img.shields.io/badge/run%20with-podman-1d355c.svg?labelColor=000000&logo=podman)](https://docs.podman.io/en/latest/)
 [![run with conda](https://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 

@@ -11,17 +11,17 @@ nav:
     - Release notes: about/changelog.md
   - User Guide:
     - Quickstart: user_doc/quickstart.md
+    - Pipeline: user_doc/pipeline.md
     - Requirements: user_doc/requirements.md
     - Installation: user_doc/installation.md
-    - Usage: user_doc/usage.md
     - Examples: user_doc/examples.md
-    - Pipeline: user_doc/pipeline.md
+    - Usage: user_doc/usage.md
     - Output: user_doc/output.md
     - Offline usage: user_doc/offline.md
   - Help:
     - FAQ: help/faq.md
-    - Contamination: help/contamination.md
     - Assembly: help/assembly.md
+    - Contamination: help/contamination.md
     - Troubleshooting: help/troubleshooting.md
   - About:
     - Software: about/software.md
