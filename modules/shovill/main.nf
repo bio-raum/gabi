@@ -24,9 +24,9 @@ process SHOVILL {
     script:
     def args = task.ext.args ?: ''
     def memory = task.memory.toGiga()
-    def prefix = task.ext.prefix ?: meta.sample_id
+    // def prefix = task.ext.prefix ?: meta.sample_id
 
-    contig = prefix + '.contigs.fa'
+    // def contig = prefix + '.contigs.fa'
 
     """
     shovill \\

@@ -10,7 +10,7 @@ workflow INPUT_CHECK {
     samplesheet
         .splitCsv(header:true, sep:'\t')
         .map { row -> input_channel(row) }
-        .branch { m, d -> 
+        .branch { m, _d -> 
             assembly: m.assembly
             reads: m.reads
         }

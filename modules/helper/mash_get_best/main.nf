@@ -13,8 +13,6 @@ process CONFINDR_INSTALL {
     path("confindr")         , emit: db
 
     script:
-    archive = url.toString().split('/')[-1]
-    db_name = archive.replace('.tar.gz', '')
 
     """
     tar -xvf $url

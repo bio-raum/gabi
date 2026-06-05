@@ -18,7 +18,6 @@ process SAMTOOLS_MERGE {
 
     script:
     merged_bam = meta.sample_id + '-merged.bam'
-    merged_bam_index = merged_bam + '.bai'
 
     """
     samtools merge -@ ${task.cpus} $merged_bam ${aligned_bam_list.join(' ')}

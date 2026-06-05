@@ -34,7 +34,7 @@ workflow FIND_REFERENCES {
         tuple(newMeta,c)
     }.set { mash_with_gbk}
             
-    mash_with_gbk.map { m, r ->
+    mash_with_gbk.map { m,_r ->
         m.gbk
     }.unique()
     .set { genome_accessions }
@@ -55,7 +55,7 @@ workflow FIND_REFERENCES {
         tuple(m.gbk, m, r)
     }.combine(
         ch_genome_with_gff, by: 0
-    ).map { g, m, r, s, a, k ->
+    ).map { _g, m,_r, s, a, k ->
         def meta = [:]
         meta.sample_id = m.sample_id
         meta.taxon = m.taxon
@@ -64,7 +64,7 @@ workflow FIND_REFERENCES {
         tuple(meta, s, a, k)
     }.set { meta_with_sequence }
 
-    meta_with_genbank = meta_with_sequence.map{m,s,a,k -> [m,k]}
+    meta_with_genbank = meta_with_sequence.map{m,_s,_a,k -> [m,k]}
 
     /*
     Combine the assembly with the best reference genome and annotation
@@ -75,17 +75,17 @@ workflow FIND_REFERENCES {
         meta_with_sequence.map { m, r, g, k ->
             tuple(m.sample_id, m, r, g, k)
         }
-    ).map { i,s, m, r, g, k ->
+    ).map { _i,s, m, r, g, k ->
         tuple(m, s, r, g, k)
     }.set { assembly_with_reference_and_gbk }
 
     // and we create a channel with taxon-enriched metadata and assembly for other analyses
-    assembly_with_reference_and_gbk.map { m,s, r, g, k ->
+    assembly_with_reference_and_gbk.map { m,s,_r,_g,_k ->
         tuple(m,s)
     }.set { assembly_with_taxa }
 
     emit:
-    taxon = meta_with_sequence.map {m,s,a,k -> m }
+    taxon = meta_with_sequence.map {m,_s,_a,_k -> m }
     gbk = meta_with_genbank
     reference = meta_with_sequence
     assembly_with_ref = assembly_with_reference_and_gbk

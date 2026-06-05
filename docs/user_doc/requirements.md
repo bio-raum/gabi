@@ -4,7 +4,7 @@ Below are some general guidelines to ensure that your data can be successfully a
 
 ## Nextflow
 
-GABI was developed in Nextflow and should work with Nextflow versions 24 and [25](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). GABI is **not** compatible with Nextflow release 26 or above at this time. 
+GABI was developed in Nextflow and should work with Nextflow versions 24 to [26](https://github.com/nextflow-io/nextflow/releases/tag/v26.04.3).
 
 ## Computing
 

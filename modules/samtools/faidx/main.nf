@@ -16,7 +16,6 @@ process SAMTOOLS_FAIDX {
     path("versions.yml"), emit: versions
 
     script:
-    assembly = meta.assembly
     fai = fasta + '.fai'
 
     """

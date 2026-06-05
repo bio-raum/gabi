@@ -41,14 +41,14 @@ workflow QC_PACBIO {
         ch_merged_reads
     )
     ch_versions = ch_versions.mix(FASTPLONG.out.versions)
-    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { m,j -> j})
+    multiqc_files = multiqc_files.mix(FASTPLONG.out.json.map { _m,j -> j})
     
     // Run FastQC on the trimmed files
     FASTQC(
         FASTPLONG.out.reads
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions)
-    multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
+    multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { _m,z -> z })
 
     /* This may need further evaluation; for now we only
     run confindr when reads are hifi

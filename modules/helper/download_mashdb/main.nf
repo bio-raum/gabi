@@ -13,7 +13,6 @@ process DOWNLOAD_MASHDB {
     path(dbfile)         , emit: db
 
     script:
-    sketch = dbfile.getName()
 
     '''
     echo "Download complete"

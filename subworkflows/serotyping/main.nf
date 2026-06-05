@@ -20,7 +20,7 @@ workflow SEROTYPING {
     ch_versions = channel.from([])
     ch_reports = channel.from([])
 
-    assembly.branch { m, a ->
+    assembly.branch { m, _a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/

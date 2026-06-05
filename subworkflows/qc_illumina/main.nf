@@ -47,13 +47,13 @@ workflow QC_ILLUMINA {
         ch_reads_merged
     )
     ch_versions = ch_versions.mix(FASTP.out.versions)
-    multiqc_files = multiqc_files.mix(FASTP.out.json.map{ m,j -> j})
+    multiqc_files = multiqc_files.mix(FASTP.out.json.map{ _m,j -> j})
 
     FASTQC(
         FASTP.out.reads
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions)
-    multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { m, z -> z })
+    multiqc_files = multiqc_files.mix(FASTQC.out.zip.map { _m, z -> z })
     
     ch_illumina_clean = FASTP.out.reads
 

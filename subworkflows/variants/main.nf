@@ -20,7 +20,7 @@ workflow VARIANTS {
     multiqc_files = channel.from([])
     ch_variants = channel.from([])
 
-    reads_with_assembly.branch { m,r,a ->
+    reads_with_assembly.branch { m,_r,_a ->
         nanopore: m.platform == "NANOPORE"
         illumina: m.platform == "ILLUMINA"
     }.set { reads_by_platform }
@@ -58,7 +58,7 @@ workflow VARIANTS {
         )
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions)
-    multiqc_files = multiqc_files.mix(BCFTOOLS_STATS.out.stats.map { m,s -> s })
+    multiqc_files = multiqc_files.mix(BCFTOOLS_STATS.out.stats.map { _m,s -> s })
 
     emit:
     vcf = ch_variants

@@ -25,14 +25,14 @@ workflow QC {
     ch_qc               = channel.from([])
 
     // Divide reads up into their sequencing technologies
-    reads.branch { meta, fastq ->
+    reads.branch { meta, _fastq ->
         illumina: meta.platform == 'ILLUMINA'
         ont: meta.platform == 'NANOPORE'
         pacbio: meta.platform == 'PACBIO'
         torrent: meta.platform == 'TORRENT'
     }.set { ch_reads }
 
-    ch_reads.torrent.subscribe { m, r ->
+    ch_reads.torrent.subscribe { m, _r ->
         log.warn "Torrent data not yet supported, skipping ${m.sample_id}..."
     }
 
@@ -79,7 +79,7 @@ workflow QC {
     in any of their contributing reads (Illumina and Pacbio only)
     */
     CONFINDR2MQC_SUMMARY(
-        ch_confindr_json.map { m, j -> j }.collect()
+        ch_confindr_json.map { _m, j -> j }.collect()
     )
     ch_qc = ch_qc.mix(CONFINDR2MQC_SUMMARY.out.json)
 

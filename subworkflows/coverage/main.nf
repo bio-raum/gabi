@@ -33,7 +33,7 @@ workflow COVERAGE {
         assembly.map { m,a ->
             [ m.sample_id, a]
         }, by: 0
-    ).map { i,m,r,a ->
+    ).map { _i,m,r,a ->
         [ m,r,a]
     }.set { ch_reads_with_assembly }
 
@@ -41,7 +41,7 @@ workflow COVERAGE {
     Align short reads using BWA
     */
     ALIGN_SHORT_READS(
-        ch_reads_with_assembly.filter{ m,r,a -> 
+        ch_reads_with_assembly.filter{ m,_r,_a -> 
             m.platform == "ILLUMINA"
         }
     )
@@ -51,7 +51,7 @@ workflow COVERAGE {
     Align long reads using Minimap2
     */
     ALIGN_LONG_READS(
-        ch_reads_with_assembly.filter{ m,r,a -> 
+        ch_reads_with_assembly.filter{ m,_r,_a -> 
             m.platform == "NANOPORE" || m.platform == "PACBIO"
         }
     )
@@ -68,9 +68,9 @@ workflow COVERAGE {
         new_meta.sample_id = meta.sample_id
         def groupKey = meta.sample_id
         tuple( groupKey, new_meta, bam)
-    }.groupTuple(by: [0,1]).map { g ,new_meta ,bam -> [ new_meta, bam ] }
+    }.groupTuple(by: [0,1]).map { _g ,new_meta ,bam -> [ new_meta, bam ] }
             
-    bam_mapped.branch {
+    bam_mapped.branch { it ->
         single:   it[1].size() == 1
         multiple: it[1].size() > 1
     }.set { bam_to_merge }
@@ -105,10 +105,10 @@ workflow COVERAGE {
     Compute BAM stats for Illumina reads
     */
     SAMTOOLS_STATS(
-        SAMTOOLS_INDEX.out.bam.filter { m,b,i -> m.platform == "ILLUMINA"}
+        SAMTOOLS_INDEX.out.bam.filter { m,_b,_i -> m.platform == "ILLUMINA"}
     )
 
-    MOSDEPTH.out.global_txt.branch { m,r ->
+    MOSDEPTH.out.global_txt.branch { m,_r ->
         illumina: m.platform == "ILLUMINA"
         ont: m.platform == "NANOPORE"
         pacbio: m.platform == "PACBIO"

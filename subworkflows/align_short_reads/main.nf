@@ -16,14 +16,14 @@ workflow ALIGN_SHORT_READS {
 
     // Index the assembly
     BWAMEM2_INDEX(
-        ch_assembly_with_reads.map { m,r,a ->
+        ch_assembly_with_reads.map { m,_r,a ->
             [ m,a]
         }
     )
     ch_versions = ch_versions.mix(BWAMEM2_INDEX.out.versions)
 
     // Join reads with index
-    ch_assembly_with_reads.map { m,r,a ->
+    ch_assembly_with_reads.map { m,r,_a ->
         [ m,r ]
     }.join(
         BWAMEM2_INDEX.out.index

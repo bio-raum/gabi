@@ -23,7 +23,7 @@ workflow AMR_PROFILING {
     ch_abricate_reports = channel.from([])
     ch_hamronization_input = channel.from([])
 
-    assembly.branch { m, a ->
+    assembly.branch { m,_a ->
         ecoli: m.taxon ==~ /^Escherichia.*/
         salmonella: m.taxon ==~ /^Salmonella.*/
         listeria: m.taxon ==~ /^Listeria.*/
@@ -103,13 +103,13 @@ workflow AMR_PROFILING {
     Summarize reports across tools
     */
     HAMRONIZATION_SUMMARIZE(
-        ch_hamronization_input.map { m, j -> j }.collect(),
+        ch_hamronization_input.map { _m,j -> j }.collect(),
         params.arg_hamronization_summarizeformat
     )
     ch_versions = ch_versions.mix(HAMRONIZATION_SUMMARIZE.out.versions)
 
     HAMRONIZATION_SUMMARIZE_HTML(
-        ch_hamronization_input.map { m, j -> j }.collect(),
+        ch_hamronization_input.map {_m,j -> j }.collect(),
         "interactive"
     )
 

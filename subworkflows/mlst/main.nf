@@ -8,7 +8,7 @@ workflow MLST_TYPING {
 
     ch_versions = channel.from([])
 
-    assembly.branch { m, a ->
+    assembly.branch { m, _a ->
         annotated: m.taxon != 'unknown'
         unknown: m.taxon == 'unknown'
     }.set { ch_assembly_filtered }

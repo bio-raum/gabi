@@ -31,7 +31,7 @@ workflow BUILD_REFERENCES {
     CONFINDR_DATABASE_SETUP()
 
     // The Database setup needs to complete before we index any additional db files
-    aux_confindr_files.combine(CONFINDR_DATABASE_SETUP.out.versions).map { m,f,v ->
+    aux_confindr_files.combine(CONFINDR_DATABASE_SETUP.out.versions).map { m,f,_v ->
         [m, f]
     }.set { ch_confindr_databases }
 

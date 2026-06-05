@@ -21,15 +21,15 @@ workflow PACBIO_ASSEMBLY {
     ch_versions = channel.from([])
 
     // Get long reads
-    reads.map { m,s,o ->
+    reads.map { m,_s,o ->
         tuple(m,o)
     }.set { lreads }
 
     // Get short reads if they exist 
     
-    reads.map { m,s,o ->
+    reads.map { m,s,_o ->
         tuple(m,s)
-    }.filter { it.last() }
+    }.filter { r -> r.last() }
     .set { sreads }
 
     if (params.autocycler) {
@@ -44,7 +44,7 @@ workflow PACBIO_ASSEMBLY {
         ch_long_read_assembly = AUTOCYCLER_WORKFLOW.out.fasta
     } else {
 
-        reads.branch { m,s,o ->
+        reads.branch { _m,s,_o ->
             with_short: s
             no_short: !s
         }.set { ch_reads_by_config }
@@ -64,7 +64,7 @@ workflow PACBIO_ASSEMBLY {
 
         // or plassembler long for long-read only
         PLASSEMBLER_LONG_PACBIO(
-            ch_reads_by_config.no_short.map {m, s, l -> tuple(m,l) }.join(FLYE_PACBIO.out.dir),
+            ch_reads_by_config.no_short.map {m, _s, l -> tuple(m,l) }.join(FLYE_PACBIO.out.dir),
             ch_plassembler_db
         )
         ch_versions = ch_versions.mix(PLASSEMBLER_LONG_PACBIO.out.versions)
@@ -78,9 +78,9 @@ workflow PACBIO_ASSEMBLY {
         sreads.map {m,r ->
             tuple(m.sample_id,r)
         }, remainder: true
-    ).map { key, m, p, r ->
+    ).map { _key, m, p, r ->
         tuple(m,p,r)
-    }.branch {
+    }.branch { it ->
         with: it.last()
         without: !it.last()
     }.set { assembly_with_short_reads }
@@ -88,7 +88,7 @@ workflow PACBIO_ASSEMBLY {
     // Run homopolish only on CLR reads
     if (params.homopolish & !params.pacbio_hifi) {
         HOMOPOLISH_PACBIO(
-            assembly_with_short_reads.without.map { m,a,r ->
+            assembly_with_short_reads.without.map { m,a,_r ->
                 tuple(m,a)
             },
             homopolish_db
@@ -96,12 +96,12 @@ workflow PACBIO_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_PACBIO.out.versions)
         ch_homopolished = HOMOPOLISH_PACBIO.out.polished
     } else {
-        ch_homopolished = assembly_with_short_reads.without.map { m,a,r -> tuple(m,a) }
+        ch_homopolished = assembly_with_short_reads.without.map { m,a,_r -> tuple(m,a) }
     }
 
     // Create BWA index
     BWAMEM2_INDEX_POLYPOLISH(
-        assembly_with_short_reads.with.map { m,a,r -> 
+        assembly_with_short_reads.with.map { m,a,_r -> 
             tuple(m,a)
         }
     )
@@ -109,7 +109,7 @@ workflow PACBIO_ASSEMBLY {
 
     // Align short reads and create one SAM file per mate
     BWAMEM2_MEM_POLYPOLISH(
-        assembly_with_short_reads.with.map { m,a,r ->
+        assembly_with_short_reads.with.map { m,_a,r ->
             tuple(m,r)
         }.join(
             BWAMEM2_INDEX_POLYPOLISH.out.index
@@ -119,7 +119,7 @@ workflow PACBIO_ASSEMBLY {
 
     // Run Polypolish if short reads are available
     POLYPOLISH_POLISH(
-        assembly_with_short_reads.with.map { m,a,r ->
+        assembly_with_short_reads.with.map { m,a,_r ->
             tuple(m,a)
         }.join(
             BWAMEM2_MEM_POLYPOLISH.out.sam

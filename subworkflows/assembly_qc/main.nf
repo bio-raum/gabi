@@ -20,7 +20,7 @@ workflow ASSEMBLY_QC {
     Currently, assemblies with more than 200 contigs are not supported!
     */
 
-    assembly.branch { m, s, r, g, k ->
+    assembly.branch { _m,s,r,_g,_k ->
         pass: s.countFasta() < 200 && r.countFasta() < 200
         fail: s.countFasta() >= 200 || r.countFasta() >= 200
     }.set { assembly_by_completeness }
@@ -28,7 +28,7 @@ workflow ASSEMBLY_QC {
    
     if (!params.skip_circos && !params.skip_optional) {
 
-        assembly_by_completeness.fail.subscribe { m, s, r, g, k ->
+        assembly_by_completeness.fail.subscribe { m,_s,_r,_g,_k ->
             log.warn "${m.sample_id} - skipping circos plot, assembly or reference too fragmented!"
         }
         MUMMER2CIRCOS(
@@ -41,7 +41,7 @@ workflow ASSEMBLY_QC {
     Assembly quality using Quast
     */
     QUAST(
-        assembly.map {  m, s, r, g, k -> tuple(m, s, r, g) }
+        assembly.map { m,s,r,g,_k -> tuple(m, s, r, g) }
     )
     ch_versions = ch_versions.mix(QUAST.out.versions)
     multiqc_files = multiqc_files.mix(QUAST.out.tsv)
@@ -57,7 +57,7 @@ workflow ASSEMBLY_QC {
         busco_db_path = BUSCO_DOWNLOAD.out.db
     }
 
-    assembly.map { m, s, r, g, k -> tuple(m, s) }.set { ch_assembly_clean }
+    assembly.map { m,s,_r,_g,_k -> tuple(m, s) }.set { ch_assembly_clean }
     BUSCO_BUSCO(
         ch_assembly_clean,
         busco_lineage,
