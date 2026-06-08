@@ -4,7 +4,7 @@ This is a very short list of steps required to get your started with GABI. Pleas
 
 ## Installation
 
-This pipeline is written in [Nextflow](https://nextflow.io/) and requires Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [25.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v25.10.5). In addition, a software provisioning tool is needed (Docker, Conda, etc). If you need help with this, see [here](https://github.com/bio-raum/nf-configs/blob/main/doc/installation.md).
+This pipeline is written in [Nextflow](https://nextflow.io/) and requires Nextflow versions between [24.10.5](https://github.com/nextflow-io/nextflow/releases/tag/v24.10.5) and [26.04.3](https://github.com/nextflow-io/nextflow/releases/tag/v26.04.3). In addition, a software provisioning tool is needed (Docker, Conda, etc). If you need help with this, see [here](https://github.com/bio-raum/nf-configs/blob/main/doc/installation.md).
 
 We recommend you also contribute a config file for your setup to our [central config repository](https://github.com/bio-raum/nf-configs/blob/main/doc/config.md). This will save you time down the road by setting certain options automatically based on your compute environment. 
 
