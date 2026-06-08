@@ -27,7 +27,7 @@ workflow QC_NANOPORE {
             reads
         )
         ch_versions         = ch_versions.mix(PORECHOP_ABI.out.versions)
-        multiqc_files       = multiqc_files.mix(PORECHOP_ABI.out.log.map { m, l -> l })
+        multiqc_files       = multiqc_files.mix(PORECHOP_ABI.out.log.map { _m,l -> l })
         ch_porechop_reads   = PORECHOP_ABI.out.reads
     } else {
         ch_porechop_reads   = reads
@@ -60,13 +60,13 @@ workflow QC_NANOPORE {
     )
     ch_versions = ch_versions.mix(CHOPPER.out.versions)
 
-    CHOPPER.out.fastq.branch { m,r ->
+    CHOPPER.out.fastq.branch { _m,r ->
         pass: r.countFastq() >= params.ont_min_reads
         fail: r.countFastq() < params.ont_min_reads
     }.set { ch_chopped_reads }
 
     // Stop a sample if the number of ONT reads is under a threshold
-    ch_chopped_reads.fail.subscribe { m,r ->
+    ch_chopped_reads.fail.subscribe { m,_r ->
         log.warn "Stopping ONT read set ${m.sample_id} - not enough reads surviving.\nConsider adjusting reads_min_length, ont_min_reads and ont_min_q."
     }
 
@@ -82,7 +82,7 @@ workflow QC_NANOPORE {
         ch_chopped_reads.pass
     )
     ch_versions = ch_versions.mix(NANOPLOT.out.versions)
-    multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { m, r -> r })
+    multiqc_files = multiqc_files.mix(NANOPLOT.out.txt.map { _m,r -> r })
 
     // Replace tabs in ONT fastq headers, else KMC will not work
     SEQKIT_REPLACE(

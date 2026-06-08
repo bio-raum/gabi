@@ -87,8 +87,6 @@ workflow GABI {
 
     confindr_db     = params.confindr_db ? params.confindr_db : file(params.references['confindr'].db, checkIfExists: true)
 
-    ch_bloom_filter = params.reference_base ? channel.from([ file(params.references["host_genome"].db + ".bf", checkIfExists: true), file(params.references["host_genome"].db + ".txt", checkIfExists: true)]).collect() : []
-
     STAGE_SAMPLESHEET(samplesheet)
 
     INPUT_CHECK(samplesheet)
@@ -116,8 +114,7 @@ workflow GABI {
     */
     QC(
         INPUT_CHECK.out.reads,
-        confindr_db,
-        ch_bloom_filter
+        confindr_db
     )
     ch_versions         = ch_versions.mix(QC.out.versions)
     ch_illumina_trimmed = QC.out.illumina
@@ -140,10 +137,10 @@ workflow GABI {
     GROUP_READS(
         ch_illumina_trimmed.mix(ch_ont_trimmed, ch_pacbio_trimmed)
     )
-    ch_hybrid_reads     = GROUP_READS.out.hybrid_reads
+    // ch_hybrid_reads     = GROUP_READS.out.hybrid_reads
     ch_short_reads_only = GROUP_READS.out.illumina_only
-    ch_ont_reads_only   = GROUP_READS.out.ont_only
-    ch_pb_reads_only    = GROUP_READS.out.pacbio_only
+    // ch_ont_reads_only   = GROUP_READS.out.ont_only
+    // ch_pb_reads_only    = GROUP_READS.out.pacbio_only
     ch_pb_hybrid_reads  = GROUP_READS.out.pacbio_hybrid
     ch_dragonflye       = GROUP_READS.out.dragonflye
 
@@ -161,9 +158,9 @@ workflow GABI {
     ch_versions         = ch_versions.mix(TAXONOMY_PROFILING.out.versions)
     ch_report           = ch_report.mix(TAXONOMY_PROFILING.out.report)
 
-    ch_multiqc_illumina = ch_multiqc_illumina.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "ILLUMINA"}.map {m,r -> r })
-    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "NANOPORE"}.map {m,r -> r })
-    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,r -> m.platform == "PACBIO"}.map {m,r -> r })
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,_r -> m.platform == "ILLUMINA"}.map {_m,r -> r })
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,_r -> m.platform == "NANOPORE"}.map {_m,r -> r })
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(TAXONOMY_PROFILING.out.report_txt.filter{m,_r -> m.platform == "PACBIO"}.map {_m,r -> r })
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,12 +202,12 @@ workflow GABI {
     ch_assemblies   = ch_assemblies.mix(PACBIO_ASSEMBLY.out.assembly)
     
     // Find empty assemblies and stop them
-    ch_assemblies.branch { m,f ->
+    ch_assemblies.branch { _m,f ->
         fail: f.countFasta() < 1
         pass: f.countFasta() > 0
     }.set { ch_assemblies_size }
 
-    ch_assemblies_size.fail.subscribe { m, f ->
+    ch_assemblies_size.fail.subscribe { m,_f ->
         log.warn "${m.sample_id} - assembly is empty, stopping sample"
     }
     
@@ -219,12 +216,12 @@ workflow GABI {
     Tag and optionally remove highly fragmented assemblies
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    ch_assemblies_size.pass.branch { m, f ->
+    ch_assemblies_size.pass.branch { _m, f ->
         fail: f.countFasta() > params.max_contigs
         pass: f.countFasta() <= params.max_contigs
     }.set { ch_assemblies_status }
 
-    ch_assemblies_status.fail.subscribe { m, f ->
+    ch_assemblies_status.fail.subscribe { m,_f ->
         log.warn "${m.sample_id} - assembly is highly fragmented!"
     }
 
@@ -257,9 +254,9 @@ workflow GABI {
     )
     ch_versions   = ch_versions.mix(COVERAGE.out.versions)
 
-    ch_multiqc_illumina = ch_multiqc_illumina.mix(COVERAGE.out.report_illumina.map{ m,r -> r })
-    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(COVERAGE.out.report_ont.map{ m,r -> r })
-    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(COVERAGE.out.report_pacbio.map{ m,r -> r })
+    ch_multiqc_illumina = ch_multiqc_illumina.mix(COVERAGE.out.report_illumina.map{ _m,r -> r })
+    ch_multiqc_nanopore = ch_multiqc_nanopore.mix(COVERAGE.out.report_ont.map{ _m,r -> r })
+    ch_multiqc_pacbio   = ch_multiqc_pacbio.mix(COVERAGE.out.report_pacbio.map{ _m,r -> r })
 
     ch_report = ch_report.mix(
         COVERAGE.out.summary,
@@ -314,13 +311,13 @@ workflow GABI {
                 ch_assembly_without_plasmids.map { m,a ->
                     tuple(m.sample_id,a)
                 }
-            ).map { s,m,r,a ->
+            ).map { _s,m,r,a ->
                 tuple(m,r,a)
             }
         )
         ch_versions         = ch_versions.mix(VARIANTS.out.versions)
-        ch_multiqc_illumina = ch_multiqc_illumina.mix(VARIANTS.out.stats.filter { m,s -> m.platform == "ILLUMINA"}.map { m,s -> s})
-        ch_multiqc_nanopore = ch_multiqc_nanopore.mix(VARIANTS.out.stats.filter { m,s -> m.platform == "NANOPORE"}.map { m,s -> s})
+        ch_multiqc_illumina = ch_multiqc_illumina.mix(VARIANTS.out.stats.filter { m,_s -> m.platform == "ILLUMINA"}.map { _m,s -> s})
+        ch_multiqc_nanopore = ch_multiqc_nanopore.mix(VARIANTS.out.stats.filter { m,_s -> m.platform == "NANOPORE"}.map { _m,s -> s})
         ch_report           = ch_report.mix(VARIANTS.out.stats)
     }
 
@@ -335,8 +332,8 @@ workflow GABI {
     )
     ch_versions     = ch_versions.mix(FIND_REFERENCES.out.versions)
     ch_report       = ch_report.mix(FIND_REFERENCES.out.gbk)
-    //ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
-    //ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
+    // ch_assemblies_without_plasmids_with_reference_and_gbk = FIND_REFERENCES.out.assembly_with_ref
+    // ch_assemblies_without_plasmids_with_taxa = FIND_REFERENCES.out.assembly_with_tax
 
     // Assembly with plasmids and the detected reference + gbk/gff
     ch_assemblies_clean.map { m, s ->
@@ -345,12 +342,12 @@ workflow GABI {
         FIND_REFERENCES.out.reference.map { m, r, g, k ->
             tuple(m.sample_id,m,r,g,k)
         }
-    ).map { d, s, m, r, g, k ->
+    ).map { _d, s, m, r, g, k ->
         tuple(m,s,r,g,k)
     }.set { ch_assemblies_clean_with_reference_and_gbk }
 
     // as well as a channel with the clean assembly incl Plasmids and taxon information
-    ch_assemblies_clean_with_reference_and_gbk.map { m, s, r, g, k ->
+    ch_assemblies_clean_with_reference_and_gbk.map { m, s, _r, _g, _k ->
         tuple(m,s)
     }.set { ch_assemblies_clean_with_taxa }
 
@@ -394,7 +391,7 @@ workflow GABI {
             ch_prokka_prodigal
         )
         ch_versions = ch_versions.mix(ANNOTATE.out.versions)
-        multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { m, r -> r })
+        multiqc_files = multiqc_files.mix(ANNOTATE.out.qc.map { _m, r -> r })
     }
 
     /*
@@ -425,7 +422,7 @@ workflow GABI {
     )
     ch_versions     = ch_versions.mix(ASSEMBLY_QC.out.versions)
     ch_assembly_qc  = ASSEMBLY_QC.out.quast
-    multiqc_files   = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { m, r -> r })
+    multiqc_files   = multiqc_files.mix(ASSEMBLY_QC.out.qc.map { _m, r -> r })
     ch_report       = ch_report.mix(ch_assembly_qc)
     ch_report       = ch_report.mix(ASSEMBLY_QC.out.busco_json)
 
@@ -455,7 +452,7 @@ workflow GABI {
             FIND_REFERENCES.out.taxon.map { m ->
                 tuple(m.sample_id,m)
             }
-        ).map { sid,r,meta ->
+        ).map { _sid,r,meta ->
             tuple (meta,r)
         }.set { ch_reports_grouped }
 

@@ -317,7 +317,7 @@ def main(input, refs, output):
 
     data["qc"]["call"] = status["missing"]
 
-    fail_categories = ["confindr_illumina", "confindr_nanopore", "quast_contigs", "coverage_total_mean", "read_hit1_species_fraction_ILLUMINA", "read_hit1_species_fraction_NANOPORE", "taxonkit_genus_fraction"]
+    fail_categories = ["confindr_illumina", "quast_contigs", "coverage_total_mean", "read_hit1_species_fraction_ILLUMINA", "read_hit1_species_fraction_NANOPORE", "taxonkit_genus_fraction"]
 
     # overall qc ruling
     for category in fail_categories:

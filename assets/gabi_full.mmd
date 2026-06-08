@@ -92,14 +92,12 @@ graph LR
         cat_fastq_pb[cat fastq]
         fastplong[FastPlong]
         fastqc_pb[FastQC]
-        confindr_pb[ConfindR]
         kmc_pb[KMC]
         rasusa_pb[Rasusa]
         pacbio_reads[Pacbio Reads]
 
         cat_fastq_pb -->|pacbio| fastplong
         fastplong -->|qc| fastqc_pb
-        fastplong -->|qc| confindr_pb
         fastplong -->|pacbio_alt| kmc_pb
         kmc_pb -->|pacbio_alt| rasusa_pb
         rasusa_pb -->|pacbio_alt| pacbio_reads

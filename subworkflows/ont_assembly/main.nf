@@ -22,14 +22,14 @@ workflow ONT_ASSEMBLY {
     ch_versions = channel.from([])
 
     // Get long reads
-    reads.map { m,s,o ->
+    reads.map { m,_s,o ->
         tuple(m,o)
     }.set { lreads }
 
     // Get short reads if they exist 
-    reads.map { m,s,o ->
+    reads.map { m,s,_o ->
         tuple(m,s)
-    }.filter { it.last() }
+    }.filter { it -> it.last() }
     .set { sreads }
 
     if (params.autocycler) {
@@ -42,7 +42,7 @@ workflow ONT_ASSEMBLY {
         ch_versions = ch_versions.mix(AUTOCYCLER_WORKFLOW.out.versions)
     } else {
 
-        reads.branch { m,s,o ->
+        reads.branch { _m,s,_o ->
             with_short: s
             no_short: !s
         }.set { ch_reads_by_config }
@@ -62,7 +62,7 @@ workflow ONT_ASSEMBLY {
 
         // or plassembler long for long-read only
         PLASSEMBLER_LONG_ONT(
-            ch_reads_by_config.no_short.map { m, s, o -> tuple(m,o) }.join(FLYE_ONT.out.dir),
+            ch_reads_by_config.no_short.map { m, _s, o -> tuple(m,o) }.join(FLYE_ONT.out.dir),
             ch_plassembler_db
         )
         ch_versions = ch_versions.mix(PLASSEMBLER_LONG_ONT.out.versions)
@@ -106,13 +106,13 @@ workflow ONT_ASSEMBLY {
         // Get any assemblies which were not polished
         lreads_with_model_status.no_model.join(
             ch_long_read_assembly
-        ).map { m,l,a -> 
+        ).map { m,_l,a -> 
             tuple(m, a)
         }.set { ch_skip_polishing }
 
         ch_medaka_polished = ch_medaka_polished.mix(ch_skip_polishing)
 
-        ch_skip_polishing.subscribe { m, a -> 
+        ch_skip_polishing.subscribe { m, _a -> 
             log.warn "Skipping Medaka polishing for ${m.sample_id} - no basecalling model defined in file or from command line!"
         }
 
@@ -125,9 +125,9 @@ workflow ONT_ASSEMBLY {
         sreads.map {m,r ->
             tuple(m.sample_id,r)
         }, remainder: true
-    ).map { key, m, p, r ->
+    ).map { _key, m, p, r ->
         tuple(m,p,r)
-    }.branch {
+    }.branch { it ->
         with: it.last()
         without: !it.last()
     }.set { polished_with_short_reads }
@@ -136,7 +136,7 @@ workflow ONT_ASSEMBLY {
     // are available 
     if (params.homopolish) {
             HOMOPOLISH_ONT(
-            polished_with_short_reads.without.map { m,p,r ->
+            polished_with_short_reads.without.map { m,p,_r ->
                 tuple(m,p)
             },
             homopolish_db
@@ -144,12 +144,12 @@ workflow ONT_ASSEMBLY {
         ch_versions = ch_versions.mix(HOMOPOLISH_ONT.out.versions)
         ch_homopolished = HOMOPOLISH_ONT.out.polished
     } else {
-        ch_homopolished = polished_with_short_reads.without.map { m,p,r -> tuple(m,p) }
+        ch_homopolished = polished_with_short_reads.without.map { m,p,_r -> tuple(m,p) }
     }
 
     // Create BWA index
     BWAMEM2_INDEX_POLYPOLISH(
-        polished_with_short_reads.with.map { m,a,r -> 
+        polished_with_short_reads.with.map { m,a,_r -> 
             tuple(m,a)
         }
     )
@@ -157,7 +157,7 @@ workflow ONT_ASSEMBLY {
 
     // Align short reads and create one SAM file per mate
     BWAMEM2_MEM_POLYPOLISH(
-        polished_with_short_reads.with.map { m,a,r ->
+        polished_with_short_reads.with.map { m,_a,r ->
             tuple(m,r)
         }.join(
             BWAMEM2_INDEX_POLYPOLISH.out.index
@@ -167,7 +167,7 @@ workflow ONT_ASSEMBLY {
 
     // Run Polypolish if short reads are available
     POLYPOLISH_POLISH(
-        polished_with_short_reads.with.map { m,a,r ->
+        polished_with_short_reads.with.map { m,a,_r ->
             tuple(m,a)
         }.join(
             BWAMEM2_MEM_POLYPOLISH.out.sam

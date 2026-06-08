@@ -1,3 +1,10 @@
+# 1.5.0
+
+- Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q25 to remove false positive contaminations reported to otherwise occur on current generaton Illumina instruments
+- Removed Nanopore ConfindR as a fail category from final sample classification due to occurences of false contamination calls
+- Combined serotyping results from ECTper and Abricate EcOH in the final HTML report as neither tool alone seems to do well on benchmark data
+- Removed option to filter reads against host genome due to aggressive license restrictions of biobloomtools as well as unpredictable effects on downstream applications
+
 # 1.4.2
 
 - Added an upper version lock to the pipeline, preventing execution with new and untestet versions of nextflow

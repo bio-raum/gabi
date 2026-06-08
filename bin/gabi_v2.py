@@ -269,7 +269,7 @@ def main(yaml, template, output, version, call, wd):
             #################
 
             serotype_data = {}
-            if "serotype" in jdata:
+            if "serotype" in jdata and jdata["serotype"]:
                 serotypes = jdata["serotype"]
                 serotype = ""
                 pathogenes = ""
@@ -282,8 +282,13 @@ def main(yaml, template, output, version, call, wd):
                     abricate = serotypes["ecoh"]
                     ectyper = serotypes["ectyper"]
                     # stecfinder = serotypes["stecfinder"]
+                    # To address incongruencies between tools, we may have to report multiple results
+                    if abricate['serotype'] != ectyper['Serotype']:
+                        serotype = f"{ectyper['Serotype']} | {abricate['serotype']}"
+                    else:
+                        serotype = abricate["serotype"]
 
-                    serotype = abricate["serotype"]
+                    # serotype = abricate["serotype"]
                     pathotype = "" if ectyper["Pathotype"] == "ND" else ectyper["Pathotype"]
                     pathogenes = ectyper["PathotypeGenes"]
                     comment = ectyper["StxSubtypes"]

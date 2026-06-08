@@ -45,7 +45,7 @@ workflow CONTAMINATION {
         reads.join(
             confindr_by_status.pass
         )
-        .map { m, r, t -> tuple(m, r) }
+        .map { m, r,_t -> tuple(m, r) }
         .set { ch_pass_reads }
     } else {
         ch_pass_reads = reads
@@ -58,7 +58,7 @@ workflow CONTAMINATION {
 
     // Combine confindR reports into Multiqc JSON
     CONFINDR2MQC(
-        CONFINDR_CONFINDR.out.report.map { m, r -> r }.collect()
+        CONFINDR_CONFINDR.out.report.map { _m, r -> r }.collect()
     )
     ch_qc = ch_qc.mix(CONFINDR2MQC.out.json)
 

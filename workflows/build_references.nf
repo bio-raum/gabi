@@ -1,4 +1,3 @@
-
 include { KRAKEN2_DOWNLOAD }                                from './../modules/kraken2/download'
 include { BUSCO_DOWNLOAD as BUSCO_INSTALL }                 from './../modules/busco/download'
 include { AMRFINDERPLUS_UPDATE as AMRFINDERPLUS_INSTALL }   from './../modules/amrfinderplus/update'
@@ -6,7 +5,6 @@ include { STAGE_FILE as DOWNLOAD_SOURMASH_DB }              from './../modules/h
 include { STAGE_FILE as DOWNLOAD_SOURMASH_NR_DB }           from './../modules/helper/stage_file'
 include { GUNZIP as GUNZIP_GENOME }                         from './../modules/gunzip'
 include { GUNZIP as GUNZIP_HOMOPOLISH_DB }                  from './../modules/gunzip'
-include { BIOBLOOM_MAKER }                                  from './../modules/biobloom/maker'
 include { UNTAR as UNTAR_TAXDUMP }                          from './../modules/untar'
 include { UNTAR as UNTAR_CONFINDR_SCHEMA }                  from './../modules/untar'
 include { CHECKM2_DATABASEDOWNLOAD }                        from './../modules/checkm2/databasedownload'
@@ -24,7 +22,6 @@ workflow BUILD_REFERENCES {
     taxdb_url           = channel.fromPath(file(params.references['taxdb'].url)).map { f -> [ [sample_id: "taxdump"], f ]}
     homopolish_db       = channel.fromPath(file(params.references['homopolish_db'].url)).map { f -> [ [target: 'Homopolish'], f] }
     ch_busco_lineage    = channel.from(['bacteria_odb10'])
-    host_genome         = channel.fromPath(file(params.references['host_genome'].url)).map { f -> [ [target: 'Host'], f] }
     aux_confindr_files  = channel.fromPath("${baseDir}/assets/confindr/*.tar.gz").map { f -> [ [sample_id: f.getSimpleName()], f]}
 
     // Download plassembler database
@@ -34,7 +31,7 @@ workflow BUILD_REFERENCES {
     CONFINDR_DATABASE_SETUP()
 
     // The Database setup needs to complete before we index any additional db files
-    aux_confindr_files.combine(CONFINDR_DATABASE_SETUP.out.versions).map { m,f,v ->
+    aux_confindr_files.combine(CONFINDR_DATABASE_SETUP.out.versions).map { m,f,_v ->
         [m, f]
     }.set { ch_confindr_databases }
 
@@ -65,17 +62,6 @@ workflow BUILD_REFERENCES {
     */
     GUNZIP_HOMOPOLISH_DB(
         homopolish_db
-    )
-
-    /*
-    Download Horse genome from EnsEMBL and build index
-    */
-    GUNZIP_GENOME(
-        host_genome
-    )
-
-    BIOBLOOM_MAKER(
-        GUNZIP_GENOME.out.gunzip.map { m,f -> f }
     )
     
     /*

@@ -14,7 +14,6 @@ process KRAKEN2_DOWNLOAD {
 
     script:
     archive = url.toString().split('/')[-1]
-    db_name = archive.replace('.tgz', '')
 
     """
     tar -xvf $archive
