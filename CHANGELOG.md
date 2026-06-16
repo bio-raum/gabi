@@ -1,3 +1,7 @@
+# 1.5.1
+
+- Updating Medaka to 2.2.2 to add support for new Dorado basecalling model hac@6.0.0
+
 # 1.5.0
 
 - Increased phred threshold in ConfindR analysis of Illumina data from Q20 to Q25 to remove false positive contaminations reported to otherwise occur on current generaton Illumina instruments
