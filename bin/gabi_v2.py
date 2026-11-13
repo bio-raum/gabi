@@ -284,7 +284,7 @@ def main(yaml, template, output, version, call, wd):
 
                     # We have seen rare examples where no serotype could be called - catch this here
                     abricate_sero = abricate["serotype"] if "serotype" in abricate else "No EcOH serotype found"
-                    ectyper_sero = ectypter["Serotype"] if "Serotype" in ectyper else "No Ectyper serotype found"
+                    ectyper_sero = ectyper["Serotype"] if "Serotype" in ectyper else "No Ectyper serotype found"
 
                     serotype = f"{ectyper_sero} | {abricate_sero}"
 

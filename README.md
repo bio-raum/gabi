@@ -19,7 +19,7 @@ If you are really impatient, check out our [quickstart](https://bio-raum.github.
 
 GABI is developed and supported by the following people and organizations:
 
-[Marc Höppner](https://github.com/marchoeppner), Landeslabor Schleswig-Holstein, [LSH](https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LLABOR)
+[Marc Hoeppner](https://github.com/marchoeppner), Landeslabor Schleswig-Holstein, [LSH](https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LLABOR)
 
 ## Acknowledgements
 
