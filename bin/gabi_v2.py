@@ -279,16 +279,15 @@ def main(yaml, template, output, version, call, wd):
 
                 if ("Escherichia coli" in taxon):
                     # We need to merge results from multiple tools here
-                    abricate = serotypes["ecoh"]
-                    ectyper = serotypes["ectyper"]
-                    # stecfinder = serotypes["stecfinder"]
-                    # To address incongruencies between tools, we may have to report multiple results
-                    if abricate['serotype'] != ectyper['Serotype']:
-                        serotype = f"{ectyper['Serotype']} | {abricate['serotype']}"
-                    else:
-                        serotype = abricate["serotype"]
+                    abricate = serotypes.get("ecoh", {})
+                    ectyper = serotypes.get("ectyper", {})
 
-                    # serotype = abricate["serotype"]
+                    # We have seen rare examples where no serotype could be called - catch this here
+                    abricate_sero = abricate["serotype"] if "serotype" in abricate else "No EcOH serotype found"
+                    ectyper_sero = ectyper["Serotype"] if "Serotype" in ectyper else "No Ectyper serotype found"
+
+                    serotype = f"{ectyper_sero} | {abricate_sero}"
+
                     pathotype = "" if ectyper["Pathotype"] == "ND" else ectyper["Pathotype"]
                     pathogenes = ectyper["PathotypeGenes"]
                     comment = ectyper["StxSubtypes"]
