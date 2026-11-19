@@ -10,10 +10,10 @@ nav:
     - Contributing: about/contributing.md
     - Release notes: about/changelog.md
   - User Guide:
-    - Quickstart: user_doc/quickstart.md
     - Pipeline: user_doc/pipeline.md
+    - Quickstart: user_doc/quickstart.md
     - Requirements: user_doc/requirements.md
-    - Installation: user_doc/installation.md
+    - Installation: user_doc/installation.md 
     - Examples: user_doc/examples.md
     - Usage: user_doc/usage.md
     - Output: user_doc/output.md

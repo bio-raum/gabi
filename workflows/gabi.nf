@@ -190,8 +190,7 @@ workflow GABI {
     ch_assemblies = ch_assemblies.mix(ONT_ASSEMBLY.out.assembly)
 
     /*
-    Option: Pacbio HiFi reads
-    Flye
+    Option: Pacbio including pilishing with and without short reads
     */
     PACBIO_ASSEMBLY(
         ch_pb_hybrid_reads,
