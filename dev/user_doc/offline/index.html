@@ -266,7 +266,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../quickstart/" class="md-tabs__link">
+        <a href="../pipeline/" class="md-tabs__link">
           
   
   
@@ -571,14 +571,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/" class="md-nav__link">
+      <a href="../pipeline/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Quickstart
+    Pipeline
   
 
     
@@ -599,14 +599,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../pipeline/" class="md-nav__link">
+      <a href="../quickstart/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Pipeline
+    Quickstart
   
 
     
@@ -776,24 +776,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Offline usage
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -810,69 +792,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-nextflow-offline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer Nextflow offline
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-the-pipleine-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer the pipleine code
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-the-reference-databases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer the reference databases
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-the-pipeline-offline_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running the pipeline offline
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1244,58 +1163,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-nextflow-offline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer Nextflow offline
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-the-pipleine-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer the pipleine code
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#transfer-the-reference-databases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Transfer the reference databases
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-the-pipeline-offline_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running the pipeline offline
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1321,30 +1188,8 @@
 
 
 <h1 id="running-the-pipeline-offline">Running the pipeline offline</h1>
-<p>It is possible to run GABI offline on secured HPC or or disconnected systems.
-This will require preparing all required components in advance on a connected system before transfering them to the offline system.</p>
-<p>See the <a href="https://nf-co.re/docs/usage/getting_started/offline">nf-core documentation for offline systems</a>.</p>
-<p>Note that using GABI offline is only possible with a local configuration! It is highly recommended to use a container based dependency management system for offline use (Apptainer/Singularity, docker).</p>
-<p>The easiest way to setup an offline system is:</p>
-<h2 id="transfer-nextflow-offline">Transfer Nextflow offline</h2>
-<p>Follow this section from the nf-core documentation</p>
-<h2 id="transfer-the-pipleine-code">Transfer the pipleine code</h2>
-<p>1- Download a .tar.gz archive from a github release
-2- Transfer to the offline system and extract
-3- Transfer the cached containers from the online system in the offline system</p>
-<h2 id="transfer-the-reference-databases">Transfer the reference databases</h2>
-<p>1- Build the reference databases on the online system
-2- Transfer to the offline system</p>
-<h2 id="running-the-pipeline-offline_1">Running the pipeline offline</h2>
-<p>1- Create a local configuration file and provide the path to the cached containers
-2- Add <code>export NXF_OFFLINE='true'</code> to your <code>~/.bashrc</code> file or type in in the commnad line before running the pipeline
-3- Run the pipeline by pointing nextflow to the <code>main.nf</code> file of the code and providing the path to the local config and reference base folder:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/path/to/nextflow<span class="w"> </span>run<span class="w"> </span>/path/to/gabi/main.nf<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>-c<span class="w"> </span>/path/to/config.local<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--reference_base<span class="w"> </span>/path/to/ref_base<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--run_name<span class="w"> </span>name<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--input<span class="w"> </span>path/to/samples.tsv
-</span></code></pre></div>
+<p>It is unfortunately not possible to run GABI in an "offline" setting. This is because GABI will download reference genomes from NCBI "on-the-fly" to calculate some 
+of the core metrics used to describe each assembly. </p>
 
 
 
