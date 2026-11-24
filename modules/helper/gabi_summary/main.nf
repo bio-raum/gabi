@@ -21,7 +21,7 @@ process GABI_SUMMARY {
     result = prefix + '.json'
 
     """
-    gabi_json.py --sample ${meta.sample_id} \
+    gabi_json_v2.py --sample ${meta.sample_id} \
     --taxon '${meta.taxon}' \
     --yaml $yaml \\
     --settings $settings_json \\

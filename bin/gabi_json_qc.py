@@ -20,12 +20,12 @@ status = {
 
 
 def bracken_stats(hits):
-
+    """Aggregate Bracken taxonomic hits by genus."""
     genus_stats = {}
     for tax in hits:
         this_taxon = tax["name"].replace('"', '')
         genus = this_taxon.split(" ")[0]
-        # The Bracken results are all in quotes, so we need to clean that up and convert to precentage
+        # The Bracken results are all in quotes, so we need to clean that up and convert to percentage
         tperc = round(float(tax["fraction_total_reads"].replace('"', '')), 2)
 
         if genus in genus_stats:
@@ -37,14 +37,14 @@ def bracken_stats(hits):
 
 
 def parse_json(j):
+    """Parse JSON file."""
     with open(j, "r") as json_file:
         data = json.loads(json_file.read())
-
     return data
 
 
 def check(key, refs, query):
-
+    """Check if query value meets reference thresholds."""
     for ref in refs:
         if key in ref:
             thresholds = sorted([float(x) for x in ref[key][0]["interval"]])
@@ -68,9 +68,9 @@ def check(key, refs, query):
                     return status["fail"]
             # Must be within this interval
             elif bins == [1, 0, 1]:
-                if (any(x >= query for x in thresholds) and any(x <= query for x in thresholds)):
+                if any(x >= query for x in thresholds) and any(x <= query for x in thresholds):
                     return status["pass"]
-                elif (any(x >= (query * 0.95) for x in thresholds) and any(x <= (query * 1.05) for x in thresholds)):
+                elif any(x >= (query * 0.95) for x in thresholds) and any(x <= (query * 1.05) for x in thresholds):
                     return status["warn"]
                 else:
                     return status["fail"]
@@ -78,15 +78,15 @@ def check(key, refs, query):
             elif bins == [2, 1, 0, 1, 2]:
                 low, low_ok, high_ok, high = thresholds
 
-                if ((query >= low_ok) and (query <= high_ok)):
+                if (query >= low_ok) and (query <= high_ok):
                     return status["pass"]
-                elif (query < low):
+                elif query < low:
                     return status["fail"]
-                elif (query < low_ok):
+                elif query < low_ok:
                     return status["warn"]
-                elif (query > high):
+                elif query > high:
                     return status["fail"]
-                elif (query > high_ok):
+                elif query > high_ok:
                     return status["warn"]
             # Must be above these limits, with outlier
             elif bins == [2, 1, 0]:
@@ -103,7 +103,6 @@ def check(key, refs, query):
                 else:
                     return status["warn"]
             elif bins == [2, 0]:
-
                 if query >= thresholds[-1]:
                     return status["pass"]
                 else:
@@ -112,48 +111,44 @@ def check(key, refs, query):
     return status["missing"]
 
 
-def main(input, refs, output):
+def main(input_path, refs_path, output_path):
+    """Main QC function."""
+    qc_calls = {"fail": [], "warn": [], "pass": [], "missing": [], "messages": set()}
 
-    qc_calls = {"fail": [], "warn": [], "pass": [], "missing": [], "messages": []}
-
-    data = parse_json(input)
-
-    ref_data = parse_json(refs)["thresholds"]
+    data = parse_json(input_path)
+    ref_data = parse_json(refs_path)["thresholds"]
 
     taxon = data["taxon"]
     genus = taxon.split(" ")[0]
 
-    this_refs = [{}]
+    # Build reference list - more efficient approach
+    this_refs = []
     if taxon in ref_data:
         this_refs.append(ref_data[taxon])
-
     if genus in ref_data:
         this_refs.append(ref_data[genus])
-
-    this_refs.append(ref_data["all Species"])
+    if "all Species" in ref_data:
+        this_refs.append(ref_data["all Species"])
 
     # confindr
     for platform, confindr in data["confindr"].items():
         if len(confindr) > 0:
-
             platform_contaminated = status["missing"]
             contaminated = status["missing"]
 
-            for set in confindr:
+            for set_data in confindr:
                 if platform_contaminated == "missing":
                     platform_contaminated = status["pass"]
 
                 if contaminated == status["missing"]:
                     contaminated = status["pass"]
 
-                for read in set:
+                for read in set_data:
                     contam_type = "intra-species"
 
                     if read["BasesExamined"] == 0:
                         contaminated = status["missing"]
-                        m = "No ConfindR databases for this species available, contamination check skipped."
-                        if m not in qc_calls["messages"]:
-                            qc_calls["messages"].append(m)
+                        qc_calls["messages"].add("No ConfindR databases for this species available, contamination check skipped.")
                         platform_contaminated = status["missing"]
                     else:
                         if ":" in read["Genus"]:
@@ -163,13 +158,11 @@ def main(input, refs, output):
                             contaminated = check("NumContamSNVs", this_refs, int(read["NumContamSNVs"]))
 
                             if contaminated == status["fail"]:
-                                m = f"ConfindR: Contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
-                                if m not in qc_calls["messages"]:
-                                    qc_calls["messages"].append(m)
+                                message = f"ConfindR: Contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                                qc_calls["messages"].add(message)
                             else:
-                                m = f"ConfindR: Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
-                                if m not in qc_calls["messages"]:
-                                    qc_calls["messages"].append(m)
+                                message = f"ConfindR: Low levels of contamination ({contam_type}) detected in {platform} reads {read['Sample']}"
+                                qc_calls["messages"].add(message)
                         else:
                             contaminated = status["pass"]
 
@@ -186,11 +179,10 @@ def main(input, refs, output):
         fastp_q30_status = check("q30_rate_after", this_refs, fastp_q30_rate)
         qc_calls[fastp_q30_status].append("fastp_q30_rate")
         if fastp_q30_rate < 0.75:
-            qc_calls["messages"].append("Fastp: Illumina Q30 fraction below 75%")
+            qc_calls["messages"].add("Fastp: Illumina Q30 fraction below 75%")
 
     # bracken
     for platform, bracken in data["bracken"].items():
-
         genus_stats = bracken_stats(bracken)
 
         # Sort abundances from high to low
@@ -200,7 +192,7 @@ def main(input, refs, output):
         first_hit_status = status["warn"] if first_hit_status == status["fail"] else first_hit_status
         qc_calls[first_hit_status].append(f"read_hit1_genus_fraction_{platform}")
         if first_hit_status == status["warn"]:
-            qc_calls["messages"].append("Bracken: Read abundance of dominant genus below threshold - possible contamination issue.")
+            qc_calls["messages"].add("Bracken: Read abundance of dominant genus below threshold - possible contamination issue.")
 
         # If there is a second genus detected
         if len(abundances) > 1:
@@ -217,7 +209,7 @@ def main(input, refs, output):
     qc_calls[checkm_status].append("checkm_contamination")
 
     if checkm_status == status["fail"]:
-        qc_calls["messages"].append(("CheckM: Assembly contains predicted contamination above threshold."))
+        qc_calls["messages"].add("CheckM: Assembly contains predicted contamination above threshold.")
 
     # Taxonkit assembly QC
     taxonkit_genus = sorted(data["taxonkit"]["genus"], key=lambda d: d['fraction'], reverse=True)
@@ -227,45 +219,45 @@ def main(input, refs, output):
     qc_calls[taxonkit_genus_status].append("taxonkit_genus_fraction")
 
     if taxonkit_genus_status == status["fail"]:
-        qc_calls["messages"].append(("Taxonkit: Majority genus fraction below threshold."))
+        qc_calls["messages"].add("Taxonkit: Majority genus fraction below threshold.")
 
     # quast
     assembly = int(data["quast"]["Total length"])
     assembly_status = check("Total length", this_refs, assembly)
     qc_calls[assembly_status].append("quast_assembly")
     if assembly_status == status["fail"]:
-        qc_calls["messages"].append("Quast: Size of the assembly outside of reference range")
+        qc_calls["messages"].add("Quast: Size of the assembly outside of reference range")
     elif assembly_status == status["warn"]:
-        qc_calls["messages"].append("Quast: Size of the assembly slightly outside of reference range")
+        qc_calls["messages"].add("Quast: Size of the assembly slightly outside of reference range")
 
     contigs = int(data["quast"]["# contigs"])
     contigs_status = check("# contigs (>= 0 bp)", this_refs, contigs)
     qc_calls[contigs_status].append("quast_contigs")
     if contigs_status == status["warn"]:
-        qc_calls["messages"].append("Quast: Number of contigs slightly outside of reference range")
+        qc_calls["messages"].add("Quast: Number of contigs slightly outside of reference range")
     elif contigs_status == status["fail"]:
-        qc_calls["messages"].append("Quast: Number of contigs well outside of reference range")
+        qc_calls["messages"].add("Quast: Number of contigs well outside of reference range")
 
     n50_status = check("N50", this_refs, int(data["quast"]["N50"]))
     qc_calls[n50_status].append("quast_n50")
     if n50_status == status["warn"]:
-        qc_calls["messages"].append("Quast: N50 of this assembly slightly outside of reference range")
+        qc_calls["messages"].add("Quast: N50 of this assembly slightly outside of reference range")
     elif n50_status == status["fail"]:
-        qc_calls["messages"].append("Quast: N50 of this assembly well outside of reference range")
+        qc_calls["messages"].add("Quast: N50 of this assembly well outside of reference range")
 
     gc_status = check("GC (%)", this_refs, float(data["quast"]["GC (%)"]))
     qc_calls[gc_status].append("quast_gc")
     if gc_status == status["warn"]:
-        qc_calls["messages"].append("Quast: GC value of this assembly slightly outside of reference range")
+        qc_calls["messages"].add("Quast: GC value of this assembly slightly outside of reference range")
     elif gc_status == status["fail"]:
-        qc_calls["messages"].append("Quast: GC value of this assembly well outside of reference range")
+        qc_calls["messages"].add("Quast: GC value of this assembly well outside of reference range")
 
     duplication_status = check("Duplication ratio", this_refs, data["quast"]["Duplication ratio"])
     qc_calls[duplication_status].append("quast_duplication")
     if duplication_status == status["warn"]:
-        qc_calls["messages"].append("Quast: Duplication ratio of assembly slightly outside of reference range")
+        qc_calls["messages"].add("Quast: Duplication ratio of assembly slightly outside of reference range")
     elif duplication_status == status["fail"]:
-        qc_calls["messages"].append("Quast: Duplication ratio of this assembly well outside of reference range")
+        qc_calls["messages"].add("Quast: Duplication ratio of this assembly well outside of reference range")
 
     # busco
     if "busco" in data:
@@ -275,17 +267,17 @@ def main(input, refs, output):
         busco_completeness_status = check("busco_single", this_refs, busco_completeness)
         qc_calls[busco_completeness_status].append("busco_completeness")
         if busco_completeness_status == status["warn"]:
-            qc_calls["messages"].append("Busco: Assembly may be incomplete")
+            qc_calls["messages"].add("Busco: Assembly may be incomplete")
         elif busco_completeness_status == status["fail"]:
-            qc_calls["messages"].append("Busco: Assembly likely incomplete")
+            qc_calls["messages"].add("Busco: Assembly likely incomplete")
 
         busco_duplicates = round((int(busco["D"]) / busco_total), 2)
         busco_duplicates_status = check("busco_duplicates", this_refs, busco_duplicates)
         qc_calls[busco_duplicates_status].append("busco_duplicates")
         if busco_duplicates_status == status["warn"]:
-            qc_calls["messages"].append("Busco: Assembly contains some duplications")
+            qc_calls["messages"].add("Busco: Assembly contains some duplications")
         elif busco_duplicates_status == status["fail"]:
-            qc_calls["messages"].append("Busco: Assembly contains many duplications")
+            qc_calls["messages"].add("Busco: Assembly contains many duplications")
 
     # mosdepth total
     for platform, pdata in data["mosdepth"].items():
@@ -294,9 +286,9 @@ def main(input, refs, output):
         qc_calls[coverage_status].append(f"coverage_{platform}_mean")
 
         if coverage_status == status["fail"]:
-            qc_calls["messages"].append(f"Mosdepth: {platform} coverage below threshold!")
+            qc_calls["messages"].add(f"Mosdepth: {platform} coverage below threshold!")
         elif coverage_status == status["warn"]:
-            qc_calls["messages"].append(f"Mosdepth: {platform} coverage below threshold!")
+            qc_calls["messages"].add(f"Mosdepth: {platform} coverage below threshold!")
 
     # mosdepth global
     for platform, pdata in data["mosdepth_global"].items():
@@ -305,19 +297,27 @@ def main(input, refs, output):
             coverage = pdata["40"]
             if coverage < 90:
                 coverage_status = status["warn"]
-                qc_calls["messages"].append(f"Mosdepth: Less than 90% of assembly coveraged at 40X by {platform} reads - this may be too low")
+                qc_calls["messages"].add(f"Mosdepth: Less than 90% of assembly coveraged at 40X by {platform} reads - this may be too low")
             elif coverage < 50:
                 coverage_status = status["fail"]
-                qc_calls["messages"].append(f"Mosdepth: Less than 50% of assembly coveraged at 40X by {platform} reads - this is likely too low")
+                qc_calls["messages"].add(f"Mosdepth: Less than 50% of assembly coveraged at 40X by {platform} reads - this is likely too low")
             else:
                 coverage_status = status["pass"]
         qc_calls[coverage_status].append(f"coverage_{platform}_40x")
 
     data["qc"] = qc_calls
 
+    # Set overall QC call
     data["qc"]["call"] = status["missing"]
 
-    fail_categories = ["confindr_illumina", "quast_contigs", "coverage_total_mean", "read_hit1_species_fraction_ILLUMINA", "read_hit1_species_fraction_NANOPORE", "taxonkit_genus_fraction"]
+    fail_categories = [
+        "confindr_illumina", 
+        "quast_contigs", 
+        "coverage_total_mean", 
+        "read_hit1_species_fraction_ILLUMINA", 
+        "read_hit1_species_fraction_NANOPORE", 
+        "taxonkit_genus_fraction"
+    ]
 
     # overall qc ruling
     for category in fail_categories:
@@ -330,7 +330,10 @@ def main(input, refs, output):
         else:
             data["qc"]["call"] = status["pass"]
 
-    with open(output, "w") as fo:
+    # Convert set back to list for JSON serialization
+    data["qc"]["messages"] = list(qc_calls["messages"])
+
+    with open(output_path, "w") as fo:
         json.dump(data, fo, indent=4, sort_keys=True)
 
 

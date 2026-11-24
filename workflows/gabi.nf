@@ -36,6 +36,7 @@ include { ILLUMINA_ASSEMBLY }           from './../subworkflows/illumina_assembl
 include { ONT_ASSEMBLY }                from './../subworkflows/ont_assembly'
 include { PACBIO_ASSEMBLY }             from './../subworkflows/pacbio_assembly'
 include { ABRICATE_RUN }                from './../modules/abricate/run/main.nf'
+include { MD5SUM }                      from './../modules/md5sum'
 
 workflow GABI {
 
@@ -108,6 +109,19 @@ workflow GABI {
     ch_assemblies = ch_assemblies.mix(RENAME_EXTERNAL_CTG.out)
 
     /*
+    Generate MD5 sums of all inputs
+    We group only by sample_id since meta hashes 
+    will differ by platform
+    */
+    MD5SUM(
+        INPUT_CHECK.out.reads.map { m, r -> 
+            [ [ sample_id: m.sample_id ], r ]
+        }.groupTuple().map {m, reads -> [ m, reads.flatten()]}
+    )
+    ch_versions = ch_versions.mix(MD5SUM.out.versions)
+    ch_report   = ch_report.mix(MD5SUM.out.checksum)
+
+    /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUB: Run read trimming and contamination check(s)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,7 +156,7 @@ workflow GABI {
     // ch_ont_reads_only   = GROUP_READS.out.ont_only
     // ch_pb_reads_only    = GROUP_READS.out.pacbio_only
     ch_pb_hybrid_reads  = GROUP_READS.out.pacbio_hybrid
-    ch_dragonflye       = GROUP_READS.out.dragonflye
+    ch_dragonflye       = GROUP_READS.out.dragonflye9
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
