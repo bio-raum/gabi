@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GABI — Genomic Analysis of Bacterial Isolates</title>
+  <style>
+    [x-cloak] { display: none !important; }
+    {{ compiled_css | safe }}
+  </style>
+  <script defer>{{ alpine_js | safe }}</script>
+</head>
+
+{# =====================================================================
+   JINJA2 UI MACROS
+   ===================================================================== #}
+{% macro th_tip(label, tip, colspan=1, sub=false) %}
+  <th colspan="{{ colspan }}"
+      class="group relative px-2.5 py-2 text-left text-xs font-semibold text-white border-l border-slate-600 select-none
+             {{ 'bg-slate-700' if sub else 'bg-slate-800' }}">
+    <span class="border-b border-dotted border-slate-400 cursor-help">{{ label }}</span>
+    <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
+                absolute left-0 top-full mt-1 z-50 w-64 p-2.5 rounded-md bg-slate-900 text-slate-100
+                text-xs font-normal leading-snug shadow-xl border border-slate-700 pointer-events-none whitespace-normal">
+      {{ tip }}
+    </div>
+  </th>
+{% endmacro %}
+
+{% macro status_cell(status, text=None) %}
+  {% set styles = {
+    'pass':    'bg-emerald-50 text-emerald-900 border-l-4 border-emerald-600',
+    'warn':    'bg-amber-50 text-amber-900 border-l-4 border-amber-500',
+    'fail':    'bg-rose-50 text-rose-900 border-l-4 border-rose-600',
+    'missing': 'bg-slate-100 text-slate-500 border-l-4 border-slate-300'
+  } %}
+  <td class="px-2.5 py-1.5 font-semibold whitespace-nowrap {{ styles.get(status|lower, styles['missing']) }}">
+    {{ text or status|upper }}
+  </td>
+{% endmacro %}
+
+{% macro metric_cell(value, variant='default') %}
+  {% set variants = {
+    'default': 'bg-white text-slate-700',
+    'alt':     'bg-slate-50 text-slate-700',
+    'amr':     'bg-amber-50/70 text-slate-800',
+    'mlst':    'bg-sky-50/70 text-slate-800',
+    'sero':    'bg-fuchsia-50/70 text-slate-800'
+  } %}
+  <td class="px-2.5 py-1.5 border-l border-slate-200 whitespace-nowrap {{ variants.get(variant, variants['default']) }}">
+    {{ value }}
+  </td>
+{% endmacro %}
+
+{# =====================================================================
+   DOCUMENT BODY
+   ===================================================================== #}
+<body class="bg-slate-100 text-slate-800 font-sans text-sm antialiased">
+
+  <!-- Top Organization Banner -->
+  <header class="bg-slate-900 text-slate-300 text-xs px-6 py-2 flex flex-wrap justify-between items-center">
+    <div>
+      <a href="https://github.com" class="text-sky-400 hover:text-sky-300 font-medium underline">://github.com</a>
+      <span class="mx-1.5 text-slate-600">|</span>
+      <span>Bioinformatic resources for surveillance in food safety and public health</span>
+    </div>
+    <span class="text-slate-400">Pipeline v{{ version }}</span>
+  </header>
+
+  <main class="max-w-[98%] mx-auto my-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+
+    <!-- Report Title & Sticky Navigation -->
+    <div class="px-6 pt-6 pb-4 border-b border-slate-200">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+        GABI
+        <span class="block text-sm font-normal text-slate-500 mt-0.5">Genomic Analysis of Bacterial Isolates</span>
+      </h1>
+    </div>
+
+    <nav class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-6 py-2.5 flex flex-wrap gap-1.5 text-xs font-medium">
+      <a href="#run-info" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Run Info</a>
+      <a href="#summary" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Summary</a>
+      <a href="#assembly" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Assembly</a>
+      {% if Insertsizes %}
+        <a href="#insert-sizes" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Insert sizes</a>
+      {% endif %}
+      <a href="#busco" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Busco</a>
+      {% if Bracken_ILLUMINA %}
+        <a href="#bracken" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Bracken (Illumina)</a>
+      {% endif %}
+      {% if Bracken_NANOPORE %}
+        <a href="#bracken_ont" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Bracken (Nanopore)</a>
+      {% endif %}
+      {% if Bracken_PACBIO %}
+        <a href="#bracken_pacbio" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Bracken (PacBio)</a>
+      {% endif %}
+      {% if serotypes %}
+        <a href="#character" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Characterization</a>
+      {% endif %}
+      <a href="#software" class="px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-100 transition">Software</a>
+    </nav>
+
+    <div class="p-6 space-y-8">
+
+      <!-- Run Metadata Grid -->
+      <section id="run-info" class="scroll-mt-14">
+        <h2 class="text-base font-semibold text-slate-800 mb-3">Run Information</h2>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs">
+          <div>
+            <dt class="text-slate-500 font-medium">User</dt>
+            <dd class="mt-0.5 font-semibold text-slate-900">{{ user }}</dd>
+          </div>
+          <div>
+            <dt class="text-slate-500 font-medium">Date</dt>
+            <dd class="mt-0.5 font-semibold text-slate-900">{{ date }}</dd>
+          </div>
+          <div>
+            <dt class="text-slate-500 font-medium">Pipeline Version</dt>
+            <dd class="mt-0.5 font-semibold text-slate-900">{{ version }}</dd>
+          </div>
+          <div>
+            <dt class="text-slate-500 font-medium">Work Directory</dt>
+            <dd class="mt-0.5 font-mono text-slate-700 truncate" title="{{ wd }}">{{ wd }}</dd>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-4 pt-2 border-t border-slate-200">
+            <dt class="text-slate-500 font-medium">Command Line Call</dt>
+            <dd class="mt-1 font-mono text-[11px] bg-slate-900 text-slate-100 p-2 rounded overflow-x-auto">{{ call }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- Main Summary Table -->
+      <section id="summary" class="scroll-mt-14">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold text-slate-800">Summary</h2>
+          <span class="text-xs text-slate-500">Click any sample row to expand details</span>
+        </div>
+
+        <div class="overflow-x-auto max-h-[75vh] border border-slate-300 rounded-lg shadow-sm">
+          <table class="min-w-full border-collapse text-xs">
+            <thead class="sticky top-0 z-20">
+              <tr>
+                <th class="sticky left-0 z-30 bg-slate-900 text-white px-3 py-2 text-left font-semibold">Sample</th>
+                {{ th_tip("Status", "The overall analysis status: pass: ok to use, warn: potential issues found, fail: most probably not usable") }}
+                {{ th_tip("Best-guess taxon", "The highest scoring taxon using kmer matching (S/MASH)") }}
+                {{ th_tip("Reference genome", "The highest matching hit in RefSeq to this assembly", colspan=2) }}
+                {{ th_tip("Assembly", "Information about this assembly", colspan=6) }}
+                {{ th_tip("Mean coverage (X)", "Mean coverage of reads mapped back to the assembly", colspan=4) }}
+                {{ th_tip("Coverage 40X (%)", "Percentage of assembly covered at 40X or more", colspan=4) }}
+                {{ th_tip("Read quality", "Quality metrics of reads after trimming", colspan=3) }}
+                {{ th_tip("ConfindR", "Indicators of contamination from sequence variation", colspan=2) }}
+                {{ th_tip("Taxa", "Number of detected taxa with an abundance of > 5% in the reads", colspan=3) }}
+                {{ th_tip("Assembly Composition", "Contamination check of the full assembly by checking taxonomic signature of all contigs", colspan=2) }}
+              </tr>
+              <tr>
+                <th class="sticky left-0 z-30 bg-slate-800"></th>
+                <th class="bg-slate-800"></th>
+                <th class="bg-slate-800"></th>
+                {{ th_tip("Assembly", "Closest RefSeq accession", sub=True) }}
+                {{ th_tip("% Cov", "How much of the reference is covered by this assembly in percent.", sub=True) }}
+                {{ th_tip("Size (Mb)", "Total assembly length in megabases", sub=True) }}
+                {{ th_tip("#Contigs", "The number of chromosomal contigs (number of plasmid contigs).", sub=True) }}
+                {{ th_tip("N50 (Kb)", "The size of contigs (>=) in which 50% of the assembly are represented.", sub=True) }}
+                {{ th_tip("Gene space (%)", "The fraction of broadly conserved genes covered in this assembly (BUSCO), complete (C) | duplicated (D).", sub=True) }}
+                {{ th_tip("GC (%)", "GC content of the assembly. Deviations from the species default are highlighted in orange (mild) and red (strong).", sub=True) }}
+                {{ th_tip("Dup", "Duplication metric", sub=True) }}
+                <!-- Add remaining sub-headers here using {{ th_tip(..., sub=True) }} -->
+              </tr>
+            </thead>
+
+            <!-- Example Sample Row Loop with Alpine.js Accordion -->
+            {% for sample in samples %}
+            <tbody x-data="{ open: false }" class="divide-y divide-slate-200 border-b border-slate-300">
+              <tr @click="open = !open" class="cursor-pointer hover:bg-sky-50/50 transition-colors">
+                <td class="sticky left-0 z-10 bg-slate-100 font-bold px-3 py-2 border-r border-slate-300 whitespace-nowrap">
+                  <span class="inline-block w-4 text-slate-400" x-text="open ? '▾' : '▸'"></span>
+                  {{ sample.id }}
+                </td>
+                {{ status_cell(sample.status) }}
+                {{ metric_cell(sample.taxon, 'default') }}
+                {{ metric_cell(sample.ref_acc, 'alt') }}
+                {{ metric_cell(sample.ref_cov, 'alt') }}
+                {{ metric_cell(sample.size_mb, 'default') }}
+                {{ metric_cell(sample.contigs, 'default') }}
+                {{ metric_cell(sample.n50_kb, 'default') }}
+                {{ metric_cell(sample.busco, 'default') }}
+                {{ metric_cell(sample.gc, 'default') }}
+                {{ metric_cell(sample.dup, 'default') }}
+                <!-- Add your remaining metric_cell(...) calls here (e.g., 'amr', 'mlst', 'sero') -->
+              </tr>
+
+              <!-- Expandable Sample Drill-Down Row -->
+              <tr x-show="open" x-cloak class="bg-slate-50 text-left">
+                <td colspan="28" class="p-4 border-t border-slate-200">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-white p-3 rounded border border-slate-200">
+                      <h4 class="font-semibold text-slate-800 mb-1">AMR Genes</h4>
+                      <p class="text-slate-600">{{ sample.amr_details | default('No AMR hits detected') }}</p>
+                    </div>
+                    <div class="bg-white p-3 rounded border border-slate-200">
+                      <h4 class="font-semibold text-slate-800 mb-1">MLST / Typing</h4>
+                      <p class="text-slate-600">{{ sample.mlst_details | default('N/A') }}</p>
+                    </div>
+                    <div class="bg-white p-3 rounded border border-slate-200">
+                      <h4 class="font-semibold text-slate-800 mb-1">QC Notes</h4>
+                      <p class="text-slate-600">{{ sample.qc_notes | default('All checks completed.') }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            {% endfor %}
+          </table>
+        </div>
+      </section>
+
+      <!-- Example Plotly Plot Card Sections -->
+      {% if Bracken_ILLUMINA %}
+      <section id="bracken" class="scroll-mt-14">
+        <h2 class="text-base font-semibold text-slate-800 mb-3">Bracken (Illumina)</h2>
+        <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+          {{ Bracken_ILLUMINA | safe }}
+        </div>
+      </section>
+      {% endif %}
+
+      <section id="busco" class="scroll-mt-14">
+        <h2 class="text-base font-semibold text-slate-800 mb-3">BUSCO</h2>
+        <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+          {{ busco_plot | safe }}
+        </div>
+      </section>
+
+      <!-- Software Versions Footer Section -->
+      <section id="software" class="scroll-mt-14">
+        <h2 class="text-base font-semibold text-slate-800 mb-3">Software Versions</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          {% for module, tools in software.items() %}
+          <div class="bg-slate-50 p-3 rounded border border-slate-200">
+            <h3 class="font-semibold text-slate-700 mb-1">{{ module }}</h3>
+            <ul class="space-y-0.5 font-mono text-[11px] text-slate-600">
+              {% for tool in tools %}
+              <li>{{ tool }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="bg-slate-100 border-t border-slate-200 px-6 py-3 text-[11px] text-slate-500 flex justify-between">
+      <span>Generated by Bio-Raum GABI</span>
+      <span>{{ date }}</span>
+    </footer>
+  </main>
+
+</body>
+</html>

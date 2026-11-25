@@ -1,3 +1,8 @@
+# 1.5.2 
+
+- Updates to core parser scripts to be more compact
+- Adding md5sums of input read files to the per-sample JSON results
+
 # 1.5.1
 
 - Updating Medaka to 2.2.2 to add support for new Dorado basecalling model hac@6.0.0

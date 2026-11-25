@@ -11,5 +11,9 @@
         "println",
         "slurm",
         "subworkflow"
-    ]
+    ],
+    "files.associations": {
+        "*.html": "jinja-html"
+    }
+    
 }
